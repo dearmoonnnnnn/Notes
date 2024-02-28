@@ -110,7 +110,7 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 
 总的来说，这个构造函数设置了Convert类的一些初值，并为这个类与Pandar LiDAR数据的处理进行了初始化。它也似乎具有动态重新配置的功能，允许在运行时修改某些参数。
 
-# 二、根据ARS548-demo实现
+# 二、根据ARS548-demo实现(直接看 D 部分)
 
 ## A、整体思路：
 
@@ -133,34 +133,10 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 
 ##### 运行环境：
 
-- Ubuntu18.04 
+- Ubuntu18.04  + ROS melodic 或 Ubuntu20.04 + ROS noetic
 
-  - ROS melodic
-
-  - nlohmann-json库
-
-    具体见 3.2.2 部分
-
-  - wireshark
-
-    1. 安装wireshark
-
-       ```bash
-       sudo apt install wireshark
-       ```
-
-       出现弹窗，选择“是”，允许Wireshark捕获网络数据包。
-
-    2. 配置wireshark插件，使其能够解析ars548传感器数据。
-
-       
-
-       
-
-- Ubuntu20.04(推荐)
-  - ROS noetic
-  - nlohmann-json库
-  - wireshark
+- nlohmann-json库
+- wireshark
 
 ## B、RosDriverForARS548
 
@@ -339,7 +315,7 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
 
 ##### 代码地址：
 
-
+https://github.com/letMeEmoForAWhile/rosbag_recorder.git
 
 ##### 具体代码：
 
@@ -381,6 +357,42 @@ int main(int argc, char **argv) {
 ```
 
 ## D、具体步骤
+
+### 零、配置环境
+
+##### 1、安装ROS
+
+参考如下链接：
+
+官方文档：http://wiki.ros.org/ROS/Installation
+
+其他教程：https://blog.csdn.net/sea_grey_whale/article/details/132023522
+
+Autolabor（推荐）：http://www.autolabor.com.cn/book/ROSTutorials/chapter1/12-roskai-fa-gong-ju-an-zhuang/124-an-zhuang-ros.html
+
+##### 2、安装wireshark
+
+1. 安装wireshark软件
+
+   ```bash
+   sudo apt install wireshark
+   ```
+
+   出现弹窗，选择“是”，允许Wireshark捕获网络数据包。
+
+2. 配置wireshark插件，使其能够解析ars548传感器数据。
+
+   找到插件需要放置的位置：`/usr/lib/x86_64-linux-gnu/wireshark/plugins`
+
+   ![wireshark插件位置](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/wireshark插件位置.png)
+
+   在插件所在目录，复制插件到上述位置
+
+   ```bash
+   sudo cp packet-ars548（大陆原版）.lua /usr/lib/x86_64-linux-gnu/wireshark/plugins
+   ```
+
+   重启wireshark
 
 ### 一、使用wireshark将传感器数据转换为json文件
 
@@ -444,3 +456,34 @@ source ~/.bashrc
 roslaunch ars548_process ars548_process.launch
 ```
 
+### 三、rosbag_recorder
+
+##### 1、编译
+
+1）下载项目：
+
+```bash
+git clone https://github.com/letMeEmoForAWhile/rosbag_recorder.git
+```
+
+2）在根路径执行编译命令
+
+```bash
+catkin_make
+```
+
+5）保存环境变量
+
+```bash
+vim ~/.bashrc
+```
+
+在最后一行如下内容。需要将`PATH_TO_RosDriverForARS548_FOLDER`改成RosDriverForARS548的路径
+
+```bash
+source PATH_TO_rosbag_recorder_FOLDER/devel/setup.bash
+```
+
+```bash
+source ~/.bashrc
+```
