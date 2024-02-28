@@ -45,24 +45,50 @@ ubuntu20.04：
 - [双系统装完之后，Ubuntu系统连不上WIFI的问题 - 代码先锋网 (codeleading.com)](https://codeleading.com/article/42485056591/)
 - [ubuntu18.04安装后没有wifi - CSDN文库](https://wenku.csdn.net/answer/b74e7077e0d19b293da066a3e293277e)
 
-适用于ubuntu20.04和ubuntu22.04
+##### 适用于ubuntu20.04和ubuntu22.04
 
 [Ubuntu20.04 无线网卡驱动（未发现wifi适配器）、Nvidia显卡驱动安装一条龙教程【多坑预警】_ubuntuwifi驱动安装-CSDN博客](https://blog.csdn.net/weixin_52490336/article/details/133139105)
 直接使用链接中的项目地址，可能会编译出错
 在github中搜到了intel官方驱动地址`https://github.com/intel/backport-iwlwifi.git`
 
 将
-```
+```bash
 git clone https://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/backport-iwlwifi.git
 ```
 替换成
-```
+```bash
 git clone https://github.com/intel/backport-iwlwifi.git
 ```
 
 - 首先明确网卡是intel还是realtek，在windows中查看设备管理器可知本机网卡为 intel AX211
 
-适用于ubuntu18.04
+- 下载驱动
+
+  ```bash
+  git clone https://github.com/intel/backport-iwlwifi.git
+  ```
+
+- 进入该路径
+
+  ```bash
+  cd backport-iwlwifi
+  
+  cd iwlwifi-stack-dev
+  ```
+
+- 编译与安装
+
+  ```bash
+   sudo make defconfig-iwlwifi-public
+   
+   sudo make
+   
+   sudo make install
+  ```
+
+- 重启电脑后就能看到无线连接选项。PS：不要删除驱动，后续再出现该问题，直接在对应路径下安装驱动即可。
+
+##### 适用于ubuntu18.04
 
 https://blog.csdn.net/m0_74397934/article/details/134809876
 
@@ -88,7 +114,7 @@ sudo apt install xserver-xorg-input-synaptics
 
 出现问题：
 
-```
+```bash
 下列软件包有未满足的依赖关系：
  xserver-xorg-input-synaptics : 依赖: xserver-xorg-core (>= 2:1.18.99.901)
 E: 无法修正错误，因为您要求某些软件包保持现状，就是它们破坏了软件包间的依赖关系。
@@ -96,13 +122,13 @@ E: 无法修正错误，因为您要求某些软件包保持现状，就是它�
 
 先更新xserver-xorg-core
 
-```
+```bash
 sudo apt-get install xserver-xorg-core
 ```
 
 重新安装驱动
 
-```
+```bash
 sudo apt install xserver-xorg-input-synaptics
 ```
 
@@ -118,8 +144,9 @@ sudo apt install xserver-xorg-input-synaptics
 
 安装相应插件
 
-```
+```bash
 sudo apt install flashplugin-installer
+
 sudo apt install browser-plugin-freshplayer-pepperflash
 ```
 
@@ -146,7 +173,7 @@ https://blog.csdn.net/afgqwjgfjqwgfg/article/details/121084950
 
 https://blog.csdn.net/qq_37416258/article/details/111186832
 
-```
+```bash
 uname -r
 ```
 
