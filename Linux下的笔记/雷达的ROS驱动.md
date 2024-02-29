@@ -327,7 +327,7 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
 
 原始代码发布的点云消息只包含位置信息（x、y、z），没有包含多普勒速度。
 
-#### 具体思路1：自定义一个带有多普勒速度的点消息格式
+#### 思路1：自定义一个带有多普勒速度的点消息格式
 
 ##### 1、自定义消息类型，包含位置和多普勒速度信息
 
@@ -418,7 +418,55 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
 ![image-20240229192543291](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240229192543291.png)
 
-#### 具体思路2：
+不能直接修改点的消息类型。查阅官方文档可知，`sensor_msgs::PointCloud` 消息类型包含一个字段叫做 `channels`，它是一个 `sensor_msgs::ChannelFloat32` 类型的数组，用于存储每个点的附加信息。
+
+#### 思路2：将点的多普勒速度存放在channels字段中
+
+1. 首先，在 `sensor_msgs::PointCloud` 中添加一个通道，用于存储多普勒速度。假设你命名这个通道为 "doppler_velocity"，你需要添加一个 `sensor_msgs::ChannelFloat32` 类型的通道。
+2. 然后，在接收雷达数据的回调函数中，将每个点的多普勒速度存储在 `channels[0].values[i]` 中，其中 `i` 表示第 `i` 个点。
+
+```c++
+#include <sensor_msgs/PointCloud.h>
+#include <sensor_msgs/ChannelFloat32.h>
+#include <ars548_msg/DetectionList.h> // 假设这是雷达消息类型
+
+void detectionReceive(const ars548_msg::DetectionList& msg)
+{
+    uint size = msg.detection_array.size();
+
+    sensor_msgs::PointCloud cloud;  
+    sensor_msgs::ChannelFloat32 doppler_channel; // 定义用于存储多普勒速度的通道
+
+    if(size > 0)
+    {
+        cloud.header.frame_id = "world";
+        cloud.header.stamp = msg.detection_array[0].header.stamp;
+        cloud.points.clear();
+        doppler_channel.name = "doppler_velocity"; // 设置通道名称
+
+        for(uint i = 0; i < size; i++) 
+        {
+            geometry_msgs::Point32 p;
+            p.x = msg.detection_array[i].f_x;
+            p.y = msg.detection_array[i].f_y; 
+            p.z = msg.detection_array[i].f_z; 
+
+            cloud.points.push_back(p);
+
+            // 假设 RadiaVelocity 是多普勒速度的字段名，将多普勒速度存储到通道中
+            doppler_channel.values.push_back(msg.detection_array[i].RadialVelocity); 
+        }
+
+        // 将通道添加到点云消息中
+        cloud.channels.push_back(doppler_channel);
+
+        detections_cloud_pub.publish(cloud);
+    }
+}
+
+```
+
+
 
 ## 3、rosbag_recorder
 
