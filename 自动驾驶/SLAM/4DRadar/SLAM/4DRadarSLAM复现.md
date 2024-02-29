@@ -9,8 +9,11 @@
   - ubuntu18.04安装ros melodic
   - ubuntu20.04安装ros noetic                                                  
 
-
 ## 1.2 第三方库
+
+主要是安装GTSAM
+
+![image-20240229160035677](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240229160035677.png)
 
 - PCL：`sudo apt install ros-XXX-pcl-ros`
 
@@ -170,6 +173,8 @@ sudo apt install libpcl-dev
   - [fast_apdgicp](https://github.com/zhuge2333/fast_apdgicp)或者[fast_gicp](https://github.com/SMRT-AIST/fast_gicp)
   - [ndt_omp](https://github.com/koide3/ndt_omp)
   - [barometer_bmp3888](https://github.com/zhuge2333/barometer_bmp388)
+  
+  ![image-20240229160134529](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240229160134529.png)
 
 # 二、编译
 
