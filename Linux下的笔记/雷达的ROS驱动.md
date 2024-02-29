@@ -47,7 +47,7 @@
 
 
 
-# 一、根据一个毫米波雷达ROS driver实现，同4DRaSLAM(未实现，弃用)
+# 一、根据HesaiLidar_Swift_ROS实现（同4DRaSLAM,未实现，弃用）
 
 ## 目前进展：
 
@@ -416,17 +416,11 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
 ##### 报错：无法将`ars548_msg::DopplerPoint` 类型的对象添加到 `std::vector<geometry_msgs::Point32>`类型的容器中
 
-```bash
- error: no matching function for call to ‘std::vector<geometry_msgs::Point32_<std::allocator<void> >, std::allocator<geometry_msgs::Point32_<std::allocator<void> > > >::push_back(ars548_msg::DopplerPoint&)’
-   93 |             cloud.points.push_back(doppler_point);
-      |     
-```
-
-
+![image-20240229192543291](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240229192543291.png)
 
 #### 具体思路2：
 
-## C、rosbag_recorder
+## 3、rosbag_recorder
 
 ##### 动机：为什么不直接使用`rosbag record -a`
 
@@ -475,7 +469,7 @@ int main(int argc, char **argv) {
 
 ```
 
-## D、具体步骤
+## 4、具体步骤
 
 ### 零、配置环境
 
