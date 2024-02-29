@@ -112,7 +112,7 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 
 # 二、根据ARS548-demo实现(直接看 D 部分)
 
-## A、整体思路：
+## 1、整体思路：
 
 ##### 两个项目：
 
@@ -138,19 +138,19 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 - nlohmann-json库
 - wireshark
 
-## B、RosDriverForARS548
+## 2、RosDriverForARS548
 
 ##### 代码地址：
 
 https://github.com/wulang584513/ARS548-demo/tree/master
 
-##### 调整后的代码：
+##### 修改后的代码：
 
 https://github.com/letMeEmoForAWhile/RosDriverForARS548
 
-### 2、文件
+### 2.1、文件
 
-#### ars548_process.launch
+#### 1、ars548_process.launch
 
 启动四个节点
 
@@ -168,7 +168,7 @@ https://github.com/letMeEmoForAWhile/RosDriverForARS548
     2. 经过格式转换后，发布成rviz可以显示的两个话题：/ars548_process/object_marker，显示object话题；/ars548_process/detection_point_cloud，显示detection话题。
 - rviz
 
-#### ars548_process/src/udp_interface.cpp(忽略该部分)
+#### 2、udp_interface.cpp(忽略该部分)
 
 udp接口，从udp读取数据
 
@@ -211,7 +211,7 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
     - DetectionList
     - BasicStatus
 
-#### ars548_process/src/data_process.cpp
+#### 3、data_process.cpp
 
 ##### 作用
 
@@ -221,19 +221,33 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
 
 - processObjectListMessage(char *in, RadarObjectList *o_list):
 
-#### ars548_process/src/data_struct.h
+#### 4、data_struct.h
 
-### 3、如何数据读取流
+#### 5、三个节点文件
 
-##### 动机：原始的ars548
+包含三个节点文件ars548_process_node、info_convert_node和test_radar_input_node。
 
-#### 3.1、从pcap文件读取数据
+##### 5.1、ars548_process_node.cpp
+
+##### 5.2、info_convert_node.cpp
+
+##### 5.3、test_radar_input_node.cpp
+
+### 2.2、如何数据读取流
+
+##### 动机：
+
+原始的ars548-demo项目没有提供获取数据流的代码，需要自己编写。
+
+##### 思路一：从pcap文件读取数据
 
 由于pcap保存的是原始字节流，无法读取重组后的字节流，因此放弃该思路。
 
-#### 3.2、以json文件的形式保存wireshark的解析结果，并读取
+##### 思路二：以json文件的形式保存wireshark的解析结果，并读取
 
-##### 3.2.1 json文件的数据结构
+由于厂家提供了lua插件，wireshark可以直接解析出雷达点的信息（位置、多普勒速度等）。将解析结果保存为json，直接从json文件中读取信息。
+
+##### 2.2.1 json文件的数据结构
 
 ##### 对象(object)
 
@@ -272,7 +286,7 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
   [1, "apple", true, null, {"color": "red"}]
   ```
 
-##### 3.2.2 C++读取json文件
+##### 2.2.2 C++读取json文件
 
 1. 将wireshark解析结果保存在json文件
 
@@ -280,7 +294,7 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
 
    - apt安装
 
-      ```
+      ```bash
       sudo apt update
       sudo apt install nlohmann-json3-dev
       ```
@@ -288,7 +302,7 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
 
    - 源码安装: https://blog.csdn.net/jiemashizhen/article/details/129275915
 
-     ```
+     ```bash
      // 在你喜欢的位置
      git clone  https://github.com/nlohmann/json.git
      cd json
@@ -306,6 +320,111 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
 
    - 在`nlohmann::json`库中，JSON对象、数组、字符串、数字、布尔值和null都是使用`nlohmann::json`类型来表示的。
    - 当你通过索引、键或其他方法访问`nlohmann::json`对象中的元素时，返回的仍然是`nlohmann::json`类型，不过其内部的实际数据可能是字符串、数字、布尔值、数组、对象或null。
+
+### 2.3、修改发布的点云消息，使其包含多普勒速度
+
+##### 动机：
+
+原始代码发布的点云消息只包含位置信息（x、y、z），没有包含多普勒速度。
+
+#### 具体思路1：自定义一个带有多普勒速度的点消息格式
+
+##### 1、自定义消息类型，包含位置和多普勒速度信息
+
+这里在`ars548_msg`这个包中自定义一个消息类型。
+
+```yaml
+# 在你的 ROS 包中创建一个名为 `DopplerPoint.msg` 的消息文件
+
+# 文件路径: RosDriverForARS548/src/ars548_msg/msg/DopplerPoint.msg
+
+geometry_msgs/Point32 position
+float32 doppler_velocity
+```
+
+##### 2、修改配置文件
+
+- `CMakeList.txt`文件中的`add_message_files`选项添加`DopplerPoint.msg`
+
+  ```cmake
+  add_message_files(
+    FILES
+    ‘其他msg’
+    DopplerPoint.msg
+  )
+  ```
+
+- 在`generate_messages`函数的`DEPENDENCIES`参数添加依赖。
+
+  ```cmake
+  generate_messages(
+    DEPENDENCIES
+    ‘其他依赖’
+    geometry_msgs  # DopplerPoint.msg 依赖于 geometry_msgs，
+  )
+  ```
+
+- 使得`ars548_msg`可以找到`geometry`包
+
+  - 在 `package.xml` 文件中添加以下行
+
+    ```xml
+    <build_depend>geometry_msgs</build_depend>
+    <exec_depend>geometry_msgs</exec_depend>
+    ```
+
+  - 在`CMakeLists.txt`中添加`find_package`声明
+
+    ```cmake
+    find_package(catkin REQUIRED COMPONENTS
+      ‘需要找到的其他包’
+      geometry_msgs
+    )
+    ```
+
+##### 3、修改`detectionReceie()`函数
+
+```c++
+#include "ars548_msg/DopplerPoint.h"  // 包含自定义消息类型
+
+void detectionReceive(const ars548_msg::DetectionList& msg)
+{
+    uint size = msg.detection_array.size();
+
+    ars548_msg::DopplerPoint doppler_point;  // 自定义消息类型
+
+    if(size > 0)
+    {
+        cloud.header.frame_id = "world";
+        cloud.header.stamp = msg.detection_array[0].header.stamp;
+        cloud.points.clear();
+        for(uint i = 0; i < size; i++) 
+        {
+            doppler_point.position.x = msg.detection_array[i].f_x;
+            doppler_point.position.y = msg.detection_array[i].f_y; 
+            doppler_point.position.z = msg.detection_array[i].f_z; 
+            doppler_point.doppler_velocity = msg.detection_array[i].doppler_velocity; // 将多普勒速度添加到自定义消息中
+
+            cloud.points.push_back(doppler_point);
+        }
+
+        detections_cloud_pub.publish(cloud);
+    }
+}
+
+```
+
+##### 报错：无法将`ars548_msg::DopplerPoint` 类型的对象添加到 `std::vector<geometry_msgs::Point32>`类型的容器中
+
+```bash
+ error: no matching function for call to ‘std::vector<geometry_msgs::Point32_<std::allocator<void> >, std::allocator<geometry_msgs::Point32_<std::allocator<void> > > >::push_back(ars548_msg::DopplerPoint&)’
+   93 |             cloud.points.push_back(doppler_point);
+      |     
+```
+
+
+
+#### 具体思路2：
 
 ## C、rosbag_recorder
 
@@ -394,6 +513,10 @@ Autolabor（推荐）：http://www.autolabor.com.cn/book/ROSTutorials/chapter1/1
 
    重启wireshark
 
+##### 3、安装nlohmann
+
+见2.2.2
+
 ### 一、使用wireshark将传感器数据转换为json文件
 
 ##### 1、使用wireshark打开抓取的pcapng文件
@@ -405,6 +528,10 @@ Autolabor（推荐）：http://www.autolabor.com.cn/book/ROSTutorials/chapter1/1
 ##### 2、导出解析结果为JSON格式	![屏幕截图 2024-01-19 16:16:54](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/屏幕截图 2024-01-19 16:16:54.png)
 
 ### 二、RosDriverForARS548
+
+##### 0、修改文件路径
+
+在`ars548_process_node.cpp`中修改`json_file_path`为步骤一中的json文件路径
 
 ##### 1、编译
 
@@ -448,9 +575,7 @@ source ~/.bashrc
 
 ##### 2、运行
 
-1）在`ars548_process_node.cpp`中修改`json_file_path`为步骤一中的json文件路径
-
-2）启动节点
+启动节点
 
 ```bash
 roslaunch ars548_process ars548_process.launch
@@ -478,7 +603,7 @@ catkin_make
 vim ~/.bashrc
 ```
 
-在最后一行如下内容。需要将`PATH_TO_RosDriverForARS548_FOLDER`改成RosDriverForARS548的路径
+在最后一行如下内容。需要将`PATH_TO_rosbag_recorder_FOLDER`改成rosbag_recorder的路径
 
 ```bash
 source PATH_TO_rosbag_recorder_FOLDER/devel/setup.bash
