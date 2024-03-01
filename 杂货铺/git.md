@@ -131,9 +131,9 @@
 - `path`：子模块相对于主仓库的路径。
 - `url`：子模块的远程仓库地址。
 
-# 将本地项目添加到github仓库中
+# 一、将本地项目添加到github仓库中
 
-## 在linux中
+## linux操作系统
 
 ##### 1、初始化本地仓库
 
@@ -191,7 +191,48 @@ git remote add origin https://github.com/username/repository.git
 git push -u origin master
 ```
 
-如果使用了不同的分支名或者标签名，需要将`master`替换为实际的分支名或者标签名。
+- **推送到master以外的分支：**
 
-根据提示，输入github的用户名和密码进行身份验证。PS：这里的密码不能使用github登录时的密码。如果使用个人访问令牌验证，密码字段应使用生成的token.
+  如果使用了不同的分支名或者标签名，需要将`master`替换为实际的分支名或者标签名，并且需要重命名当前所在分支。
 
+  例如：如果是推送到`main`分支。
+
+  先重命名本地仓库的当前分支为`main`
+
+  ```bash
+  git branch -M main
+  ```
+
+  再推送到远程仓库的`main`分支
+
+  ```bash
+  git push -u origin main
+  ```
+
+- **身份验证：**
+
+  根据提示，输入github的用户名和密码进行身份验证。PS：这里的密码不能使用github登录时的密码。如果使用个人访问令牌验证，密码字段应使用生成的token.
+
+##### github创建空仓库后的提示：
+
+##### create a new repository on the command line：
+
+```bash
+echo "# RosDriverForARS548" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/letMeEmoForAWhile/RosDriverForARS548.git
+git push -u origin main
+```
+
+##### push an existing repository from the command line
+
+```bash
+git remote add origin https://github.com/letMeEmoForAWhile/RosDriverForARS548.git
+git branch -M main
+git push -u origin main
+```
+
+## windows操作系统
