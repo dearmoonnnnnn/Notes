@@ -91,13 +91,27 @@
 
 5. 完成身份验证后，你应该能够成功进行操作。
 
-# 下载特定分支
+# 零、git clone用法
 
--b 
+## 1、下载特定分支
 
-# 递归下载
+```bash
+git clone -b branch_name repository_url
+```
 
-##### 使用时机：
+- `branch_name` 是你想要克隆的分支的名称。
+
+- `repository_url` 是你要克隆的远程仓库的 URL
+
+举例：
+
+```bash
+git clone -b development https://github.com/username/repository.git
+```
+
+## 2、递归下载
+
+##### 动机：
 
 仓库中有`.gitmodules`文件，说明该仓库包含子模块，可以使用`--recursive`选项，递归地初始化和更新所有子模块。
 
@@ -133,7 +147,7 @@
 
 # 一、将本地项目添加到github仓库中
 
-## linux操作系统
+## A、linux操作系统
 
 ##### 1、初始化本地仓库
 
@@ -235,4 +249,4 @@ git branch -M main
 git push -u origin main
 ```
 
-## windows操作系统
+## B、windows操作系统
