@@ -1,5 +1,31 @@
 # 零、问题和概念
 
+## 概念：
+
+##### 1、RCS
+
+- 定义：
+
+  Radar Cross Section, 雷达散射截面积，是度量目标在雷达波照射下所产生的回波强度的一种物理量，它是目标的假想面积。
+
+- 作用：
+
+  它有助于确定雷达如何“看”这个目标——即目标在雷达上显得有多明显。例如，一个大的金属飞机可能会有一个很大的RCS，使其在雷达上很容易被检测到。而设计有隐身特性的飞机，其形状和表面被特别设计以散射雷达波，从而减少其RCS值，使其在雷达上更难被检测到。
+
+- 影响RCS的相关因素
+
+  RCS与目标的尺寸和形状、材料、目标视角、雷达工作频率及雷达发射和接收天线的==极化==有关。
+
+- RCS的单位
+
+  - RCS的单位是面积单位
+    - 通常使用平方米(m^2^)。例如，一个物体的RCS是1m^2^。这并不意味着这个物体的实际物理面积是1m^2^,而是说这个物体反射雷达波的“效果”与一个完美反射1m^2^面积的目标相同。
+  - 或者以分贝(dB)为单位
+    - `ars548`4D毫米波雷达的手册中，RCS单位为$dBm^2$（即dBsm，dB square meters），表示的是RCS相对于一个平方米的参考面积的对数比。
+    - 例如，如果某个目标的RCS是-10dBsm，意味着它的反射能力相当于一个平方米的参考面积的反射能力的10分之一。
+
+  
+
 ## 问题：
 
 ##### 1、ars548_process_node未接受到网口数据，从网口读数据的代码在哪？
@@ -110,7 +136,7 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 
 总的来说，这个构造函数设置了Convert类的一些初值，并为这个类与Pandar LiDAR数据的处理进行了初始化。它也似乎具有动态重新配置的功能，允许在运行时修改某些参数。
 
-# 二、根据ARS548-demo实现(直接看 D 部分)
+# 二、根据ARS548-demo实现(直接跳转4、具体步骤)
 
 ## 1、整体思路：
 
@@ -321,13 +347,17 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
    - 在`nlohmann::json`库中，JSON对象、数组、字符串、数字、布尔值和null都是使用`nlohmann::json`类型来表示的。
    - 当你通过索引、键或其他方法访问`nlohmann::json`对象中的元素时，返回的仍然是`nlohmann::json`类型，不过其内部的实际数据可能是字符串、数字、布尔值、数组、对象或null。
 
-### 2.3、修改发布的点云消息，使其包含多普勒速度
+### 2.3、修改发布的点云消息，使其包含多普勒速度和强度信息
 
 ##### 动机：
 
-原始代码发布的点云消息只包含位置信息（x、y、z），没有包含多普勒速度。
+原始代码发布的点云消息只包含位置信息（x、y、z），没有包含多普勒速度和强度信息。
 
-#### 思路1：自定义一个带有多普勒速度的点消息格式
+在wireshark中查看点的消息内容，存在多普勒速度(Detection Radial Velocity)和强度信息(RCS)。
+
+![image-20240301130657374](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240301130657374.png)
+
+#### 思路1：自定义一个带有多普勒速度的点消息格式（报错）
 
 ##### 1、自定义消息类型，包含位置和多普勒速度信息
 
@@ -435,6 +465,7 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
     uint size = msg.detection_array.size();
 
     sensor_msgs::PointCloud cloud;  
+    geometry_msgs::Point32 p;
     sensor_msgs::ChannelFloat32 doppler_channel; // 定义用于存储多普勒速度的通道
 
     if(size > 0)
@@ -446,15 +477,14 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
         for(uint i = 0; i < size; i++) 
         {
-            geometry_msgs::Point32 p;
             p.x = msg.detection_array[i].f_x;
             p.y = msg.detection_array[i].f_y; 
             p.z = msg.detection_array[i].f_z; 
 
             cloud.points.push_back(p);
 
-            // 假设 RadiaVelocity 是多普勒速度的字段名，将多普勒速度存储到通道中
-            doppler_channel.values.push_back(msg.detection_array[i].RadialVelocity); 
+            // 将多普勒速度存储到通道中
+            doppler_channel.values.push_back(msg.detection_array[i].f_RangeRate); 
         }
 
         // 将通道添加到点云消息中
@@ -464,6 +494,56 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
     }
 }
 
+```
+
+**同理，添加了强度信息的代码如下：**
+
+```c++
+#include <sensor_msgs/PointCloud.h>
+#include <sensor_msgs/ChannelFloat32.h>
+#include <ars548_msg/DetectionList.h> // 假设这是雷达消息类型
+
+void detectionReceive(const ars548_msg::DetectionList& msg)
+{
+    uint size = msg.detection_array.size();
+
+    sensor_msgs::PointCloud cloud;  
+    geometry_msgs::Point32 p;
+    sensor_msgs::ChannelFloat32 doppler_channel;         // 定义用于存储多普勒速度的通道,存储雷达点的f_RangeRate
+    sensor_msgs::ChannelFloat32 intensity_channel;       // 定义用于存储信号强度的通道，存储雷达点的RCS
+
+    if(size>0)
+    {
+        cloud.header.frame_id = "world";
+        cloud.header.stamp = msg.detection_array[0].header.stamp;
+        cloud.points.clear();
+
+        // 设置通道名称
+        doppler_channel.name = "doppler_velocity"; 
+        intensity_channel.name = "intensity";
+
+        for(uint i=0;i<size;i++) 
+        {
+            p.x = msg.detection_array[i].f_x;
+            p.y = msg.detection_array[i].f_y; 
+            p.z = msg.detection_array[i].f_z; 
+
+            cloud.points.push_back(p);
+
+            // 将多普勒速度和信号强度存储到对应通道中
+            doppler_channel.values.push_back(msg.detection_array[i].f_RangeRate); 
+            intensity_channel.values.push_back(msg.detection_array[i].s_RCS);
+        }
+
+        // 将通道添加到点云消息中
+        // cloud.channels[o].value[i]表示点i的多普勒速度
+        // cloud.channels[1].value[i]表示点i的信号强度
+        cloud.channels.push_back(doppler_channel);
+        cloud.channels.push_back(intensity_channel);
+
+        detections_cloud_pub.publish(cloud);
+    }
+}
 ```
 
 
@@ -559,6 +639,14 @@ Autolabor（推荐）：http://www.autolabor.com.cn/book/ROSTutorials/chapter1/1
 
 见2.2.2
 
+##### 4、安装libpcap
+
+`RosDriverForARS548`需要该库。
+
+```bash
+sudo apt-get install libpcap-dev
+```
+
 ### 一、使用wireshark将传感器数据转换为json文件
 
 ##### 1、使用wireshark打开抓取的pcapng文件
@@ -587,19 +675,13 @@ git clone https://github.com/letMeEmoForAWhile/RosDriverForARS548.git
 
 - 不创建会报错：https://github.com/wulang584513/ARS548-demo/issues/3
 
-3）安装依赖
-
-安装nlohmann库
-
-- 见3.2.2 C++读取json文件部分
-
-4）终端切换到RosDriverForARS548根路径并编译
+3）终端切换到RosDriverForARS548根路径并编译
 
 ```bash
 catkin_make
 ```
 
-5）保存环境变量
+4）保存环境变量
 
 ```bash
 vim ~/.bashrc
@@ -654,3 +736,12 @@ source PATH_TO_rosbag_recorder_FOLDER/devel/setup.bash
 ```bash
 source ~/.bashrc
 ```
+
+##### 2、运行
+
+先启动RosDriverForARS548，由于读取josn文件需要一定时间，当rviz开始显示点云时，再启动该项目。
+
+```bash
+rosrun rosbag_recorder rosbag_recorder 
+```
+
