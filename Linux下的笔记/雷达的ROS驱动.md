@@ -659,7 +659,7 @@ sudo apt-get install libpcap-dev
 
 ### 二、RosDriverForARS548
 
-##### 0、修改文件路径
+##### 0、修改路径
 
 在`ars548_process_node.cpp`中修改`json_file_path`为步骤一中的json文件路径
 
@@ -706,6 +706,10 @@ roslaunch ars548_process ars548_process.launch
 ```
 
 ### 三、rosbag_recorder
+
+##### 0、修改路径
+
+在`rosbag_recorder.cpp`中修改`bag.open()`参数为输出的bag文件路径。
 
 ##### 1、编译
 
