@@ -92,6 +92,18 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 ##### 9、什么是扫描到地图的配准，它与扫描到扫描的配准有什么区别
 
+##### 10、params.yaml和utility_radar.h都定义了节点的相关参数，比如说pointCloudTopic参数，两者不会冲突吗，能不能只保留其中一个？
+
+在ROS中，参数可以从多个来源进行设置，包括`launch`文件、命令行参数、参数文件（如`params.yaml`）、程序内部设置等。当参数从不同来源设置时，ROS会按照一定的优先级进行处理，确保参数值正确地被设置。
+
+通常情况下，参数文件（如`params.yaml`）中定义的参数会被ROS参数服务器加载，而在程序内部定义的参数（如`utility_radar.h`中的`ParamServer`类）是由节点内部直接设置的。
+
+如果在`params.yaml`文件和`utility_radar.h`中都定义了相同的参数，ROS会按照一定的优先级来确定最终使用的参数值。一般来说，命令行参数的优先级最高，其次是`launch`文件中设置的参数，然后是参数文件中定义的参数，最后是程序内部设置的参数。
+
+如果你希望只保留其中一个参数定义，可以根据你的需求选择保留哪个。如果你更喜欢使用参数文件（`params.yaml`）来管理参数，你可以删除utility_radar.h中的参数定义，并将所有参数都集中在`params.yaml`文件中进行管理。反之，如果你更喜欢在程序内部定义参数，你可以删除`params.yaml`文件，并在`utility_radar.h`中设置所有参数。
+
+总之，确保最终使用的参数值是正确的，且来源清晰明确即可。
+
 ## B、概念
 
 ##### 1、tf变化
@@ -856,7 +868,26 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 ### config/params.yaml
 
-##### 参数服务器
+ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节点的参数。主要包括与雷达SLAM相关的参数，包括话题名称、坐标系、传感器设置、IMU设置、外部传感器之间的变化等。
+
+##### 如何将params.yaml文件中的参数加载到参数服务器？
+
+在launch文件中使用如下代码
+
+```xml
+<!-- radar_graph_slam.launch --> 
+<rosparam file="$(find radar_graph_slam)/config/params.yaml" command="load" />
+```
+
+## F、include文件
+
+### utility_radar.h
+
+##### 1、定义了`RadarGraphSlamNodelet` ROS节点的参数服务器：`ParamServer()`类。
+
+- `ParamServer()`用于管理节点的相关参数。
+- 三个`nodelet`（`PreprocessingNodelet`、`RadarGraphSlamNodelet`、`ScanMatchingOdometryNodelet`）在创建时均会继承`nodelet::Nodelet`和`ParamServer`类
+- 注意ROS节点的参数服务器和ROS参数服务的区别。
 
 #  二、运行自己的数据
 
@@ -1006,14 +1037,40 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
     <include file="$(find radar_graph_slam)/launch/rosbag_play_radar_carpark1.launch" />
     ```
 
-##### 2、params.yaml文件
+##### 2、参数相关的文件
 
-该文件代表参数服务器
+- params.yaml
 
-- Topics部分
+  该文件代表ROS参数服务器
 
-  - ```yaml
+  - Topics部分
+
+    ```yaml
     pointCloudTopicL=: "/ars548_process/detection_point_cloud"
     ```
 
+- utility_radar.h
+
+  ROS节点的参数服务器
+
+  - Topics部分
+
+    ```c++
     
+    ```
+
+    
+
+
+##### 3、preprocessing_nodelet.cpp
+
+根据自己写的毫米波RosDriver，信号强度存储在点云消息的通道1。
+
+`eagle_msg->channels[2].values[i]`更改为`eagle->msg->channels[1].values[i]`
+
+## C、运行
+
+```bash
+roslaunch radar_graph_slam radar_graph_slam.launch
+```
+
