@@ -114,6 +114,8 @@
 
 修改workspace/src路径下的CMakeList.txt即可。直接将neotic中能跑通的CMakeList.txt文件内容拷贝。
 
+
+
 ## 概念
 
 ##### 1、节点
@@ -534,6 +536,81 @@ int main(int argc, char **argv)
 ## 2.2 服务通信
 
 ## 2.3 参数服务器
+
+在ROS中，通常所说的参数服务器指的是 ROS 参数服务器，它是一个分布式的参数存储系统，允许你在运行时存储和检索参数。
+
+##### 举例：
+
+1. **从参数服务器获取参数值**：
+
+```cpp
+#include <ros/ros.h>
+
+int main(int argc, char** argv) {
+    ros::init(argc, argv, "param_example_node");
+    ros::NodeHandle nh;
+
+    // 从参数服务器获取整数参数值
+    int my_param_int;
+    nh.getParam("/my_namespace/my_param_int", my_param_int);
+
+    // 从参数服务器获取浮点数参数值
+    double my_param_double;
+    nh.getParam("/my_namespace/my_param_double", my_param_double);
+
+    // 从参数服务器获取字符串参数值
+    std::string my_param_string;
+    nh.getParam("/my_namespace/my_param_string", my_param_string);
+
+    // 从参数服务器获取布尔值参数值
+    bool my_param_bool;
+    nh.getParam("/my_namespace/my_param_bool", my_param_bool);
+
+    ROS_INFO("my_param_int: %d", my_param_int);
+    ROS_INFO("my_param_double: %f", my_param_double);
+    ROS_INFO("my_param_string: %s", my_param_string.c_str());
+    ROS_INFO("my_param_bool: %s", my_param_bool ? "true" : "false");
+
+    return 0;
+}
+```
+
+2. **将参数设置到参数服务器**：
+
+```cpp
+#include <ros/ros.h>
+
+int main(int argc, char** argv) {
+    ros::init(argc, argv, "param_example_node");
+    ros::NodeHandle nh;
+
+    // 设置整数参数到参数服务器
+    nh.setParam("/my_namespace/my_param_int", 42);
+
+    // 设置浮点数参数到参数服务器
+    nh.setParam("/my_namespace/my_param_double", 3.14);
+
+    // 设置字符串参数到参数服务器
+    nh.setParam("/my_namespace/my_param_string", "hello");
+
+    // 设置布尔值参数到参数服务器
+    nh.setParam("/my_namespace/my_param_bool", true);
+
+    ROS_INFO("Parameters set.");
+
+    return 0;
+}
+```
+
+**ROS参数服务器和ROS节点的参数服务器的区别：**
+
+在ROS中，通常所说的“ROS参数服务器”是指ROS提供的一个分布式参数存储系统，它允许ROS节点在运行时动态地存储和检索参数。这些参数可以在不同的ROS节点之间共享，允许节点之间进行配置和通信。
+
+而“ROS节点的参数服务器”则指的是每个ROS节点内部的参数服务器实例。每个运行的ROS节点都有自己的参数服务器，它用于存储节点本身的参数，以及该节点可能需要使用的其他节点的参数。
+
+因此，两者的区别在于：
+1. ROS参数服务器是一个全局的、分布式的参数存储系统，用于整个ROS系统中的节点之间共享参数。
+2. ROS节点的参数服务器是每个节点内部的参数存储实例，用于存储该节点本身的参数以及可能需要的其他节点的参数。
 
 # 四、launch文件
 
