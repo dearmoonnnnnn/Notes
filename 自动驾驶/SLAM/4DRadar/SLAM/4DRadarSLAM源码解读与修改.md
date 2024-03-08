@@ -92,6 +92,18 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 ##### 9、什么是扫描到地图的配准，它与扫描到扫描的配准有什么区别
 
+##### 10、params.yaml和utility_radar.h都定义了节点的相关参数，比如说pointCloudTopic参数，两者不会冲突吗，能不能只保留其中一个？
+
+在ROS中，参数可以从多个来源进行设置，包括`launch`文件、命令行参数、参数文件（如`params.yaml`）、程序内部设置等。当参数从不同来源设置时，ROS会按照一定的优先级进行处理，确保参数值正确地被设置。
+
+通常情况下，参数文件（如`params.yaml`）中定义的参数会被ROS参数服务器加载，而在程序内部定义的参数（如`utility_radar.h`中的`ParamServer`类）是由节点内部直接设置的。
+
+如果在`params.yaml`文件和`utility_radar.h`中都定义了相同的参数，ROS会按照一定的优先级来确定最终使用的参数值。一般来说，命令行参数的优先级最高，其次是`launch`文件中设置的参数，然后是参数文件中定义的参数，最后是程序内部设置的参数。
+
+如果你希望只保留其中一个参数定义，可以根据你的需求选择保留哪个。如果你更喜欢使用参数文件（`params.yaml`）来管理参数，你可以删除utility_radar.h中的参数定义，并将所有参数都集中在`params.yaml`文件中进行管理。反之，如果你更喜欢在程序内部定义参数，你可以删除`params.yaml`文件，并在`utility_radar.h`中设置所有参数。
+
+总之，确保最终使用的参数值是正确的，且来源清晰明确即可。
+
 ## B、概念
 
 ##### 1、tf变化
@@ -856,7 +868,26 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 ### config/params.yaml
 
-##### 参数服务器
+ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节点的参数。主要包括与雷达SLAM相关的参数，包括话题名称、坐标系、传感器设置、IMU设置、外部传感器之间的变化等。
+
+##### 如何将params.yaml文件中的参数加载到参数服务器？
+
+在launch文件中使用如下代码
+
+```xml
+<!-- radar_graph_slam.launch --> 
+<rosparam file="$(find radar_graph_slam)/config/params.yaml" command="load" />
+```
+
+## F、include文件
+
+### utility_radar.h
+
+##### 1、定义了`RadarGraphSlamNodelet` ROS节点的参数服务器：`ParamServer()`类。
+
+- `ParamServer()`用于管理节点的相关参数。
+- 三个`nodelet`（`PreprocessingNodelet`、`RadarGraphSlamNodelet`、`ScanMatchingOdometryNodelet`）在创建时均会继承`nodelet::Nodelet`和`ParamServer`类
+- 注意ROS节点的参数服务器和ROS参数服务的区别。
 
 #  二、运行自己的数据
 
@@ -875,6 +906,8 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
      ```
 
      可知，原话题为：`/radar_enhanced_pcl`。PS：在`params.yaml`文件中也可知该信息。
+
+     消息类型为：`sensor_msgs/PointCloud`
 
   2. 保存该话题为txt文件
 
@@ -930,19 +963,47 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
      - 坐标系：`field.header.frame_id`
      - 37个点：`filed.points[0-36].x`,`filed.points[0-36].y`,`filed.points[0-36].z`
 
-- eagle_msg和自己采集的ars548数据区别如下：
+- `eagle_msg`和自己采集的ars548数据区别如下：
 
   1. 点的数量差距很大。
 
-     eagle_msg数据一帧拥有6556个点，而ars548数据一帧只有36个点。
+     - `eagle_msg`数据一帧拥有6556个点
+     - 而ars548数据一帧只有36个点。
+  
+     **当前解决思路：**点云融合。
+  
+  2. 两者的消息格式都为`sensor_msgs/PointCloud`，但是消息内容有区别
+  
+     - `eagle_msg`数据拥有多普勒速度和信号强度信息
+     - ars548未收集到多普勒速度和信号强度信息。
+  
+     **原因：**
+  
+     点云消息类型都为：`sensor_msgs/PointCloud`，但是点的消息格式不同。
+  
+     **当前解决思路：**重新从原始的ars548传感器数据流中获取点的信息，定义新的点消息类型，使其包含多普勒速度。
 
-     当前解决思路：点云融合。
+##### 2、原作者提供的数据，包含两种点云数据`/radar_enhanced_pcl`和`/radar_trk`，它们有什么区别？
 
-  2. ars548未收集到多普勒速度和信号强度信息。
+执行
 
-     当前解决思路：重新从原始的ars548传感器数据流中处理相关信息。
+```bash
+rosbag info cp_2022-02-26.bag 
+```
 
+可得与毫米波点云相关的话题有两个：
 
+```bash
+/radar_enhanced_pcl              5428 msgs    : sensor_msgs/PointCloud     
+/radar_trk                       5428 msgs    : sensor_msgs/PointCloud 
+```
+
+- `/radar_enhanced_pcl`：
+  - 经过了增强处理，比如去噪声、配准等。
+  - 也是`preprocessing_nodelet`用的点云数据。
+- `/radar_trk`
+  - 可能是原始的点云数据。
+  - 转换为txt后，发现该话题一帧也只有53个点。而`/radar_enhanced_pcl`一帧有6000多个点。
 
 ## B、需要修改的文件:
 
@@ -996,14 +1057,230 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
     <include file="$(find radar_graph_slam)/launch/rosbag_play_radar_carpark1.launch" />
     ```
 
-##### 2、params.yaml文件
+##### 2、参数相关的文件
 
-该文件代表参数服务器
+- params.yaml
 
-- Topics部分
+  该文件代表ROS参数服务器
 
-  - ```yaml
-    pointCloudTopicL=: "/ars548_process/detection_point_cloud"
+  - Topics部分
+
+    ```yaml
+    pointCloudTopic : "/ars548_process/detection_point_cloud"
     ```
 
-    
+- utility_radar.h
+
+  ROS节点的参数服务器
+
+  - Topics部分
+
+    ```c++
+    nh.param<std::string>("radar_slam/pointCloudTopic", pointCloudTopic, "/ars548_process/detection_point_cloud");
+    ```
+
+
+
+##### 3、preprocessing_nodelet.cpp
+
+根据自己写的毫米波RosDriver，信号强度存储在点云消息的通道1。
+
+`eagle_msg->channels[2].values[i]`更改为`eagle->msg->channels[1].values[i]`
+
+## C、运行
+
+```bash
+roslaunch radar_graph_slam radar_graph_slam.launch
+```
+
+### 第一次运行成功：
+
+##### 问题1：轨迹十分混乱![第一次运行](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/第一次运行.png)
+
+##### 可能原因：
+
+1. 点云数据过于稀疏
+2. 没有使用其他数据
+
+   在`rosbag_play_radar_carpark1.launch`文件中可以发现，使用了4个话题运行slam
+
+   ```xml
+   <node pkg="rosbag" type="play" name="player"
+       args = "-s 0.5 --clock --rate=3 --duration=10000
+       $(arg path)$(arg file_0)
+       --topic /radar_enhanced_pcl /rgb_cam/image_raw/compressed /barometer/filtered /vectornav/imu
+       ">
+   </node>
+   ```
+
+   - `/radar_enhanced_pcl`
+   - `/rgb_cam/image_raw/image_raw/compressed`
+   - `/baraometer/filtered`
+   - `/vectornav/imu`
+
+##### 问题2：命令行出现报错：
+
+```bash
+[pcl::KdTreeFLANN::setInputCloud] Cannot create a KDTree with an empty input cloud!
+```
+
+##### 可能原因：
+
+尝试创建 KD 树时输入的点云为空，导致无法创建 KD 树
+
+##### 出现错误的可能位置：
+
+information_matrix_calculator.cpp 57行
+
+fast_adpgicp_mp_impl.hpp 226行 307行
+
+fast_gicp_impl.hpp  307行
+
+fast_vgicp_cuda_impl.hpp 154行
+
+voxel_grid_covariance_omp.h 284行 301行
+
+## D、数据增强
+
+##### 动机：
+
+采集到的ars548点云数据过于稀疏，一帧30-60个点，且包含很多噪声。而运行4DRadarSlam所使用的点云数据一帧包含了6000多个点。
+
+##### 方法：
+
+- 超分辨率（Super Resolution）技术
+
+  - https://arxiv.org/abs/2306.09839
+
+  
+
+- 点云配准方法
+
+- 点云插值
+
+  - 最邻近插值
+  - 双线性插值
+  - 高斯过程插值
+
+- 深度学习方法
+
+##### github相关仓库
+
+- Zadar Labs：
+
+  Zadar Labs 是一个致力于 4D 毫米波雷达的公司，他们的 GitHub 存储库包含有关 4D 毫米波雷达的深度学习处理器单元（DPU）等项目。
+
+- TI mmWave SDK：
+
+  德州仪器（Texas Instruments）提供了一个用于毫米波雷达的开发工具包（SDK）。你可以在这里找到与 4D 毫米波雷达相关的示例代码和资源。
+
+- Open3D：
+
+  Open3D 是一个用于 3D 数据处理的开源库，包括点云处理。虽然它不专门针对 4D 毫米波雷达，但你可以在其中找到一些有用的功能。
+
+- PCL (Point Cloud Library)
+
+  PCL 是一个广泛使用的点云处理库，也包括一些点云配准和插值算法。虽然它不是专门为 4D 毫米波雷达设计的，但你可以在其中找到一些通用的点云处理工具。
+
+
+
+##### 使用了ars548传感器的数据集：
+
+- Dual-Radar
+
+  https://github.com/adept-thu/Dual-Radar
+
+### 1、点云插值
+
+##### 1.1、线性插值
+
+```python
+import rospy
+from sensor_msgs.msg import PointCloud
+from sensor_msgs.msg import ChannelFloat32
+
+def increase_point_cloud_density(original_pc):
+    # Copy the header
+    new_pc = PointCloud()
+    new_pc.header = original_pc.header
+
+    # Copy the points
+    new_pc.points = original_pc.points
+
+    # Extract the channels
+    velocity_channel = None
+    intensity_channel = None
+    for channel in original_pc.channels:
+        if channel.name == "velocity":
+            velocity_channel = channel
+        elif channel.name == "intensity":
+            intensity_channel = channel
+
+    # Check if channels exist
+    if velocity_channel is None or intensity_channel is None:
+        rospy.logerr("Velocity or intensity channel not found in the point cloud.")
+        return None
+
+    # Interpolate between consecutive points
+    new_points = []
+    new_velocity_values = []
+    new_intensity_values = []
+    for i in range(len(original_pc.points) - 1):
+        point1 = original_pc.points[i]
+        point2 = original_pc.points[i + 1]
+        num_interpolated_points = 10  # Adjust this value as needed
+        for j in range(num_interpolated_points):
+            ratio = float(j) / num_interpolated_points
+            new_x = point1.x + (point2.x - point1.x) * ratio
+            new_y = point1.y + (point2.y - point1.y) * ratio
+            new_z = point1.z + (point2.z - point1.z) * ratio
+            new_point = rospy.Point32(new_x, new_y, new_z)
+            new_points.append(new_point)
+            # Interpolate velocity and intensity values
+            new_velocity = velocity_channel.values[i] + (velocity_channel.values[i + 1] - velocity_channel.values[i]) * ratio
+            new_velocity_values.append(new_velocity)
+            new_intensity = intensity_channel.values[i] + (intensity_channel.values[i + 1] - intensity_channel.values[i]) * ratio
+            new_intensity_values.append(new_intensity)
+
+    # Append the last point
+    new_points.append(original_pc.points[-1])
+    new_velocity_values.append(velocity_channel.values[-1])
+    new_intensity_values.append(intensity_channel.values[-1])
+
+    # Assign new points and values to the point cloud
+    new_pc.points = new_points
+
+    # Add the channels to the new point cloud
+    new_velocity_channel = ChannelFloat32()
+    new_velocity_channel.name = "velocity"
+    new_velocity_channel.values = new_velocity_values
+    new_intensity_channel = ChannelFloat32()
+    new_intensity_channel.name = "intensity"
+    new_intensity_channel.values = new_intensity_values
+    new_pc.channels.append(new_velocity_channel)
+    new_pc.channels.append(new_intensity_channel)
+
+    return new_pc
+
+def main():
+    rospy.init_node('point_cloud_density_increaser', anonymous=True)
+    original_pc_topic = "/ars548_process/detection_point_cloud"
+    increased_pc_topic = "/ars548_process/increased_point_cloud"
+
+    original_pc_sub = rospy.Subscriber(original_pc_topic, PointCloud, original_pc_callback)
+    increased_pc_pub = rospy.Publisher(increased_pc_topic, PointCloud, queue_size=10)
+
+    rospy.spin()
+
+def original_pc_callback(original_pc):
+    increased_pc = increase_point_cloud_density(original_pc)
+    if increased_pc is not None:
+        increased_pc_pub.publish(increased_pc)
+
+if __name__ == "__main__":
+    main()
+
+```
+
+##### 1.2、
+
