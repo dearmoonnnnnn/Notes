@@ -266,6 +266,16 @@ git remote add origin https://github.com/username/repository.git
 git push -u origin master
 ```
 
+- `-u`参数
+
+  - `-u`选项用于将本地分支与远程仓库的分支进行关联。
+
+  - 已经执行过一次推送，并且已经建立了本地分支与远程分支的关联，那么在下次推送时，你可以直接使用 `git push` 命令：
+
+    ```bash
+    git push origin master
+    ```
+
 - **推送到master以外的分支：**
 
   如果使用了不同的分支名或者标签名，需要将`master`替换为实际的分支名或者标签名，并且需要重命名当前所在分支。
@@ -287,6 +297,10 @@ git push -u origin master
 - **身份验证：**
 
   根据提示，输入github的用户名和密码进行身份验证。PS：这里的密码不能使用github登录时的密码。如果使用个人访问令牌验证，密码字段应使用生成的token.
+
+  
+
+
 
 ##### github创建空仓库后的提示：
 
