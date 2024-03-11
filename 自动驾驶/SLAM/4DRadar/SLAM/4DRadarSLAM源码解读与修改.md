@@ -1120,6 +1120,8 @@ roslaunch radar_graph_slam radar_graph_slam.launch
 
 ##### 问题2：命令行出现报错：
 
+![image-20240311113228252](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240311113228252.png)
+
 ```bash
 [pcl::KdTreeFLANN::setInputCloud] Cannot create a KDTree with an empty input cloud!
 ```
