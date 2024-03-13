@@ -328,7 +328,7 @@ git push -u origin main
 
 只需要执行2、3、5步骤
 
-### 出现的错误1：
+### 错误1：无法推送一些引用到...
 
 ```bash
  ! [rejected]        main -> main (fetch first)
@@ -359,7 +359,11 @@ error: 无法推送一些引用到 'https://github.com/letMeEmoForAWhile/Notes.g
 
     这将会将你的本地更改推送到远程仓库的 `main` 分支中。
 
+### 错误2：error: 源引用规格 main 没有匹配 error: 无法推送一些引用到 'origin'
 
+##### 错误原因：
+
+本地分支与远程仓库的分支名称不匹配。
 
 ## B、windows操作系统
 
