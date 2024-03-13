@@ -267,56 +267,56 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 ##### 3、command_sub
 
-- 话题：/conmand
-- 回调函数：&PrecessingNodelet::command_callback
+- 话题：`/conmand`
+- 回调函数：`&PrecessingNodelet::command_callback`
 
 
 #### 八个发布者：
 
 ##### 1、points_pub
 
-- 话题：/flitered_points
+- 话题：`/flitered_points`
 
-- 消息类型：sensor_msgs::PointCloud2
+- 消息类型：`sensor_msgs::PointCloud2`
 
 ##### 2、colored_pub
 
-- 话题：/colored_points
-- 消息类型：sensor_msgs::PointCloud2
+- 话题：`/colored_points`
+- 消息类型：`sensor_msgs::PointCloud2`
 
 ##### 3、imu_pub
 
-- 话题：/imu
-- 消息类型：sensor_msgs::Imu
+- 话题：`/imu`
+- 消息类型：`sensor_msgs::Imu`
 
 ##### 4、gt_pub
 
-- 话题：/aftmapped_to_init
-- 消息类型：nav_msgs::Odometry
+- 话题：`/aftmapped_to_init`
+- 消息类型：`nav_msgs::Odometry`
 - 描述：Aft-mapped到初始位姿的里程计数据
 
 ##### 5、pub_twist
 
-- 话题：topic_twist,即/eagle_data/twist
-- 消息类型：gemetry_msgs::TwistWithConvarianceStamped
+- 话题：`topic_twist`,即`/eagle_data/twist`
+- 消息类型：`gemetry_msgs::TwistWithConvarianceStamped`
 - 描述：Twist通常是指机器人的运动变化，包括线速度和角速度
 
 ##### 6、pub_inlier_pc2
 
-- 话题：topic_inlier_pc2，即/eagle_data/inlier_pc2
-- 消息类型：sensor_msgs::PointCloud2
+- 话题：`topic_inlier_pc2`，即`/eagle_data/inlier_pc2`
+- 消息类型：`sensor_msgs::PointCloud2`
 - 描述：在点云配准或特征提取中，内点是指与模型或特征匹配的点。内点点云可能是经过某种滤波或配准后，与某个模型或参考帧相关的点云。
 
 ##### 7、pub_outlier
 
-- 话题：topic_outlier_pc2, 即/eagle_data/outlier_pc2
-- 消息类型：sensor_msgs::PointCloud2
+- 话题：`topic_outlier_pc2`, 即`/eagle_data/outlier_pc2`
+- 消息类型：`sensor_msgs::PointCloud2`
 - 描述：与内点相反，外点是指不符合模型或特征的点。外点点云通常包含未能与给定模型或参考帧匹配的点。
 
 ##### 8、pc2_raw_pub
 
-- 话题：/eagle_data/pc2_raw
-- 消息类型：sensor_msgs::PointCloud2
+- 话题：`/eagle_data/pc2_raw`
+- 消息类型：`sensor_msgs::PointCloud2`
 - 描述：这是从传感器（如激光雷达或深度相机）获取的未经处理的点云数据。原始点云包含传感器采集到的所有点，可能包含噪声、离群点等。
 
 #### 成员函数
@@ -497,6 +497,59 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 定义了一个类:RadarGraphSlamNodelet
 
+#### 订阅者
+
+##### 1、odom_sub
+
+- 话题：odomTopic, 即`/odom`
+- 消息类型：`nav_msgs::Odometry`
+
+##### 2、cloud_sub
+
+- 话题：`/flitered_points`
+- 消息类型：`sensor_msgs::PointCloud2`
+
+
+#### 发布者
+
+##### 1、markers_pub
+
+- 话题：`/radar_graph_slam/markers`
+- 消息类型：`visualization_msgs::MarkerArray`
+
+##### 2、odom2base_pub
+
+- ==将雷达里程计转换为基线==
+- 话题：`/radar_graph_slam/odom2base`
+- 消息类型：`geometry_msgs::TransformStamped`
+
+##### 3、aftmapped_odom_pub
+
+- 话题：`/radar_graph_slam/aftmapped_odoml`
+- 消息类型：`nav::Odometry`
+
+##### 4、aftmapped_odom_incremenral_pub
+
+- 话题：`/radar_graph_slam/aftmapped_odoml_incremenral`
+- 消息类型：`nav::Odometry`
+
+##### 5、map_points_pub
+
+- 话题：`/radar_graph_slam/map_points`
+- 消息类型：`sensor_msgs::PointCloud2`
+
+##### 6、read_uintil_pub
+
+- 话题：`/radar_graph_slam/read_until`
+- 消息类型：`std_msgs::Header`
+
+##### 7、odom_frame2frame_pub
+
+- 话题：`/radar_graph_slam/odom_frame2frame`
+- 消息类型：`nav_msgs::Odometry`
+
+
+
 #### 成员函数：
 
 ##### 1、onInit()
@@ -583,57 +636,6 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 - 对应类的定义都在src/radar_graph_slam/文件夹下
 
-#### 订阅者
-
-##### 1、odom_sub
-
-- 话题：odomTopic, 即/odom
-- 消息类型：nav_msgs::Odometry
-
-##### 2、cloud_sub
-
-- 话题：/flitered_points
-- 消息类型：sensor_msgs::PointCloud2
-
-
-#### 发布者
-
-##### 1、markers_pub
-
-- 话题：/radar_graph_slam/markers
-- 消息类型：visualization_msgs::MarkerArray
-
-##### 2、odom2base_pub
-
-- ==将雷达里程计转换为基线==
-- 话题：/radar_graph_slam/odom2base
-- 消息类型：geometry_msgs::TransformStamped
-
-##### 3、aftmapped_odom_pub
-
-- 话题：/radar_graph_slam/aftmapped_odoml
-- 消息类型：nav::Odometry
-
-##### 4、aftmapped_odom_incremenral_pub
-
-- 话题：/radar_graph_slam/aftmapped_odoml_incremenral
-- 消息类型：nav::Odometry
-
-##### 5、map_points_pub
-
-- 话题：/radar_graph_slam/map_points
-- 消息类型：sensor_msgs::PointCloud2
-
-##### 6、read_uintil_pub
-
-- 话题：/radar_graph_slam/read_until
-- 消息类型：std_msgs::Header
-
-##### 7、odom_frame2frame_pub
-
-- 话题：/radar_graph_slam/odom_frame2frame
-- 消息类型：nav_msgs::Odometry
-
 ### 三、apps/scan_matching_odometry_nodelet.cpp
 
 #### 订阅者：
@@ -661,6 +663,15 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 - 话题：/command
 - 回调函数：&ScanMatchingOdometryNodelet::command_callback
+
+##### 5、消息同步器Synchronizer
+
+```cpp
+sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(32), *ego_vel_sub, *points_sub));
+    sync->registerCallback(boost::bind(&ScanMatchingOdometryNodelet::pointcloud_callback, this, _1, _2));
+```
+
+当`ego_vel_sub`和`points_sub`订阅的话题消息都到达时，调用回调函数`pointcloud_callback`
 
 #### 发布者：
 
@@ -764,6 +775,7 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 - 描述
   - 处理传入的点云数据和相应的运动信息
+  - 调用`matching()`函数，进行点云配准
 - 参数
   - `twistMsg`
     - 变量类型：`const geometry_msgs::TwistWithCovarianceStampedConstPtr&`
@@ -1081,11 +1093,31 @@ rosbag info cp_2022-02-26.bag
 
 
 
-##### 3、preprocessing_nodelet.cpp
+##### 3、节点文件
 
-根据自己写的毫米波RosDriver，信号强度存储在点云消息的通道1。
+- `preprocessing_nodelet.cpp`
 
-`eagle_msg->channels[2].values[i]`更改为`eagle->msg->channels[1].values[i]`
+  根据自己写的毫米波RosDriver，信号强度存储在点云消息的通道1。
+
+  `eagle_msg->channels[2].values[i]`更改为`eagle->msg->channels[1].values[i]`
+
+- `radar_graph_slam_nodelet.cpp`
+
+  修改点云话题`points_topic`
+
+  ```cpp
+  points_topic = private_nh.param<std::string>("points_topic", "/ars548_process/detection_point_cloud");
+  ```
+
+- `scan_matching_odometry_nodelet.cpp`
+
+  修改点云话题`points_topic`
+
+  ```cpp
+  points_topic = private_nh.param<std::string>("points_topic", "/ars548_process/detection_point_cloud");
+  ```
+
+  
 
 ## C、运行
 
@@ -1093,9 +1125,9 @@ rosbag info cp_2022-02-26.bag
 roslaunch radar_graph_slam radar_graph_slam.launch
 ```
 
-### 第一次运行成功：
+### 1、第一次运行成功：
 
-##### 问题1：轨迹十分混乱![第一次运行](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/第一次运行.png)
+#### 问题1：轨迹十分混乱![第一次运行](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/第一次运行.png)
 
 ##### 可能原因：
 
@@ -1118,7 +1150,7 @@ roslaunch radar_graph_slam radar_graph_slam.launch
    - `/baraometer/filtered`
    - `/vectornav/imu`
 
-##### 问题2：命令行出现报错：
+#### 问题2：命令行出现报错：
 
 ![image-20240311113228252](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240311113228252.png)
 
@@ -1126,21 +1158,55 @@ roslaunch radar_graph_slam radar_graph_slam.launch
 [pcl::KdTreeFLANN::setInputCloud] Cannot create a KDTree with an empty input cloud!
 ```
 
-##### 可能原因：
-
 尝试创建 KD 树时输入的点云为空，导致无法创建 KD 树
 
-##### 出现错误的可能位置：
+##### 原因：
 
-information_matrix_calculator.cpp 57行
+在预处理节点中，从原始点云得到处理后的点云过程中，使得所有点都被滤除。
 
-fast_adpgicp_mp_impl.hpp 226行 307行
+##### 错误位置：
 
-fast_gicp_impl.hpp  307行
+fast_adpgicp_mp_impl.hpp 226行 307行 
 
-fast_vgicp_cuda_impl.hpp 154行
+- `registrations.cpp`使用了`fast_adpgicp`
 
-voxel_grid_covariance_omp.h 284行 301行
+- **`scan_matching_odometry_nodelet.cpp`**
+
+  - 使用了`registrations.cpp`
+
+  - `matching`函数：`registration_s2s->setInputSource(filtered)`
+
+    `flitered`由`matching`的参数`cloud`转换而来
+
+  - `pointcloud_callback`函数调用了`matching`函数，并且传递`cloud`参数。 
+
+    - 当`ego_vel_sub`和`points_sub`订阅的话题消息(`/eagle_data/twist`和`/flitered_points`)都到达时，调用回调函数
+
+      ```cpp
+      void pointcloud_callback(const geometry_msgs::TwistWithCovarianceStampedConstPtr& twistMsg, const sensor_msgs::PointCloud2ConstPtr& cloud_msg){...}
+      ```
+
+    - 调试可知，`pointcloud_callback`调用成功，cloud_msg指针不为空，但是其中点的数量为空。
+
+- **`preprocessing_nodelet.cpp`**
+
+  - 发布者`points_sub`发布`/filtered_points`话题
+
+- 原始点云处理为filtered点云的一系列过程，导致所有点云被滤除。
+
+  - 经过调试可知，在如下代码运行后，点云的数量几乎为零
+
+    ```c++
+    filtered = outlier_removal(filtered);
+    ```
+
+    由于点云过于稀疏，所有的点都被认为是离群点，被滤除。
+
+##### 解决错误后的运行结果：
+
+注释`outlier_removal`代码后的运行结果：
+
+![image-20240313142522953](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240313142522953.png)
 
 ## D、数据增强
 
