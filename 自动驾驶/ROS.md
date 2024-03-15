@@ -905,42 +905,48 @@ http://wiki.ros.org/rosbag/Commandline
 
   这对于 replay 数据时保持与记录时相同的时间关系是很有用的，特别是在涉及到需要同步的多个话题时。
 
-## 5.4 bag转txt
-
-```bash
-rostopic echo -b <bag_name>.bag -p /<topic_name> > <new_name>.txt
-```
-
-举例
-
-```bash
-rostopic echo -b data1.bag -p /tag_detections > data1.txt
-```
-
 # 六、PCL库
 
 ## 6.1 表示点云数据的四种方式
 
-- sensor_msgs::PointCloud —— ROS message，已弃用
-  - 由于`sensor_msgs::PointCloud2`更加灵活和高效，所以已弃用。
-  - 数据字段包括`points`（一个3D点列表）和`channels`（关于点的额外数据，如强度）。
+##### 6.1.1、sensor_msgs::PointCloud —— ROS message，已弃用
 
-- sensor_msgs::PointCloud2 —— ROS message 
-  - 旨在比其前身更加灵活和高效。
-  - 包含一个统一的`data`字段，其中包含所有点数据。
-  - 使用一个灵活的消息格式（类似于ROS中的图像表示方式）。
-  - 虽然更加高效，但直接使用它处理比较复杂。
+- 由于`sensor_msgs::PointCloud2`更加灵活和高效，所以已弃用。
+- 数据字段包括`points`（一个3D点列表）和`channels`（关于点的额外数据，如强度）。
 
-- pcl::PCLPointCloud2 —— PCL数据结构，主要是为了与ROS兼容
-  - PCL的数据结构，与`sensor_msgs::PointCloud2`非常匹配。
-  - 存在的目的是允许PCL与ROS之间轻松转换，而不丢失任何信息。
-  - 虽然它与ROS消息非常匹配，但通常不会在PCL中直接使用这种格式来操作点云。相反，会将其转换为`pcl::PointCloud<T>`以进行大多数处理任务。
+  ```cpp
+  std_msgs/Header header
+    uint32 seq
+    time stamp
+    string frame_id
+  geometry_msgs/Point32[] points
+    float32 x
+    float32 y
+    float32 z
+  sensor_msgs/ChannelFloat32[] channels
+    string name
+    float32[] values
+  ```
 
-- pcl::PointCloud\<T> —— 标准的PCL数据结构
-  - PCL中用于点云的标准且最常用的数据结构。
-  - 是模板化的，其中`T`是点的类型，例如`pcl::PointXYZ`、`pcl::PointXYZRGB`、`pcl::PointNormal`等。
-  - 提供了许多方便的方法，允许轻松访问点。
-  - 旨在为点云处理任务提供高效和用户友好的方式。
+##### 6.1.2、sensor_msgs::PointCloud2 —— ROS message 
+
+- 旨在比其前身更加灵活和高效。
+- 包含一个统一的`data`字段，其中包含所有点数据。
+- 使用一个灵活的消息格式（类似于ROS中的图像表示方式）。
+- 虽然更加高效，但直接使用它处理比较复杂。
+
+##### 6.1.3、pcl::PCLPointCloud2 —— PCL数据结构，主要是为了与ROS兼容
+
+- PCL的数据结构，与`sensor_msgs::PointCloud2`非常匹配。
+- 存在的目的是允许PCL与ROS之间轻松转换，而不丢失任何信息。
+- 虽然它与ROS消息非常匹配，但通常不会在PCL中直接使用这种格式来操作点云。相反，会将其转换为`pcl::PointCloud<T>`以进行大多数处理任务。
+
+##### 6.1.4、pcl::PointCloud\<T> —— 标准的PCL数据结构
+
+- PCL中用于点云的标准且最常用的数据结构。
+- 是模板化的，其中`T`是点的类型，例如`pcl::PointXYZ`、`pcl::PointXYZRGB`、`pcl::PointNormal`等。
+- 提供了许多方便的方法，允许轻松访问点。
+- 旨在为点云处理任务提供高效和用户友好的方式。
 
 
 当我们同时使用ROS和PCL时，典型的工作流如下：
@@ -976,7 +982,7 @@ catkin_create_pkg my_bag_recorder std_msgs sensor_msgs rosbag roscpp
 
   - `[depend1]`, `[depend2]`, `[depend3]`：该包依赖的其他ROS包的名称。这些包将被添加到`package.xml`文件中的`<depend>`部分
 
-##### 2、编写C++程序
+##### 2、编写C++程序（节点）
 
 在`my_rosbag_recorder`包的`src`目录下，创建c++源文件，如`my_rosbag_recorder.cpp`，并编写代码
 
@@ -992,6 +998,12 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   roscpp
   rosbag
+)
+
+add_executable(rosbag_recorder src/rosbag_recorder.cpp)
+
+target_link_libraries(rosbag_recorder
+  ${catkin_LIBRARIES}
 )
 ```
 
@@ -1085,3 +1097,47 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 
 # 九、catkin_make
 
+# 十、格式转换
+
+## bag包转png
+
+1. 播放bag包
+
+2. 执行命令
+
+   ```bash
+   rosrun image_view image_saver image:=<image_topic> _filename_format:=<filename_format>
+   ```
+
+   其中：
+
+   - `<image_topic>` 是包含图像数据的ROS话题名，对于你的情况是/stereo_inertial_publisher/color/image。
+   - `<filename_format>` 是保存图像文件的命名格式。可以使用image:=<image_topic>来指定文件名，也可以使用时间戳等信息来动态命名。例如，image_%04i.png将以image_0001.png、image_0002.png等格式保存图像。
+
+   eg:
+
+   ```bash
+   rosrun image_view image_saver image:=/stereo_inertial_publisher/color/image _filename_format:=image_%04i.png
+   ```
+
+
+
+## bag转pcd
+
+
+
+
+
+## bag转txt
+
+```bash
+rostopic echo -b <bag_name>.bag -p /<topic_name> > <new_name>.txt
+```
+
+举例
+
+```bash
+rostopic echo -b data1.bag -p /tag_detections > data1.txt
+```
+
+# 

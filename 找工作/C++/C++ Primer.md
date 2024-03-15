@@ -1,14 +1,10 @@
-# 零、编程环境
+# 零、前言
 
-https://www.zhihu.com/question/356037550/answer/1641637422
 
-采用方案：VScode+MinGW
 
-https://zhuanlan.zhihu.com/p/362936856
 
-## VSCode+MinGW64搭建c/c++开发环境
 
-https://blog.csdn.net/kekehuizi/article/details/124277082
+
 
 # 一、C++ Primer
 
@@ -113,19 +109,19 @@ std::cout << std:endl;
 
 **输入运算符（>>）**与输出运算符类似，它接受一个istream作为其左侧运算对象，接受一个对象作为其右侧运算对象。与输出运算符类似，输入运算符返回其左侧运算对象作为其计算结果。
 
-```
+```c++
 std::cin >> v1 >> v2;
 ```
 
 等价于
 
-```ci
+```c++
 (std::cin >> v1) >> v2;
 ```
 
 由于此运算符返回其左侧运算对象，因此我们我们可以将一系列输入请求合并到单一语句中，上述语句执行结果与下面两条语句的执行结果一样
 
-```
+```c++
 std::cin >> v1;
 std::cin >> v2;
 ```
