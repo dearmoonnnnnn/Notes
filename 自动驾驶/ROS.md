@@ -114,7 +114,62 @@
 
 修改workspace/src路径下的CMakeList.txt即可。直接将neotic中能跑通的CMakeList.txt文件内容拷贝。
 
+##### 7、将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is_dense，该怎么填充后者的这些数据字段?
 
+由于 `sensor_msgs::PointCloud` 消息类型没有 `width`、`height` 和 `is_dense` 这些字段,因此在将其转换为 `pcl::PointCloud<pcl::PointXYZ>` 时,我们无法直接获取这些信息。
+
+不过,我们可以根据点云数据的特点来设置这些字段。以下是一些建议:
+
+1. **width 和 height**:
+   - 如果您知道点云数据的组织形式(例如,来自深度相机或激光雷达的有序点云),您可以根据点云的尺寸设置 `width` 和 `height`。
+   - 如果点云数据是无序的,您可以将 `width` 设置为点云中点的数量,而将 `height` 设置为 1。
+
+2. **is_dense**:
+   - 如果您知道点云数据中没有无效点(NaN 或 Inf),则可以将 `is_dense` 设置为 `true`。
+   - 如果您不确定点云数据是否包含无效点,可以在转换过程中检查每个点的坐标值,如果发现无效点,则将 `is_dense` 设置为 `false`。
+
+下面是一个示例代码,展示了如何在转换过程中设置 `width`、`height` 和 `is_dense` 字段:
+
+```cpp
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud.h>
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
+void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
+{
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+
+    // 假设点云数据是无序的
+    cloud.width = cloud_msg->points.size();
+    cloud.height = 1;
+    cloud.is_dense = true; // 初始化为 true
+
+    // 将 sensor_msgs::PointCloud 转换为 pcl::PointCloud<pcl::PointXYZ>
+    for (const auto& point : cloud_msg->points)
+    {
+        pcl::PointXYZ pcl_point;
+        pcl_point.x = point.x;
+        pcl_point.y = point.y;
+        pcl_point.z = point.z;
+
+        // 检查是否有无效点
+        if (!std::isfinite(pcl_point.x) || !std::isfinite(pcl_point.y) || !std::isfinite(pcl_point.z))
+        {
+            cloud.is_dense = false; // 如果发现无效点,将 is_dense 设置为 false
+        }
+
+        cloud.points.push_back(pcl_point);
+    }
+
+    // 现在可以使用 cloud 对象进行后续处理
+    // ...
+}
+```
+
+在这个示例中,我们假设点云数据是无序的,因此将 `width` 设置为点的数量,将 `height` 设置为 1。我们还初始化 `is_dense` 为 `true`,并在转换过程中检查每个点的坐标值是否有效。如果发现无效点,我们将 `is_dense` 设置为 `false`。
+
+根据您的具体情况,您可能需要调整这些设置。例如,如果您知道点云数据是有序的,并且知道其尺寸,则可以相应地设置 `width` 和 `height`。如果您确定点云数据中没有无效点,则可以直接将 `is_dense` 设置为 `true`。
 
 ## 概念
 
@@ -1124,7 +1179,71 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 
 ## bag转pcd
 
+```cpp
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 
+ros::Publisher pub;
+std::string output_file = "/home/dearmoon/datasets/calib/NWU508/pcd/0.pcd";
+
+void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
+{
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    // cloud.width = cloud_msg->width;
+    // cloud.height = cloud_msg->height;
+    // cloud.is_dense = cloud_msg->is_dense;
+
+    // for (size_t i = 0; i < cloud_msg->points.size(); ++i)
+    // {
+    //     pcl::PointXYZ point;
+    //     point.x = cloud_msg->points[i].x;
+    //     point.y = cloud_msg->points[i].y;
+    //     point.z = cloud_msg->points[i].z;
+    //     cloud.points.push_back(point);
+    // }
+
+    // 假设点云数据是无序的
+    cloud.width = cloud_msg->points.size();
+    cloud.height = 1;
+    cloud.is_dense = true; // 初始化为 true
+
+    // 将 sensor_msgs::PointCloud 转换为 pcl::PointCloud<pcl::PointXYZ>
+    for (const auto& point : cloud_msg->points)
+    {
+        pcl::PointXYZ pcl_point;
+        pcl_point.x = point.x;
+        pcl_point.y = point.y;
+        pcl_point.z = point.z;
+
+        // 检查是否有无效点
+        if (!std::isfinite(pcl_point.x) || !std::isfinite(pcl_point.y) || !std::isfinite(pcl_point.z))
+        {
+            cloud.is_dense = false; // 如果发现无效点,将 is_dense 设置为 false
+        }
+
+        cloud.points.push_back(pcl_point);
+    }
+
+
+    pcl::io::savePCDFileASCII(output_file, cloud);
+    ROS_INFO("Saved %lu data points to %s.", cloud.points.size(), output_file.c_str());
+}
+
+int main(int argc, char** argv)
+{
+    ros::init(argc, argv, "bag_to_pcd");
+    ros::NodeHandle nh;
+
+    ros::Subscriber sub = nh.subscribe("/ars548_process/detection_point_cloud", 10, cloudCallback);
+
+    ros::spin();
+
+    return 0;
+}
+
+```
 
 
 
@@ -1140,4 +1259,3 @@ rostopic echo -b <bag_name>.bag -p /<topic_name> > <new_name>.txt
 rostopic echo -b data1.bag -p /tag_detections > data1.txt
 ```
 
-# 
