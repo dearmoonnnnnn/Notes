@@ -1003,16 +1003,33 @@ http://wiki.ros.org/rosbag/Commandline
 - 提供了许多方便的方法，允许轻松访问点。
 - 旨在为点云处理任务提供高效和用户友好的方式。
 
+具体的数据结构：
 
-当我们同时使用ROS和PCL时，典型的工作流如下：
+```cpp
+template<typename PointT>
+class PointCloud
+{
+  public:
+    // 点云的宽度，即点的数量
+    uint32_t width;
+    // 点云的高度，通常为 1
+    uint32_t height;
+    // 是否是密集点云，即是否每个点都有值
+    bool is_dense;
+    // 点云数据，是一个数组，每个元素代表一个三维点
+    std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
+    // ...
+};
+
+```
+
+##### 当我们同时使用ROS和PCL时，典型的工作流如下：
 
 1. 在一个ROS节点中接收一个`sensor_msgs::PointCloud2`消息的点云。
 2. 如果需要使用pcl处理它，我们会将其转换为`pcl::PointCloud<T>`，进行处理。
 3. 最后将其转换回`sensor_msgs::PointCloud2`，用以发布或者在ROS中进一步使用。<!-- 在ROS的pcl_conversions包中有函数，可以方便地在这些类型之间转换 -->
 
-### 6.1.1 sensor_msgs/PointCloud2
 
-### 6.1.2 pcl/PointCloud\<T>
 
 # 七、从零创建ROS工程
 

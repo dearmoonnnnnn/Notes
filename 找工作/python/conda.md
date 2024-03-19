@@ -11,3 +11,12 @@ https://blog.csdn.net/qq_32460819/article/details/108449221?spm=1001.2014.3001.5
 
 
 [在执行 pip install 时遇到错误：python setup.py egg_info ... - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/89858202)
+
+
+
+不要默认显示base
+
+```bash
+conda config --set auto_activate_base false
+```
+
