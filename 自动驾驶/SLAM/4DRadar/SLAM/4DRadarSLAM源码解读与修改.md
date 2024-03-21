@@ -239,6 +239,18 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 - *radar_graph_slam_nodelet*
   - 使用闭环检测消除累积误差并且优化位姿图
 
+### 零、数据流动的方向
+
+#### 1、点云数据
+
+##### 1.1、preprocessing_nodelet
+
+被points_sub订阅
+
+
+
+
+
 ### 一、apps/preprocessing_nodelet.cpp
 
 从`ground truth`文件中读取每一行，作为`odom_msgs`队列的元素，每个odom消息包含位置和方向数据
@@ -642,27 +654,27 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 ##### 1、ego_vel_sub
 
-- 话题：/eagle_data/twist
-- 消息类型：geometry_msgs::TwistWithCovarianceStamped
-- 回调函数：&ScanMatchingOdometryNodelet::pointcloud_callback
+- 话题：`/eagle_data/twist`
+- 消息类型：`geometry_msgs::TwistWithCovarianceStamped`
+- 回调函数：`&ScanMatchingOdometryNodelet::pointcloud_callback`
 
 ##### 2、points_sub
 
-- 话题：/filtered_points
-- 消息类型：sensor_msgs::PointCloud2
+- 话题：`/filtered_points`
+- 消息类型：`sensor_msgs::PointCloud2`
 - 回调函数：同上
 
 <!--上述消息同步处理-->
 
 ##### 3、imu_sub
 
-- 话题：/imu
-- 回调函数：&ScanMatchingOdometryNodelet::command_callback
+- 话题：`/imu`
+- 回调函数：`&ScanMatchingOdometryNodelet::command_callback`
 
 ##### 4、command_sub
 
-- 话题：/command
-- 回调函数：&ScanMatchingOdometryNodelet::command_callback
+- 话题：`/command`
+- 回调函数：`&ScanMatchingOdometryNodelet::command_callback`
 
 ##### 5、消息同步器Synchronizer
 
@@ -900,6 +912,8 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
 - `ParamServer()`用于管理节点的相关参数。
 - 三个`nodelet`（`PreprocessingNodelet`、`RadarGraphSlamNodelet`、`ScanMatchingOdometryNodelet`）在创建时均会继承`nodelet::Nodelet`和`ParamServer`类
 - 注意ROS节点的参数服务器和ROS参数服务的区别。
+
+
 
 #  二、运行自己的数据
 

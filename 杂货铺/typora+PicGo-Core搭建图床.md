@@ -15,7 +15,7 @@ Pic-Core：上传图片的工具，这里使用命令行版本，只有在需要
 
 
 
-# 三、github设置
+# 二、github设置
 
 ## 1、创建仓库
 
@@ -41,9 +41,9 @@ Pic-Core：上传图片的工具，这里使用命令行版本，只有在需要
 
 ![image-20230101170211300](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20230101170211300.png)
 
-2.5 点击 `generate token`，生成token。**token**只显示一边，记得保存。
+2.5 点击 `generate token`，生成token。**token**只显示一遍，记得保存。
 
-![image-20230101170336387](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20230101170336387.png)
+![generate_new_token](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/generate_new_token.jpg)
 
 # 三、Pic-Core的下载与配置
 
