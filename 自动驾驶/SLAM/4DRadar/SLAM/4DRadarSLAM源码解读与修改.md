@@ -245,9 +245,39 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 
 ##### 1.1、preprocessing_nodelet
 
-被points_sub订阅
+被`points_sub`订阅，进入`cloud_callback`函数，转为`radarcloud_raw`、`radarcloud_xyzi`
+
+- `radarcloud_raw`
+  - 包含位置信息、强度和多普勒速度
+  - 转为`sensor_msgs::PointCloud2`格式的`pc2_raw_msg`
+  - `pc2_raw_msg`传入自我速度评估器`estimator`，得到线速度`twist`、内点信息`inlier_radar_msg`、外点信息`outlier_radar_msg`。然后发布这三类信息。
+- `radarcloud_xyzi`
+  - 包含位置信息和强度
+- `src_cloud`
+  - 若启用动态物体去除，指向`radarcloud_inlier`；否则指向`radar_xyzi`
+  - 经过一系列的处理后(转为`filtered`)，由`poins_pub`发布
 
 
+##### 1.2 scan_matching_odometry_nodelet
+
+`twist`消息被`ego_vel_sub`订阅；`filtered`点云消息被`points_sub`订阅。当两者消息都到达时，被传入`pointcloud_callback`。
+
+- `twist`
+  - 被用来计算当前帧到上一帧之间的累积线速度：`egovel_cum_x`、`egovel_cum_y`、`egovel_cum_z`。
+- `filtered`点云消息
+  - 转为pcl点云格式
+  - 被传入`matching`函数，执行点云配准，得到传感器位姿`pose`
+- `pose`和`twist`一起被`publish_odometry`发表。同时利用`read_until`机制来发布处理完的数据。
+
+##### 1.3 radar_graph_slam_nodelet
+
+`odom`消息被`odom_sub`订阅，`filtered_points`话题被`cloud_sub`订阅。当两者都到达时，调用`cloud_callback`
+
+###### 提问：这里的`filtered_points`话题是preprocessing_nodelet发布的还是scan_matching_nodelet发布的?
+
+.......
+
+#### 2、imu数据
 
 
 
@@ -348,11 +378,18 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 - 返回值：无
 - 相关变量：
   - `livox_to_RGB`：Livox雷达坐标系到RGB坐标系的变换矩阵。
+    - 后续代码中未使用
   - `RGB_to_livox`：RGB坐标系到Livox雷达坐标系的逆变换矩阵，即 `livox_to_RGB` 的逆矩阵。
+    - 后续代码中未使用
   - `Thermal_to_RGB`：红外热像仪坐标系到RGB坐标系的变换矩阵。
+    - 后续代码中未使用
   - `Radar_to_Thermal`：雷达坐标系到红外热像仪坐标系的变换矩阵。
-  - `Change_Radarframe`：雷达坐标系到Livox雷达坐标系的变换矩阵，通过交换坐标轴实现。
-  - `Radar_to_livox`：将雷达坐标系转换到Livox雷达坐标系的组合变换矩阵，通过矩阵相乘得到。
+    - 后续代码中未使用
+  - `Change_Radarframe`：雷达坐标系到`livox`雷达坐标系的变换矩阵，通过交换坐标轴实现。
+    - 后续代码中未使用
+  - `Radar_to_livox`：将雷达坐标系转换到`livox`坐标系的组合变换矩阵，通过矩阵相乘得到。
+    - 将毫米波雷达坐标系的点`ptMat`转换为`livox`坐标系的点`dstMat`
+    - `radarcloud_raw`和`radarcloud_xyzi`中的点都是`livox`坐标系
 
 ##### 3、initializeParams()
 
@@ -505,150 +542,7 @@ c++模板库，提供了许多用于**向量**、**矩阵**、**数组**操作�
 - 返回值：无
   - 输出时间容器的中值，或者平均点分布数据
 
-### 二、apps/radar_graph_slam_nodelet.cpp
-
-定义了一个类:RadarGraphSlamNodelet
-
-#### 订阅者
-
-##### 1、odom_sub
-
-- 话题：odomTopic, 即`/odom`
-- 消息类型：`nav_msgs::Odometry`
-
-##### 2、cloud_sub
-
-- 话题：`/flitered_points`
-- 消息类型：`sensor_msgs::PointCloud2`
-
-
-#### 发布者
-
-##### 1、markers_pub
-
-- 话题：`/radar_graph_slam/markers`
-- 消息类型：`visualization_msgs::MarkerArray`
-
-##### 2、odom2base_pub
-
-- ==将雷达里程计转换为基线==
-- 话题：`/radar_graph_slam/odom2base`
-- 消息类型：`geometry_msgs::TransformStamped`
-
-##### 3、aftmapped_odom_pub
-
-- 话题：`/radar_graph_slam/aftmapped_odoml`
-- 消息类型：`nav::Odometry`
-
-##### 4、aftmapped_odom_incremenral_pub
-
-- 话题：`/radar_graph_slam/aftmapped_odoml_incremenral`
-- 消息类型：`nav::Odometry`
-
-##### 5、map_points_pub
-
-- 话题：`/radar_graph_slam/map_points`
-- 消息类型：`sensor_msgs::PointCloud2`
-
-##### 6、read_uintil_pub
-
-- 话题：`/radar_graph_slam/read_until`
-- 消息类型：`std_msgs::Header`
-
-##### 7、odom_frame2frame_pub
-
-- 话题：`/radar_graph_slam/odom_frame2frame`
-- 消息类型：`nav_msgs::Odometry`
-
-
-
-#### 成员函数：
-
-##### 1、onInit()
-
-- 描述：
-  - 初始化参数，设置订阅者、发布者
-
-
-##### 2、cloud_callback()
-
-- 描述：
-  - 将接受到的点云扔到关键帧队列中
-
-- 参数：
-  - `odom_msg`：里程计信息，即当前帧到基座之间的旋转、平移信息
-  - `cloud_msg`：点云信息，即当前帧各个点的x、y、z坐标和强度等
-- 相关变量：
-  - 构造的关键帧：`KeyFrame::Ptr keyframe(new KeyFrame(keyframe_index, stamp, odom_now, accum_d, cloud));`
-    - 包含关键帧索引、时间戳、当前的里程计信息、累计的距离、点云
-
-##### 3、imu_callback()
-
-- 描述：
-
-  - 根据IMU数据的四元数部分计算初始的机器人初始位姿矩阵`initial_pose`
-
-- 参数：
-
-  - `imu_odom_msg`:接受到的imu数据消息，包含机器人在某个时间点的惯性测量单元数据，如加速度、角速度等信息。
-
-    `sensor_msgs::Imu`常见的成员：
-
-    - `Header`：时间戳`stamp`
-    - `linear_acceleration`：包含机器人在三个坐标轴上的线性加速度
-    - `angular_velocity`：包含机器人在三个坐标轴上的角速度
-    - `orientation`（可能有）：包含机器人的方向信息，通常表示为四元数x、y、z、w
-
-    在这个`imu_callback()`中主要处理`imu_odom_msg->orientation`部分
-
-- 相关变量：
-
-  - `initial_pose`：初始位姿矩阵，有imu中的四元数经过一系列转换得到。
-
-##### 4、imu_odom_callback
-
-- 描述
-  - 接收imu和里程计融合的消息，并将其存储在imu_odom_queue队列中
-
-- 参数
-  - `imu_odom_msg`：imu和里程计融合的消息
-
-
-##### 5、preIntegrationTransform
-
-- 描述
-  - 计算关键帧队列第一个imu-odom消息和最后一个imu-odom消息之间的变换
-
-- 参数：无
-- 返回值：
-  - `trans_`：
-    - `trans_.rotation`：整个队列的旋转
-    - `trans_.translation`：整个队列的平移
-
-- 相关变量：
-  - `lastImuOdomQt`：队列中最早的imu-odom消息的时间戳
-  - `isom_imu_odom_btn`：队列中最后一个消息到第一个消息之间的变换矩阵
-
-##### 6、barometer_callback
-
-- 描述：气压计回调函数，处理来自barometer_bmp388话题的消息。若启用了barometer，将消息加入到barometer_queue队列中，并使用互斥锁保护对队列的访问。若没有，直接返回，不进行处理。
-- 参数：
-  - `baro_msg`：气压计消息
-- 返回值：void类型的函数无返回
-
-##### 7、==flush_barometer_queue==
-
-- 描述：将气压计数据和关键帧对齐，从而提供相对于机器人起始点的高度信息。
-- 参数：无
-- 返回值：无
-
-##### 创建slam需要用到的对象:
-
-- graph_slam, keyframe_updater, loop_detector，map_cloud_generator等等
-
-- 对应类的定义都在src/radar_graph_slam/文件夹下
-
-### 三、apps/scan_matching_odometry_nodelet.cpp
+### 二、apps/scan_matching_odometry_nodelet.cpp
 
 #### 订阅者：
 
@@ -855,7 +749,148 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
 
 
 
+### 三、apps/radar_graph_slam_nodelet.cpp
 
+定义了一个类:RadarGraphSlamNodelet
+
+#### 订阅者
+
+##### 1、odom_sub
+
+- 话题：odomTopic, 即`/odom`
+- 消息类型：`nav_msgs::Odometry`
+
+##### 2、cloud_sub
+
+- 话题：`/flitered_points`
+- 消息类型：`sensor_msgs::PointCloud2`
+
+
+#### 发布者
+
+##### 1、markers_pub
+
+- 话题：`/radar_graph_slam/markers`
+- 消息类型：`visualization_msgs::MarkerArray`
+
+##### 2、odom2base_pub
+
+- ==将雷达里程计转换为基线==
+- 话题：`/radar_graph_slam/odom2base`
+- 消息类型：`geometry_msgs::TransformStamped`
+
+##### 3、aftmapped_odom_pub
+
+- 话题：`/radar_graph_slam/aftmapped_odoml`
+- 消息类型：`nav::Odometry`
+
+##### 4、aftmapped_odom_incremenral_pub
+
+- 话题：`/radar_graph_slam/aftmapped_odoml_incremenral`
+- 消息类型：`nav::Odometry`
+
+##### 5、map_points_pub
+
+- 话题：`/radar_graph_slam/map_points`
+- 消息类型：`sensor_msgs::PointCloud2`
+
+##### 6、read_uintil_pub
+
+- 话题：`/radar_graph_slam/read_until`
+- 消息类型：`std_msgs::Header`
+
+##### 7、odom_frame2frame_pub
+
+- 话题：`/radar_graph_slam/odom_frame2frame`
+- 消息类型：`nav_msgs::Odometry`
+
+
+
+#### 成员函数：
+
+##### 1、onInit()
+
+- 描述：
+  - 初始化参数，设置订阅者、发布者
+
+
+##### 2、cloud_callback()
+
+- 描述：
+  - 将接受到的点云扔到关键帧队列中
+
+- 参数：
+  - `odom_msg`：里程计信息，即当前帧到基座之间的旋转、平移信息
+  - `cloud_msg`：点云信息，即当前帧各个点的x、y、z坐标和强度等
+- 相关变量：
+  - 构造的关键帧：`KeyFrame::Ptr keyframe(new KeyFrame(keyframe_index, stamp, odom_now, accum_d, cloud));`
+    - 包含关键帧索引、时间戳、当前的里程计信息、累计的距离、点云
+
+##### 3、imu_callback()
+
+- 描述：
+
+  - 根据IMU数据的四元数部分计算初始的机器人初始位姿矩阵`initial_pose`
+
+- 参数：
+
+  - `imu_odom_msg`:接受到的imu数据消息，包含机器人在某个时间点的惯性测量单元数据，如加速度、角速度等信息。
+
+    `sensor_msgs::Imu`常见的成员：
+
+    - `Header`：时间戳`stamp`
+    - `linear_acceleration`：包含机器人在三个坐标轴上的线性加速度
+    - `angular_velocity`：包含机器人在三个坐标轴上的角速度
+    - `orientation`（可能有）：包含机器人的方向信息，通常表示为四元数x、y、z、w
+
+    在这个`imu_callback()`中主要处理`imu_odom_msg->orientation`部分
+
+- 相关变量：
+
+  - `initial_pose`：初始位姿矩阵，有imu中的四元数经过一系列转换得到。
+
+##### 4、imu_odom_callback
+
+- 描述
+  - 接收imu和里程计融合的消息，并将其存储在imu_odom_queue队列中
+
+- 参数
+  - `imu_odom_msg`：imu和里程计融合的消息
+
+
+##### 5、preIntegrationTransform
+
+- 描述
+  - 计算关键帧队列第一个imu-odom消息和最后一个imu-odom消息之间的变换
+
+- 参数：无
+- 返回值：
+  - `trans_`：
+    - `trans_.rotation`：整个队列的旋转
+    - `trans_.translation`：整个队列的平移
+
+- 相关变量：
+  - `lastImuOdomQt`：队列中最早的imu-odom消息的时间戳
+  - `isom_imu_odom_btn`：队列中最后一个消息到第一个消息之间的变换矩阵
+
+##### 6、barometer_callback
+
+- 描述：气压计回调函数，处理来自barometer_bmp388话题的消息。若启用了barometer，将消息加入到barometer_queue队列中，并使用互斥锁保护对队列的访问。若没有，直接返回，不进行处理。
+- 参数：
+  - `baro_msg`：气压计消息
+- 返回值：void类型的函数无返回
+
+##### 7、==flush_barometer_queue==
+
+- 描述：将气压计数据和关键帧对齐，从而提供相对于机器人起始点的高度信息。
+- 参数：无
+- 返回值：无
+
+##### 创建slam需要用到的对象:
+
+- graph_slam, keyframe_updater, loop_detector，map_cloud_generator等等
+
+- 对应类的定义都在src/radar_graph_slam/文件夹下
 
 
 
@@ -1221,6 +1256,45 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 注释`outlier_removal`代码后的运行结果：
 
 ![image-20240313142522953](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240313142522953.png)
+
+#### 错误3：命令行报错
+
+```bash
+[ INFO] [1711097189.752290720, 1696750139.451054050]: To small valid_targets (< 2) in radar_scan (15)
+[ INFO] [1711097193.176887109, 1696750149.712368178]: Warning: radar_data.rows() < config_.N_ransac_points
+```
+
+##### 可能原因：
+
+您提供的日志消息表明雷达数据处理中存在两个问题:
+
+1. "To small valid_targets (< 2) in radar_scan (15)":这条消息表明,在第15次雷达扫描中,检测到的有效目标少于2个。系统似乎需要最少数量的有效目标(可能由参数`config_.N_ransac_points`设置)才能正常工作,可能是为了执行RANSAC(随机抽样一致性)滤波或跟踪。
+
+2. "Warning: radar_data.rows() < config_.N_ransac_points":这个警告直接指出`radar_data`矩阵的行数少于配置的`config_.N_ransac_points`值。RANSAC是一种鲁棒的估计技术,常用于雷达和激光雷达数据处理中,用于过滤异常值和估计模型参数。它需要最少数量的数据点才能可靠地工作。
+
+这些消息表明,雷达系统没有检测到足够的有效目标或数据点,这可能是由于以下原因:
+
+- 信噪比(SNR)较差,导致漏检
+- 障碍物或能见度有限,影响雷达性能
+- 雷达配置或校准不正确
+- 雷达硬件或固件问题
+- 恶劣的环境条件(暴雨、雾等)
+
+为了解决这些问题,您可以:
+
+1. 检查雷达配置参数,确保它们针对预期的工作条件和要求进行了适当设置。
+
+2. 验证雷达传感器的物理状况和对准情况。
+
+3. 分析原始雷达数据,评估信号质量和噪声水平。
+
+4. 考虑调整检测和跟踪算法,以更好地处理目标数量较少的情况,例如通过调整RANSAC参数,或在可用点不足时切换到替代方法。
+
+5. 通过将出现的情况与环境因素、系统状态和其他相关数据关联起来,调查目标数量较少的根本原因。
+
+解决这些雷达数据质量问题将有助于提高整个系统的可靠性和性能。
+
+##### 解决方法：数据增强
 
 ## D、数据增强
 
