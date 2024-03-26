@@ -172,6 +172,48 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 
 根据您的具体情况,您可能需要调整这些设置。例如,如果您知道点云数据是有序的,并且知道其尺寸,则可以相应地设置 `width` 和 `height`。如果您确定点云数据中没有无效点,则可以直接将 `is_dense` 设置为 `true`。
 
+##### 8、如何修改ROS包的名称
+
+要修改自己创建的ROS包的名称，需要修改以下几个地方：
+
+1. **包文件夹名称(经过实践，这一步可忽略)：**
+   修改你的ROS包的文件夹名称。假设你的ROS包名称为`my_package`，那么你可以使用以下命令修改文件夹名称：
+
+   ```bash
+   mv my_package new_package_name
+   ```
+
+2. **CMakeLists.txt 文件：**
+   在你的ROS包的 CMakeLists.txt 文件中，将 `project()` 命令里的包名修改为新的包名。比如，原来是这样的：
+
+   ```cmake
+   project(my_package)
+   ```
+
+   修改为：
+
+   ```cmake
+   project(new_package_name)
+   ```
+
+3. **package.xml 文件：**
+   同样，在你的ROS包的 package.xml 文件中，将 `<name>` 标签的内容修改为新的包名。比如，原来是这样的：
+
+   ```xml
+   <name>my_package</name>
+   ```
+
+   修改为：
+
+   ```xml
+   <name>new_package_name</name>
+   ```
+
+4. **修改其他文件引用：**
+   如果在代码或者启动文件中有引用到包名的地方，也需要将引用的包名修改为新的包名。
+
+修改完以上内容后，保存文件并重新编译你的ROS包，即可使用新的包名。
+
 ## 概念
 
 ##### 1、节点
@@ -204,6 +246,8 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 总之，`ROS Master`在ROS中扮演着中央目录的角色，允许节点发现彼此并建立通信连接。
 
 ##### 3、bags
+
+##### 4、rosrun
 
 
 
