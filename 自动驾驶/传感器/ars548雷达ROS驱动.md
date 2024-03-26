@@ -550,7 +550,7 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
 
 
-## 3、rosbag_recorder
+## 3、rosbag_tools
 
 ##### 动机：为什么不直接使用`rosbag record -a`
 
@@ -558,7 +558,7 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
 ##### 代码地址：
 
-https://github.com/letMeEmoForAWhile/rosbag_recorder.git
+https://github.com/letMeEmoForAWhile/rosbag_tools.git
 
 ##### 具体代码：
 
@@ -707,7 +707,7 @@ source ~/.bashrc
 roslaunch ars548_process ars548_process.launch
 ```
 
-### 三、rosbag_recorder
+### 三、rosbag_tools
 
 ##### 0、修改路径
 
@@ -718,7 +718,7 @@ roslaunch ars548_process ars548_process.launch
 1）下载项目：
 
 ```bash
-git clone https://github.com/letMeEmoForAWhile/rosbag_recorder.git
+git clone https://github.com/letMeEmoForAWhile/rosbag_tools.git
 ```
 
 2）在根路径执行编译命令
@@ -748,6 +748,6 @@ source ~/.bashrc
 先启动RosDriverForARS548，由于读取josn文件需要一定时间，当rviz开始显示点云时，再启动该项目。
 
 ```bash
-rosrun rosbag_recorder rosbag_recorder 
+rosrun rosbag_tools rosbag_recorder 
 ```
 
