@@ -104,6 +104,10 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 总之，确保最终使用的参数值是正确的，且来源清晰明确即可。
 
+##### 11、gps数据为什么有三种话题？
+
+
+
 ## B、概念
 
 ##### 1、tf变化
@@ -332,7 +336,19 @@ T_init = [R_init | t_init]
 
 #### 3、GPS
 
-##### 3.1 
+##### radar_graph_slam_nodelet
+
+如果启用了gps(在launch文件中设置是否启用)
+
+- 订阅`/gps/geopoint`、`/gpsimu_driver/nmea_sentence`、`gpsTopic`(即`/ublox/fix`)。
+- 若接收到`/gps/geopoint`话题，调用`gps_callback()`
+  - 将gps数据进行时间校正，然后添加到队列`gps_geopoint_queue`中。
+  - 后续未对`gps_geopoint_queue`进行处理
+- 若接收到`/gpsimu_driver/nmea_sentence`话题，调用`nmea_callback()`
+  - 从nmea_msg中解析头部、经纬度信息，将解析后的结果传递到`gps_callback()`函数中
+- 若接收到gpsTopic话题，即`/gps/geopoint`话题，调用`navsat_callback()`
+  - 将gps数据存储到`gps_navsat_queue`队列中
+  - `flush_gps_queue()`对该队列进行处理
 
 ### 一、apps/preprocessing_nodelet.cpp
 
@@ -909,7 +925,7 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
 
   - `initial_pose`：初始位姿矩阵，有imu中的四元数经过一系列转换得到。
 
-##### 4、imu_odom_callback
+##### 4、imu_odom_callback()
 
 - 描述
   - 接收imu和里程计融合的消息，并将其存储在imu_odom_queue队列中
@@ -918,7 +934,7 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
   - `imu_odom_msg`：imu和里程计融合的消息
 
 
-##### 5、preIntegrationTransform
+##### 5、preIntegrationTransform()
 
 - 描述
   - 计算关键帧队列第一个imu-odom消息和最后一个imu-odom消息之间的变换
@@ -940,7 +956,7 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
   - `baro_msg`：气压计消息
 - 返回值：void类型的函数无返回
 
-##### 7、==flush_barometer_queue==
+##### 7、==flush_barometer_queue()==
 
 - 描述：将气压计数据和关键帧对齐，从而提供相对于机器人起始点的高度信息。
 - 参数：无
@@ -952,7 +968,65 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
 
 - 对应类的定义都在src/radar_graph_slam/文件夹下
 
+##### 8、flush_keyframe_queue()
 
+##### 9、optimization_timer_callback()
+
+##### 10、addLoopFactor()
+
+##### 11、map_points_publish_timer_callback()
+
+##### 12、create_marker_array()
+
+##### 13、edge_marker()
+
+##### 14、dump_service()
+
+##### 15、save_map_setvice()
+
+##### 16、nmea_callback()
+
+- 描述：从`nmea_msg`中解析出gps_msg，然后调用`gps_callback()`
+- 参数
+  - `nmea_msg`
+    - 类型：`const nmea_msgs::SentenceConstPtr&`
+    - ==。。。。==
+- 返回值
+  - 无
+
+##### 17、navsat_callback()
+
+- 描述：将gps数据存储到`gps_navsat_queue`
+
+##### 18、gps_callback()
+
+- 描述：
+  - 将gps数据进行时间校准，然后添加到队列中
+- 参数：
+  - `gps_msg`
+    - 类型：`const sensor_msgs::NavSatFixConstPtr&`
+    - 订阅话题接收到的gps数据
+- 相关变量：
+  - `gps_time_offset`
+    - 时间偏移量，用于校正gps时间，自己设值
+  - `gps_navsat_queue`
+    - gps数据队列
+- 返回值
+  - 无
+
+##### 19、flush_gps_queue()
+
+- 描述：处理gps数据队列
+- 参数：
+  - 无
+- 相关变量
+  - `gps_navsat_queue`
+    - 存储GPS数据的队列
+  - `keyframes`
+    - 关键帧队列
+  - last_gps_edge_index
+
+##### 20、command_callback()
 
 ## D、launch文件
 
@@ -1511,3 +1585,9 @@ if __name__ == "__main__":
 
 
 ## 2、利用激光雷达辅助，增强毫米波雷达数据
+
+## 3、自己采集的数据
+
+编写ROS驱动，
+
+数据采集的过程，图片
