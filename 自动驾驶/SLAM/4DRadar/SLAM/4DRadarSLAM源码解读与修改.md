@@ -330,6 +330,10 @@ T_init = [R_init | t_init]
 - 将imu消息转换到雷达坐标系，得到`imu_quat_deskew`
 - 得到初始位姿矩阵
 
+#### 3、GPS
+
+##### 3.1 
+
 ### 一、apps/preprocessing_nodelet.cpp
 
 从`ground truth`文件中读取每一行，作为`odom_msgs`队列的元素，每个odom消息包含位置和方向数据
@@ -1500,3 +1504,10 @@ if __name__ == "__main__":
 
 
 
+# 三、修改思路
+
+## 1、毫米波+GPS+IMU
+
+
+
+## 2、利用激光雷达辅助，增强毫米波雷达数据
