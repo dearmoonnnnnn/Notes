@@ -954,7 +954,7 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
 - 描述：气压计回调函数，处理来自barometer_bmp388话题的消息。若启用了barometer，将消息加入到barometer_queue队列中，并使用互斥锁保护对队列的访问。若没有，直接返回，不进行处理。
 - 参数：
   - `baro_msg`：气压计消息
-- 返回值：void类型的函数无返回
+- 返回值：无
 
 ##### 7、==flush_barometer_queue()==
 
@@ -969,6 +969,15 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
 - 对应类的定义都在src/radar_graph_slam/文件夹下
 
 ##### 8、flush_keyframe_queue()
+
+- 描述：
+  - 将关键帧添加到位姿图中
+- 参数：
+  - 无
+- 相关变量：
+  - `graph_slam`
+- 返回值`bool`
+  - `true`：至少一个关键帧被添加到位姿图中
 
 ##### 9、optimization_timer_callback()
 
