@@ -747,7 +747,7 @@ source ~/.bashrc
 
 ##### 2、运行
 
-先启动RosDriverForARS548，由于读取josn文件需要一定时间，当rviz开始显示点云时，再启动该项目。
+先启动RosDriverForARS548，再启动该项目。
 
 ```bash
 rosrun rosbag_tools rosbag_recorder 

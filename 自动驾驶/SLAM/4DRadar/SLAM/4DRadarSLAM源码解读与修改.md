@@ -352,8 +352,6 @@ T_init = [R_init | t_init]
 
 ### 一、apps/preprocessing_nodelet.cpp
 
-从`ground truth`文件中读取每一行，作为`odom_msgs`队列的元素，每个odom消息包含位置和方向数据
-
 #### 三个订阅者：
 
 ##### 1、imu_sub
@@ -442,9 +440,9 @@ T_init = [R_init | t_init]
 
 - 描述
   - 初始化一些变换矩阵，主要涉及不同坐标系之间的转换
+- 参数
+  - 无
 
-- 参数：无
-- 返回值：无
 - 相关变量：
   - `livox_to_RGB`：Livox雷达坐标系到RGB坐标系的变换矩阵。
     - 后续代码中未使用
@@ -459,20 +457,28 @@ T_init = [R_init | t_init]
   - `Radar_to_livox`：将雷达坐标系转换到`livox`坐标系的组合变换矩阵，通过矩阵相乘得到。
     - 将毫米波雷达坐标系的点`ptMat`转换为`livox`坐标系的点`dstMat`
     - `radarcloud_raw`和`radarcloud_xyzi`中的点都是`livox`坐标系
+- 返回值
+  - 无
 
 ##### 3、initializeParams()
 
 - 描述
   - 从ROS参数服务器获取并初始化一些参数，这些参数主要涉及点云处理中的降采样、离群点去除等操作的参数设置。
-
-- 参数：无
-- 返回值：无
-  - 将从ground truth获得的odom消息添加到队列`odom_msgs`队列中
+  - 从`ground truth`文件中读取每一行，作为`odom_msgs`队列的元素，每个odom消息包含位置和方向数据
+- 参数
+  - 无
 
 - 相关变量：
-  - `voxelgrid`：用于进行体素网格降采样
-  - `outlier_removal_filter`：离群点移除对象的指针
-  - `odom_msgs`：std::deque\<nav_msgs::Odometry\>,`Odometry`消息的队列，这里存储的是`ground truth`文件中的`odom`消息
+  - `voxelgrid`：
+    - 用于进行体素网格降采样
+  - `outlier_removal_filter`：
+    - 离群点移除对象的指针
+  - `odom_msgs`：
+    - `std::deque<nav_msgs::Odometry>`
+    - ``Odometry`消息的队列，这里存储的是`ground truth`文件中的`odom`消息
+- 返回值：
+  - 无
+
 
 ##### 4、imu_callback()
 
