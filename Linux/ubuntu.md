@@ -203,13 +203,21 @@ uname -m
 - 若输出为`armv71`或类似，说明使用的是32位的ARM架构
 - 若输出为`aarch64`，则表示系统为64位的ARM架构，选择arm64或者aarch64版本
 
-### B、Ubuntu卸载软件
+### B、源码安装
+
+手动编译、安装
+
+### C、apt安装
+
+apt是ubuntu的包管理工具
+
+## 4.2、Ubuntu卸载软件
 
 ubuntu卸载和安装 https://blog.csdn.net/Laney_Midory/article/details/120686618
 
 https://blog.csdn.net/qq_42170079/article/details/130770073
 
-## 4.2 卸载源码安装的软件
+### A 卸载源码安装的软件
 
 在你make install的文件下面输入:
 
