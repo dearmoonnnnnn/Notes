@@ -92,6 +92,20 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 ##### 9、什么是扫描到地图的配准，它与扫描到扫描的配准有什么区别
 
+扫描到地图的配准是将3D点云数据与已有的地图或模型进行对齐。
+
+- 源点云
+  - 传感器采集的新的一帧点云数据
+- 目标点云
+  - 系统先前构建好的、覆盖了机器人所在环境的大尺度点云地图
+
+扫描到扫描的配准是将多个3D点云数据相互对齐。
+
+- 源点云
+  - 传感器采集的新的一帧点云数据
+- 目标点云
+  - 传感器采集的上一帧（关键帧）点云
+
 ##### 10、params.yaml和utility_radar.h都定义了节点的相关参数，比如说pointCloudTopic参数，两者不会冲突吗，能不能只保留其中一个？
 
 在ROS中，参数可以从多个来源进行设置，包括`launch`文件、命令行参数、参数文件（如`params.yaml`）、程序内部设置等。当参数从不同来源设置时，ROS会按照一定的优先级进行处理，确保参数值正确地被设置。
@@ -274,7 +288,7 @@ T_init = [R_init | t_init]
 
 ### 零、数据流动的方向
 
-#### 1、点云数据
+#### 1、点云数据流动方向
 
 ##### 1.1、preprocessing_nodelet
 
@@ -310,7 +324,7 @@ T_init = [R_init | t_init]
 
 .......
 
-#### 2、imu数据
+#### 2、imu数据流动方向
 
 ##### 2.1 preprocessing_nodelet
 
@@ -322,10 +336,31 @@ T_init = [R_init | t_init]
 
 `/imu`话题被`imu_sub`订阅，传入`imu_callback`
 
-- 参数`enable_scan_to_map`为false，源代码未启用imu融合
+- 参数`enable_imu_fusion`为false，源代码未启用imu融合
 - imu的四元数被提取出来，存储在`imu_quat_from`中
 - 使用预定义的`extQRPY`对IMU的方向进行去扰动，得到`imu_quat_deskew`。这是为了补偿IMU安装时的方向偏差，使IMU方向和激光雷达方向对齐。
 - 根据去扰动后的imu数据，创建新的IMU数据，添加到`imu_queue`队列中
+
+若`enable_imu_fusion`为`true`，发生的事情：
+
+- `matching()`函数中
+
+  ```cpp
+   if(keyframe_updater->decide(Eigen::Isometry3d(odom_s2s_now), stamp)) {
+        // Loose Coupling the IMU roll & pitch
+        if (enable_imu_fusion){
+          if(enable_scan_to_map) transformUpdate(odom_s2m_now);
+          else transformUpdate(odom_s2s_now);
+        }
+   ......
+   }
+  ```
+
+  - 调用transformUpdate函数	
+    - 若启用点云到地图的配准，传入参数`odom_s2m_now`
+    - 若未启用点云到地图的配准，传入参数`odom_s2s_now`
+
+- `transformUpdate`函数
 
 ##### 2.3、radar_graph_slam_nodelet
 
@@ -334,7 +369,7 @@ T_init = [R_init | t_init]
 - 将imu消息转换到雷达坐标系，得到`imu_quat_deskew`
 - 得到初始位姿矩阵
 
-#### 3、GPS
+#### 3、GPS数据流动方向
 
 ##### radar_graph_slam_nodelet
 
@@ -356,16 +391,16 @@ T_init = [R_init | t_init]
 
 ##### 1、imu_sub
 
-- 话题：`imuTopic`，即/vectornav/imu
+- 话题：`imuTopic`，即`/vectornav/imu`
 - 消息类型：
-- 回调函数：&PreprocessingNodelet::imu_callback
-  - 从输入的imu_msg获取信息并调整，得到imu_data并发布
-  - 同时，判断odom消息是否需要更新，若需要，更新后重新发布
+- 回调函数：`&PreprocessingNodelet::imu_callback`
+  - 从输入的`imu_msg`获取信息并调整，得到`imu_data`并发布
+  - 同时，判断`odom`消息是否需要更新，若需要，更新后重新发布
 
 ##### 2、points_sub：
 
-- 话题：`pointCloudTopic`，从config/params.yaml中可知，pointCloudTopic即/radar_enhanced_pcl
-- 回调函数：&PreprocessingNodelet::cloud_callback
+- 话题：`pointCloudTopic`，从`config/params.yaml`中可知，`pointCloudTopic`即`/radar_enhanced_pcl`
+- 回调函数：`&PreprocessingNodelet::cloud_callback`
   - 输入： `sensor::PointCloud::ConstPtr& eagle_msg`
   - `radarpoint_raw`
   - `radarpoint_xyzi`
@@ -402,7 +437,7 @@ T_init = [R_init | t_init]
 
 - 话题：`/aftmapped_to_init`
 - 消息类型：`nav_msgs::Odometry`
-- 描述：Aft-mapped到初始位姿的里程计数据
+- 描述：`Aft-mapped`到初始位姿的里程计数据
 
 ##### 5、pub_twist
 
@@ -699,6 +734,7 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
 
 - 描述
   - 初始化参数
+    - 关键帧
 
 ##### 2、imu_callback()
 
@@ -751,6 +787,9 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
   - `odom_to_update`
     - 变量类型：`Eigen::Matrix4d&`
     - ==代表激光雷达扫描周期内的里程计（Odometry）变换矩阵==
+    - 两个可能的实参：
+      - `matching()`函数中的`odom_s2m_now`
+      - `matching()`函数中的`odom_s2s_now`
 - 返回值：无
 - 相关变量
   - `odom_to_update.block`：
@@ -799,6 +838,7 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
 ##### 9、matching()
 
 - 描述
+  - 在`pointcloud_callback`中被调用一次
   - 估计输入点云和关键帧点云之间的位姿
 - 参数
   - `stamp`
@@ -809,17 +849,25 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
   - 返回类型为 `Eigen::Matrix4d`，表示输入点云与关键帧点云之间的相对姿态变换矩阵。
 - 相关变量：
   - 扫描配准部分
-    - `keyframe_cloud_s2s`：扫描到扫描的配准对象
-    - `keyframe_cloud_s2m`：扫描到地图的配准对象
+    - `keyframe_cloud_s2s`：
+      - 扫描到扫描的配准中的目标点云
+      - 即上一个关键帧对象
+    - `keyframe_pose_s2s`
+      - 初始化时设置为单位矩阵
+      - 关键帧更新后：`keyframe_pose_s2s`更新为`odom_s2s_now`
+    - `keyframe_cloud_s2m`：
+      - 扫描到地图的配准中的目标点云
+      - 即先前构建好的、覆盖了机器人所在环境的大尺度点云地图
     - `guess`：
       - 初始猜测变换矩阵
       - 初始猜测的好坏直接影响了扫描匹配算法的收敛速度和结果的准确性。一个良好的初始猜测可以使算法更容易找到全局最优解，而不容易陷入局部最优解。
-    - `trans_s2s`：最终的扫描到扫描的变换矩阵
+    - `trans_s2s`：
+      - 最终的扫描到扫描的变换矩阵
     - `odom_s2s_now`： 
       - 等于上一帧关键帧的位姿 * `tran_s2s`
-      - 当前时刻的扫描到扫描的位姿变换矩阵，即当前帧相对于起始点的变换矩阵
+      - 当前时刻的扫描到扫描的位姿变换矩阵，即当前帧相对于上一个关键帧的变换矩阵
     - `odom_s2m_now`：
-      - 当前时刻的地图到扫描的位姿变换矩阵
+      - 当前时刻的地图到扫描的位姿变换矩阵，即当前帧相对于起始点的变换矩阵
   - 异常判断
     - 
 
@@ -1261,7 +1309,7 @@ rosbag info cp_2022-02-26.bag
     <include file="$(find radar_graph_slam)/launch/rosbag_play_radar_NWU.launch" />
     ```
 
-  - 注释如下行
+  - 注释下行
 
     ```xml
     <include file="$(find radar_graph_slam)/launch/rosbag_play_radar_carpark1.launch" />
@@ -1315,7 +1363,6 @@ rosbag info cp_2022-02-26.bag
   points_topic = private_nh.param<std::string>("points_topic", "/ars548_process/detection_point_cloud");
   ```
 
-  
 
 ## C、运行
 
@@ -1591,11 +1638,19 @@ if __name__ == "__main__":
 
 ##### 1.2、
 
+## E、参数调整
 
+
+
+### 1、关键帧相关参数
+
+`scan_matching_odometry_nodelet.cpp`节点`initialize_params()`函数中的相关参数 
 
 # 三、修改思路
 
-## 1、毫米波+GPS+IMU
+## 1、IMU融合+GPS
+
+
 
 
 
@@ -1606,4 +1661,3 @@ if __name__ == "__main__":
 编写ROS驱动，
 
 数据采集的过程，图片
-
