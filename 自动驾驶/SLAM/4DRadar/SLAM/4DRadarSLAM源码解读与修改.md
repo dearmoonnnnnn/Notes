@@ -362,7 +362,7 @@ T_init = [R_init | t_init]
 
 - `transformUpdate`函数
 
-##### 2.3、radar_graph_slam_nodelet
+##### 2.3 radar_graph_slam_nodelet
 
 `imu_sub`订阅`preprocessing_nodelet`传入的`/imu`话题。
 
