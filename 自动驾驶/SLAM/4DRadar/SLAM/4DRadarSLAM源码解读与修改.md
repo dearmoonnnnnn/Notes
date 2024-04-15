@@ -120,7 +120,9 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 ##### 11、gps数据为什么有三种话题？
 
+##### 12、IMU的融合方法是什么
 
+使用了简单的加权平均策略来整合IMU和激光雷达里程计的Roll和Pitch角度信息。
 
 ## B、概念
 
@@ -795,6 +797,9 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
   - `odom_to_update.block`：
     - 激光雷达里程计的变换矩阵
     - 描述了激光雷达在一个另一个坐标系中的位置和方向
+  - `imu_fusion_ratio`:
+    - 融合系数
+    - 对IMU和激光雷达里程计的Pitch和Roll角度进行加权融合
 - question：
   - 为什么IMU的姿态信息可以表示激光雷达里程计的变换矩阵
 
