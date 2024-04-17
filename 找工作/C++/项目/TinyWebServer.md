@@ -4,7 +4,7 @@ https://dev.mysql.com/doc/refman/5.7/en/what-is.html
 
 # 零、问题和概念
 
-# 概念
+## 概念
 
 ##### 1、MySQL
 
@@ -113,6 +113,10 @@ CGI校验是指对CGI脚本进行验证和检查，以确保脚本的安全性�
 
 - 当有新的任务需要执行时，不是立即创建新的线程，而是从线程池中取出一个空闲线程来执行任务。
 - 完成任务时，线程不被销毁，而是返回池中，等待下一个任务。
+
+## 问题
+
+##### 1、一共有几个线程，分别有什么作用
 
 # 一、环境搭建
 
@@ -229,15 +233,150 @@ sudo systemctl restart mysql
 
 # 三、源码解析
 
-# 1、webserver类
+## 0、main
 
+设置数据库用户名、密码、数据库名称
 
+命令行解析，得到相关参数的值
 
+实例化`WebServer`对象
 
+- 初始化
+  - 传递相关参数的值给WebServer对象
+- 日志
+- 数据库
+- 线程池
+- 触发模式
+- 监听
+- 运行
 
-## 连接池
+## 1、webserver类
 
-### sql_connection_pool.h
+### 成员变量
+
+##### 1、基础变量
+
+- `int m_port`
+  - 监听端口
+- `char *m_root`
+  - 网站根目录
+- `int m_log_write`
+  - 日志写入方式
+- `int m_close_log`
+  - 日志是否关闭
+- `int m_actormodel`
+  - 模型选择
+- `int m_pipefd[2]`
+  - 管道文件描述符
+- `int m_epollfd`
+  - `epoll`文件描述符
+
+##### 2、数据库相关变量
+
+-  `connection_pool *m_connPool`
+
+- `string m_user`
+  - 登陆数据库用户名
+
+- `string m_passWord`
+  - 登陆数据库密码
+
+- `string m_databaseName`
+  - 使用数据库名
+
+- `int m_sql_num`
+  - 数据库连接池数量
+
+##### 3、线程池相关变量
+
+|         变量类型          |    变量名称    |         描述         |
+| :-----------------------: | :------------: | :------------------: |
+| `threadpool<http_conn> *` |    `m_pool`    | 线程池实例化对象指针 |
+|           `int`           | `m_thread_num` |      线程的数量      |
+
+##### 4、epoll_event
+
+|   变量类型    |      变量名称      |                    描述                    |
+| :-----------: | :----------------: | :----------------------------------------: |
+| `epoll_event` |      `events`      |            epoll实例化对象数组             |
+|     `int`     |    `m_listenfd`    |                 线程的数量                 |
+|     `int`     |   `m_OPT_LINGER`   | 在关闭套接字时是否等待未发送数据被发送完毕 |
+|     `int`     |    `m_TRIGMode`    |                  触发模式                  |
+|     `int`     | `m_LISTENTrigmode` |                  监听模式                  |
+|     `int`     |  `m_CONNTrigmode`  |                  连接模式                  |
+
+##### 5、定时器相关
+
+| 变量类型        | 变量名称      | 描述 |
+| --------------- | ------------- | ---- |
+| `client_data *` | `users_timer` |      |
+| `Utils`         | `utils`       |      |
+
+### 成员函数
+
+##### 1、WebServer()
+
+- 描述
+  - 构造函数，创建`http_conn`类对象`users`
+
+- 关键变量
+  - `users`
+    - `http_conn`类对象
+  - `m_root`
+    - 当前工作目录与 `/root`拼接而成的路径
+  - `users_timer`
+    - 定时器
+
+##### 2、~WebServer()
+
+- 描述
+  - 析构函数
+  - 关闭`epoll`、监听套接字和两个管道
+  - 释放内存变量的内存空间：`users`、`users_timer`、`m_pool`
+
+##### 3、init()
+
+- 描述
+  - 传递参数
+- 参数
+  - `port`
+    - 参数类型：`int`
+    - 服务器监听端口
+  - `user`
+  - passWord
+  - databaseName
+  - log_write
+  - opt_linger
+  - trigmode
+  - sql_num
+  - thread_num
+  - close_log
+  - actor_model
+
+##### 4、trig_mode()
+
+- 描述
+  - 设置触发模式
+- 关键变量
+  - `m_TRIGMode`
+    - 根据`m_TRIGMode`的值设置不同的触发模式
+  - `m_LISTENTrigmode`
+    - 监听模式
+  - `m_CONNTrigmode`
+    - 连接模式
+
+##### 5、log_write()
+
+- 描述
+  - `m_close_log`为0则对日志示例进行初始化
+- 无参数
+- 无返回值
+
+##### 6、sql_pool()
+
+- 
+
+## 2、sql_connection_pool.h
 
 定义两个类：
 

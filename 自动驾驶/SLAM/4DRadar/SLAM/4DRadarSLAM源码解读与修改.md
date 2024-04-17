@@ -1653,11 +1653,22 @@ if __name__ == "__main__":
 
 # 三、修改思路
 
-## 1、IMU融合+GPS
+## 1、IMU融合
 
+### 问题1：bash报错
 
+加入IMU的部分后，产生如下错误
 
+```bash
+[radarslam_nodelet_manager-2] process has died [pid 48909, exit code -11, cmd /opt/ros/noetic/lib/nodelet/nodelet manager __name:=radarslam_nodelet_manager __log:=/home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam_nodelet_manager-2.log].
+log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam_nodelet_manager-2*.log
+```
 
+#### 原因：
+
+`exit code -11`通常表示程序由于段错误而非正常退出。段错误的原因可能包括：内存访问错误、空指针解引用、内存溢出等。
+
+这种错误通常意味着程序试图访问未分配给它的内存区域或者试图访问已经释放的内存区域。
 
 ## 2、利用激光雷达辅助，增强毫米波雷达数据
 

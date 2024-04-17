@@ -81,6 +81,11 @@
 4. **选择指南**:
    - 当你的ROS应用需要高效地处理和传输大型数据时（如在机器人的感知和图像处理任务中），使用`nodelet`可能是一个好选择。
    - 对于更通用的、不涉及大型数据处理的任务，常规的节点可能更为简单和方便。
+5. **代码实现**：
+   - `node`可以直接在main中实现
+   - `nodelet`最好以类的方式实现，并在插件的形式注册到`Nodelet`管理器中，并通过`Nodelet`管理器来加载和实例化`Nodelet`
+      - 不推荐在main函数中实例化Nodelet对象，并调用它的onInit函数来初始化。这可能会导致不可预料的问题。
+
 
 总的来说，`node`和`nodelet`都是ROS中进行任务和算法处理的实体，但`nodelet`提供了一种更高效的方法，特别是当需要在算法之间交换大型数据时。
 
@@ -666,9 +671,14 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "param_example_node");
     ros::NodeHandle nh;
 
-    // 从参数服务器获取整数参数值
+    /** 
+     * 从参数服务器获取整数参数值
+     * "/my_namespace/my_param_int":要获取的参数名称，指定了参数的命名空间和参数名
+     * my_param_int:存储参数值的变量。如果参数存在，它的值会被存在这个变量中
+     * 1：参数的默认值。如果参数服务器中找不到指定的参数，将会使用这个默认值
+     */
     int my_param_int;
-    nh.getParam("/my_namespace/my_param_int", my_param_int);
+    nh.getParam("/my_namespace/my_param_int", my_param_int, 1);
 
     // 从参数服务器获取浮点数参数值
     double my_param_double;
@@ -1227,7 +1237,6 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 - 多线程节点句柄
   - **作用范围：**多线程句柄提供对ROS全局命名空间中的所有主题、服务和参数的访问，类似于全局节点句柄
 - 私有节点句柄
-- 
 
 # 九、catkin_make
 
@@ -1314,8 +1323,6 @@ int main(int argc, char** argv)
 }
 ```
 
-
-
 ## 3、bag转txt
 
 ```bash
@@ -1330,6 +1337,8 @@ rostopic echo -b data1.bag -p /tag_detections > data1.txt
 
 ## 4、融合两个bag文件
 
+### 4.1 两个bag文件中的特定话题
+
 要将两个bag文件中特定话题的消息融合为一个bag文件，可以使用`rosbag filter`命令。下面是一个示例：
 
 ```bash
@@ -1341,3 +1350,55 @@ rosbag merge output1.bag output2.bag merged_output.bag
 这里的`/your_topic`是您要融合的特定话题。首先，使用`rosbag filter`从两个输入文件中提取特定话题的消息到两个输出文件中。然后，使用`rosbag merge`将这两个输出文件合并为一个文件。
 
 请确保将`input1.bag`、`input2.bag`和`merged_output.bag`替换为实际的文件名和路径。
+
+### 4.2 两个bag文件合并为一个，并保留需要的所有话题
+
+设a.bag包有三个话题 `/a1`、`/a2`、`/a3`，`b.bag`包有2个话题，分别为`/b1`、`/b2`
+
+```cpp
+#include "ros/ros.h"
+#include "rosbag/bag.h"
+#include "rosbag/view.h"
+#include "std_msgs/String.h"
+
+int main(int argc, char** argv) {
+    // 初始化ROS节点
+    ros::init(argc, argv, "bag_merger");
+    ros::NodeHandle nh;
+
+    // 从ROS参数服务器获取输入bag文件的路径和输出bag文件的路径
+    std::string bag1_path, bag2_path, output_bag_path;
+    nh.param<std::string>("bag1_path", bag1_path, "/path/to/a.bag");
+    nh.param<std::string>("bag2_path", bag2_path, "/path/to/b.bag");
+    nh.param<std::string>("output_bag_path", output_bag_path, "/path/to/merged.bag");
+
+    // 打开输入bag文件和输出bag文件
+    rosbag::Bag bag1(bag1_path, rosbag::bagmode::Read);
+    rosbag::Bag bag2(bag2_path, rosbag::bagmode::Read);
+    rosbag::Bag output_bag(output_bag_path, rosbag::bagmode::Write);
+
+    // 创建一个Topic过滤器，选择需要保留的所有话题
+    rosbag::View view1(bag1, rosbag::TopicQuery("/a1") || rosbag::TopicQuery("/a2") || rosbag::TopicQuery("/a3"));
+    rosbag::View view2(bag2, rosbag::TopicQuery("/b1") || rosbag::TopicQuery("/b2"));
+
+    // 循环读取输入bag文件中的消息并写入输出bag文件
+    for (const rosbag::MessageInstance& msg : view1) {
+        output_bag.write(msg.getTopic(), msg.getTime(), msg);
+    }
+
+    for (const rosbag::MessageInstance& msg : view2) {
+        output_bag.write(msg.getTopic(), msg.getTime(), msg);
+    }
+
+    // 关闭输入和输出的bag文件
+    bag1.close();
+    bag2.close();
+    output_bag.close();
+
+    // 进入ROS事件循环，接收和处理ROS消息
+    ros::spin();
+
+    return 0;
+}
+```
+
