@@ -1032,6 +1032,89 @@ http://wiki.ros.org/rosbag/Commandline
 
   这对于 replay 数据时保持与记录时相同的时间关系是很有用的，特别是在涉及到需要同步的多个话题时。
 
+
+
+## 5.4 bag文件相关操作
+
+### 5.4.1融合两个bag文件中的特定话题
+
+要将两个bag文件中特定话题的消息融合为一个bag文件，可以使用`rosbag filter`命令。下面是一个示例：
+
+```bash
+rosbag filter input1.bag output1.bag "topic == '/your_topic'"
+rosbag filter input2.bag output2.bag "topic == '/your_topic'"
+rosbag merge output1.bag output2.bag merged_output.bag
+```
+
+这里的`/your_topic`是您要融合的特定话题。首先，使用`rosbag filter`从两个输入文件中提取特定话题的消息到两个输出文件中。然后，使用`rosbag merge`将这两个输出文件合并为一个文件。
+
+请确保将`input1.bag`、`input2.bag`和`merged_output.bag`替换为实际的文件名和路径。
+
+### 5.4.2 两个bag文件合并为一个，并保留需要的所有话题
+
+设a.bag包有三个话题 `/a1`、`/a2`、`/a3`，`b.bag`包有2个话题，分别为`/b1`、`/b2`
+
+```cpp
+#include "ros/ros.h"
+#include "rosbag/bag.h"
+#include "rosbag/view.h"
+#include "std_msgs/String.h"
+
+int main(int argc, char** argv) {
+    // 初始化ROS节点
+    ros::init(argc, argv, "bag_merger");
+    ros::NodeHandle nh;
+
+    // 从ROS参数服务器获取输入bag文件的路径和输出bag文件的路径
+    std::string bag1_path, bag2_path, output_bag_path;
+    nh.param<std::string>("bag1_path", bag1_path, "/path/to/a.bag");
+    nh.param<std::string>("bag2_path", bag2_path, "/path/to/b.bag");
+    nh.param<std::string>("output_bag_path", output_bag_path, "/path/to/merged.bag");
+
+    // 打开输入bag文件和输出bag文件
+    rosbag::Bag bag1(bag1_path, rosbag::bagmode::Read);
+    rosbag::Bag bag2(bag2_path, rosbag::bagmode::Read);
+    rosbag::Bag output_bag(output_bag_path, rosbag::bagmode::Write);
+
+    // 创建一个Topic过滤器，选择需要保留的所有话题
+    rosbag::View view1(bag1, rosbag::TopicQuery("/a1") || rosbag::TopicQuery("/a2") || rosbag::TopicQuery("/a3"));
+    rosbag::View view2(bag2, rosbag::TopicQuery("/b1") || rosbag::TopicQuery("/b2"));
+
+    // 循环读取输入bag文件中的消息并写入输出bag文件
+    for (const rosbag::MessageInstance& msg : view1) {
+        output_bag.write(msg.getTopic(), msg.getTime(), msg);
+    }
+
+    for (const rosbag::MessageInstance& msg : view2) {
+        output_bag.write(msg.getTopic(), msg.getTime(), msg);
+    }
+
+    // 关闭输入和输出的bag文件
+    bag1.close();
+    bag2.close();
+    output_bag.close();
+
+    // 进入ROS事件循环，接收和处理ROS消息
+    ros::spin();
+
+    return 0;
+}
+```
+
+### 5.4.3 删除bag文件中的特定话题
+
+```bash
+rosbag filter input.bag output.bag "topic != '/topic1'"
+```
+
+删除多个话题，可以使用逻辑运算符 `&&` 和 `||`。比如，要删除 `/topic1` 和 `/topic2` 的消息，可以使用：
+
+```bash
+rosbag filter input.bag output.bag "topic != '/topic1' && topic != '/topic2'"
+```
+
+
+
 # 六、PCL库
 
 ## 6.1 表示点云数据的四种方式
@@ -1333,72 +1416,5 @@ rostopic echo -b <bag_name>.bag -p /<topic_name> > <new_name>.txt
 
 ```bash
 rostopic echo -b data1.bag -p /tag_detections > data1.txt
-```
-
-## 4、融合两个bag文件
-
-### 4.1 两个bag文件中的特定话题
-
-要将两个bag文件中特定话题的消息融合为一个bag文件，可以使用`rosbag filter`命令。下面是一个示例：
-
-```bash
-rosbag filter input1.bag output1.bag "topic == '/your_topic'"
-rosbag filter input2.bag output2.bag "topic == '/your_topic'"
-rosbag merge output1.bag output2.bag merged_output.bag
-```
-
-这里的`/your_topic`是您要融合的特定话题。首先，使用`rosbag filter`从两个输入文件中提取特定话题的消息到两个输出文件中。然后，使用`rosbag merge`将这两个输出文件合并为一个文件。
-
-请确保将`input1.bag`、`input2.bag`和`merged_output.bag`替换为实际的文件名和路径。
-
-### 4.2 两个bag文件合并为一个，并保留需要的所有话题
-
-设a.bag包有三个话题 `/a1`、`/a2`、`/a3`，`b.bag`包有2个话题，分别为`/b1`、`/b2`
-
-```cpp
-#include "ros/ros.h"
-#include "rosbag/bag.h"
-#include "rosbag/view.h"
-#include "std_msgs/String.h"
-
-int main(int argc, char** argv) {
-    // 初始化ROS节点
-    ros::init(argc, argv, "bag_merger");
-    ros::NodeHandle nh;
-
-    // 从ROS参数服务器获取输入bag文件的路径和输出bag文件的路径
-    std::string bag1_path, bag2_path, output_bag_path;
-    nh.param<std::string>("bag1_path", bag1_path, "/path/to/a.bag");
-    nh.param<std::string>("bag2_path", bag2_path, "/path/to/b.bag");
-    nh.param<std::string>("output_bag_path", output_bag_path, "/path/to/merged.bag");
-
-    // 打开输入bag文件和输出bag文件
-    rosbag::Bag bag1(bag1_path, rosbag::bagmode::Read);
-    rosbag::Bag bag2(bag2_path, rosbag::bagmode::Read);
-    rosbag::Bag output_bag(output_bag_path, rosbag::bagmode::Write);
-
-    // 创建一个Topic过滤器，选择需要保留的所有话题
-    rosbag::View view1(bag1, rosbag::TopicQuery("/a1") || rosbag::TopicQuery("/a2") || rosbag::TopicQuery("/a3"));
-    rosbag::View view2(bag2, rosbag::TopicQuery("/b1") || rosbag::TopicQuery("/b2"));
-
-    // 循环读取输入bag文件中的消息并写入输出bag文件
-    for (const rosbag::MessageInstance& msg : view1) {
-        output_bag.write(msg.getTopic(), msg.getTime(), msg);
-    }
-
-    for (const rosbag::MessageInstance& msg : view2) {
-        output_bag.write(msg.getTopic(), msg.getTime(), msg);
-    }
-
-    // 关闭输入和输出的bag文件
-    bag1.close();
-    bag2.close();
-    output_bag.close();
-
-    // 进入ROS事件循环，接收和处理ROS消息
-    ros::spin();
-
-    return 0;
-}
 ```
 

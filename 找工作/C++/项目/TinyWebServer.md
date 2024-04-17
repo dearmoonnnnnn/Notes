@@ -252,24 +252,19 @@ sudo systemctl restart mysql
 
 ## 1、webserver类
 
-### 成员变量
+### A、成员变量
 
 ##### 1、基础变量
 
-- `int m_port`
-  - 监听端口
-- `char *m_root`
-  - 网站根目录
-- `int m_log_write`
-  - 日志写入方式
-- `int m_close_log`
-  - 日志是否关闭
-- `int m_actormodel`
-  - 模型选择
-- `int m_pipefd[2]`
-  - 管道文件描述符
-- `int m_epollfd`
-  - `epoll`文件描述符
+| 变量类型 |    变量名称     |       描述        |
+| :------: | :-------------: | :---------------: |
+|  `int`   |    ` m_port`    |     监听端口      |
+| `char *` |    `m_root`     |    网站根目录     |
+|  `int`   | ` m_log_write`  |   日志写入方式    |
+|  `int`   | ` m_close_log`  |   日志是否关闭    |
+|  `int`   | ` m_actormodel` |     模型选择      |
+|  `int`   | ` m_pipefd[2]`  |  管道文件描述符   |
+|  `int`   |  ` m_epollfd`   | `epoll`文件描述符 |
 
 ##### 2、数据库相关变量
 
@@ -307,14 +302,14 @@ sudo systemctl restart mysql
 
 ##### 5、定时器相关
 
-| 变量类型        | 变量名称      | 描述 |
-| --------------- | ------------- | ---- |
+|    变量类型     |   变量名称    | 描述 |
+| :-------------: | :-----------: | :--: |
 | `client_data *` | `users_timer` |      |
-| `Utils`         | `utils`       |      |
+|     `Utils`     |    `utils`    |      |
 
-### 成员函数
+### B、成员函数
 
-##### 1、WebServer()
+**1、WebServer()**
 
 - 描述
   - 构造函数，创建`http_conn`类对象`users`
@@ -327,14 +322,14 @@ sudo systemctl restart mysql
   - `users_timer`
     - 定时器
 
-##### 2、~WebServer()
+**2、~WebServer()**
 
 - 描述
   - 析构函数
   - 关闭`epoll`、监听套接字和两个管道
   - 释放内存变量的内存空间：`users`、`users_timer`、`m_pool`
 
-##### 3、init()
+**3、init()**
 
 - 描述
   - 传递参数
@@ -353,7 +348,7 @@ sudo systemctl restart mysql
   - close_log
   - actor_model
 
-##### 4、trig_mode()
+**4、trig_mode()**
 
 - 描述
   - 设置触发模式
@@ -365,18 +360,84 @@ sudo systemctl restart mysql
   - `m_CONNTrigmode`
     - 连接模式
 
-##### 5、log_write()
+**5、log_write()**
 
 - 描述
   - `m_close_log`为0则对日志示例进行初始化
 - 无参数
 - 无返回值
 
-##### 6、sql_pool()
+**6、sql_pool()**
 
 - 
 
-## 2、sql_connection_pool.h
+## 2、log类
+
+### A、成员变量
+
+均为private
+
+|        变量类型         |    变量名称     |                描述                |
+| :---------------------: | :-------------: | :--------------------------------: |
+|         `char`          | `dir_name[128]` |               路径名               |
+|         `char`          | `log_name[128]` |             log文件名              |
+|          `int`          | `m_split_lines` |            日志最大行数            |
+|       `long long`       |    `m_count`    |      日志计数器，日志行数记录      |
+|          `int`          |    `m_today`    | 因为按天分类，记录当前时间是哪一天 |
+|        `FILE *`         |     `m_fp`      |         打开log的文件指针          |
+|        `char *`         |     `m_buf`     |       指向缓冲区的字符型指针       |
+| `block_queue<string> *` |  `m_log_queue`  |              阻塞队列              |
+|         `bool`          |  `m_is_async`   |           是否异步标志位           |
+|       `locker`类        |    `m_mutex`    |                                    |
+|          `int`          |  `m_close_log`  |          关闭日志的标志位          |
+
+### B、成员函数
+
+**1、Log()**
+
+- 描述
+  - 构造函数
+  - 设置日志技术器为0
+  - 异步标志为false
+
+**2、~Log()**
+
+- 描述
+  - 析构函数
+  - 关闭日志文件
+
+**3、init**
+
+## 2.1、block_queue,阻塞队列
+
+循环数组实现的阻塞队列，`m_back = (m_back + 1) % m_max_size`
+
+线程安全:每个操作前都要先加互斥锁，操作完后，再解锁
+
+### A、成员变量
+
+|  变量类型  |   变量名称   |        描述        |
+| :--------: | :----------: | :----------------: |
+| `locker`类 |  `m_mutex`   | `locker`实例化对象 |
+|  `cond`类  |   `m_cond`   |  `cond`实例化对象  |
+|   `T *`    |  `m_array`   |       模板类       |
+|   `int`    |   `m_size`   |    队列当前长度    |
+|   `int`    | `m_max_size` |    队列最大长度    |
+|   `int`    |  `m_front`   |      队首位置      |
+|   `int`    |   `m_back`   |      队尾位置      |
+
+### B、成员函数
+
+**1、block_queue()**
+
+- 描述
+  - 构造函数
+- 参数
+  - `int max_size`
+    - 队列最大长度
+    - 默认为1000
+
+## 3、sql_connection_pool.h
 
 定义两个类：
 
