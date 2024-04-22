@@ -1673,6 +1673,8 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 #### 问题位置定位：
 
 1. 可能是时间戳混乱
+   - 该问题已排除
+
 
 ## 2、利用激光雷达辅助，增强毫米波雷达数据
 
