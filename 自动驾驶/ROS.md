@@ -12,7 +12,7 @@
 
 ##### 1、如何知道一个bag文件中的数据结构
 
-使用rosbag命令行工具
+**使用rosbag命令行工具**
 
 1. **查看bag文件中的话题和消息数**
 
@@ -32,7 +32,7 @@
    rosmsg show <message_type>
    ```
 
-或者将特定话题转换为txt文件，用文本编辑器查看。
+**将bag文件转换为txt文件，用文本编辑器查看，见“十、格式转换”**
 
 ##### 2、话题和消息的关系
 
@@ -267,8 +267,6 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 总之，`ROS Master`在ROS中扮演着中央目录的角色，允许节点发现彼此并建立通信连接。
 
 ##### 3、bags
-
-##### 4、rosrun
 
 
 
@@ -1020,19 +1018,25 @@ int main(int argc, char *argv[])
 }
 ```
 
-## 5.3 命令行
+## 5.3 rosbag play
 
 http://wiki.ros.org/rosbag/Commandline
 
-### rosbag play
-
-- `rosbag play -- clock ***.bag`
+- `rosbag play --clock example.bag`
 
   使用`--clock`参数时，rosbag play 会读取bag文件中的时间戳信息，并使用这些时间戳来模拟消息的发布时间。
 
   这对于 replay 数据时保持与记录时相同的时间关系是很有用的，特别是在涉及到需要同步的多个话题时。
 
-
+- `rosbag play -s 0.5 example.bag`
+  - 从`example.bag`的0.5s处开始播放
+- `rosbag play --rate=3 example.bag`
+  - 以3倍速度播放bag文件
+- `rosbag play --duration=10000 example.bag`
+  - 播放的总时长，单位为秒
+- `rosbag play example.bag --topics /example_topic`
+  - 播放特定话题
+  - `--topics`参数需要放在最后
 
 ## 5.4 bag文件相关操作
 
@@ -1101,7 +1105,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-### 5.4.3 删除bag文件中的特定话题
+### 5.4.3 删除/保留bag文件中的特定话题
 
 ```bash
 rosbag filter input.bag output.bag "topic != '/topic1'"
@@ -1113,7 +1117,7 @@ rosbag filter input.bag output.bag "topic != '/topic1'"
 rosbag filter input.bag output.bag "topic != '/topic1' && topic != '/topic2'"
 ```
 
-
+保留话题：使用 `==`
 
 # 六、PCL库
 
