@@ -1675,7 +1675,12 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 1. 可能是imu时间戳混乱
    - 该问题已排除
    - 毫米波雷达时间戳未排除
-2. `scan_matching_odometry_nodelet.cpp` 359行，输出的值为NAN
+2. 不管错误，反复运行，`scan_matching_odometry_nodelet.cpp` 359行，输出的值为NAN
+3. `preprocessing_nodelet` 执行完第八个`cloud_callback`后报错。
+4. 跑原作者数据集，启动imu融合就会报错
+   - 排除是数据集的问题。
+
+5. 
 
 
 ## 2、利用激光雷达辅助，增强毫米波雷达数据
@@ -1685,3 +1690,5 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 编写ROS驱动，
 
 数据采集的过程，图片
+
+## 4、点云配准算法改进

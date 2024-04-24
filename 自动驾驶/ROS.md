@@ -1312,6 +1312,52 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 
 4. 重新执行catkin_make
 
+## 自定义消息格式
+
+1. 在`msg`文件夹下创建`.msg`文件
+
+2. `CmakeList.txt`
+
+   ```cmake
+   # 1、声明自定义消息文件所需的依赖
+   find_package(catkin REQUIRED COMPONENTS
+     roscpp
+     rospy
+     std_msgs
+     message_generation  # 添加这一行
+   )
+   
+   # 2、添加生成自定义消息的语句
+   add_message_files(
+     FILES
+     CustomMsg.msg
+     CustomPoint.msg  # 如果CustomPoint消息单独定义了文件，则需要添加这一行
+   )
+   
+   # 3、在 generate_messages() 函数中添加定义的自定义消息类型：
+   generate_messages(
+     DEPENDENCIES
+     std_msgs
+   )
+   
+   # 4、在 catkin_package() 中确保包含了消息生成的依赖
+   catkin_package(
+     CATKIN_DEPENDS roscpp rospy std_msgs message_runtime  # 添加 message_runtime
+   )
+   
+   ```
+
+3. 在需要用到该消息的cpp文件添加头文件
+
+   ```cpp
+   #include <rosbag_tools/CustomMsg.h>
+   
+   // 使用消息时，需要加上namespace
+   rosbag_tools::CuostomMsg msg;
+   ```
+
+   
+
 # 八、nodelet
 
 ## 问题
