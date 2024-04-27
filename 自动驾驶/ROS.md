@@ -16,19 +16,19 @@
 
 1. **查看bag文件中的话题和消息数**
 
-   ```
+   ```bash
    rosbag info <your_bag_file.bag>
    ```
 
 2. 查看特定话题的消息的内容
 
-   ```
+   ```bash
    rosbag echo -n 1 <your_bag_file.bag> <topic_name>
    ```
 
 3. 查看消息的定义
 
-   ```
+   ```bash
    rosmsg show <message_type>
    ```
 
@@ -754,7 +754,7 @@ launch文件是一个XML格式的文件，可以启动本地和远程的多个�
 
 ##### 调用launch文件
 
-```
+```bash
 roslaunch 包名 xxx.launch
 ```
 
@@ -863,13 +863,13 @@ PS：roslaunch命令执行launch文件时，首先会判断是否启动了roscor
 
      启动launch文件后，在cmd中查看参数服务器中的参数
 
-     ```
+     ```bash
      rosparm list 
      ```
 
      显示：
 
-     ```c
+     ```bash
      /param_A
      /talker/param_B
      ```
@@ -912,7 +912,7 @@ PS：roslaunch命令执行launch文件时，首先会判断是否启动了roscor
 
      也可以在命令行中传递参数的值，
 
-     ```
+     ```bash
      roslaunch 程序名 XXX.launch car_length:=0.6
      ```
 
@@ -1149,6 +1149,38 @@ rosbag filter input.bag output.bag "topic != '/topic1' && topic != '/topic2'"
 - 使用一个灵活的消息格式（类似于ROS中的图像表示方式）。
 - 虽然更加高效，但直接使用它处理比较复杂。
 
+数据结构:
+
+```
+std_msgs/Header header
+  uint32 seq
+  time stamp
+  string frame_id
+uint32 height
+uint32 width
+sensor_msgs/PointField[] fields
+  uint8 INT8=1
+  uint8 UINT8=2
+  uint8 INT16=3
+  uint8 UINT16=4
+  uint8 INT32=5
+  uint8 UINT32=6
+  uint8 FLOAT32=7
+  uint8 FLOAT64=8
+  string name
+  uint32 offset
+  uint8 datatype
+  uint32 count
+bool is_bigendian
+uint32 point_step
+uint32 row_step
+uint8[] data
+bool is_dense
+
+```
+
+
+
 ##### 6.1.3、pcl::PCLPointCloud2 —— PCL数据结构，主要是为了与ROS兼容
 
 - PCL的数据结构，与`sensor_msgs::PointCloud2`非常匹配。
@@ -1205,7 +1237,7 @@ catkin_create_pkg my_bag_recorder std_msgs sensor_msgs rosbag roscpp
 
 - `catkin_create_pkg`参数：
 
-  ```shell
+  ```bash
   catkin_create_pkg <package_name> [depend1] [depend2] [depend3] ...
   ```
 
@@ -1250,13 +1282,13 @@ catkin_make
 
 在终端中，运行ROS核心
 
-```
+```bash
 roscore
 ```
 
 ##### 6、运行节点
 
-```
+```bash
 rosrun my_rosbag_recorder my_rosbag_recorder
 ```
 
@@ -1282,7 +1314,7 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 
 3. source配置文件，使其立即生效
 
-   ```
+   ```bash
    source ~/.bashrc
    ```
 
@@ -1455,6 +1487,14 @@ int main(int argc, char** argv)
     return 0;
 }
 ```
+
+转换为pcd后，可以使用pcl_viewer可视化点云数据。
+
+```bash
+pcl_viewer example.pcd
+```
+
+
 
 ## 3、bag转txt
 
