@@ -1121,6 +1121,22 @@ rosbag filter input.bag output.bag "topic != '/topic1' && topic != '/topic2'"
 
 # 六、PCL库
 
+## 相关资料
+
+- pcl库官方文档
+
+  http://wiki.ros.org/pcl/Overview
+
+- pcl相关函数文档
+
+  http://docs.ros.org/en/hydro/api/pcl_conversions/html/namespacepcl.html#af662c7d46db4cf6f7cfdc2aaf4439760
+
+## 问题：
+
+##### 1、PCL的fromROSMsg()和toROSMsg()不能正确处理xyz之外其他field的数据长度
+
+https://blog.csdn.net/XCCCCZ/article/details/136142235
+
 ## 6.1 表示点云数据的四种方式
 
 ##### 6.1.1、sensor_msgs::PointCloud —— ROS message，已弃用
@@ -1214,13 +1230,102 @@ class PointCloud
 
 ```
 
-##### 当我们同时使用ROS和PCL时，典型的工作流如下：
+## 6.2 当我们同时使用ROS和PCL时，典型的工作流如下：
 
 1. 在一个ROS节点中接收一个`sensor_msgs::PointCloud2`消息的点云。
 2. 如果需要使用pcl处理它，我们会将其转换为`pcl::PointCloud<T>`，进行处理。
 3. 最后将其转换回`sensor_msgs::PointCloud2`，用以发布或者在ROS中进一步使用。<!-- 在ROS的pcl_conversions包中有函数，可以方便地在这些类型之间转换 -->
 
+##### 示例代码：
 
+```cpp
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
+// 回调函数，接收sensor_msgs::PointCloud2消息
+void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& msg)
+{
+    // 将sensor_msgs::PointCloud2转换为pcl::PointCloud<pcl::PointXYZ>
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromROSMsg(*msg, *cloud);
+
+    // 对点云进行处理，这里简单地输出点云的大小
+    std::cout << "Received point cloud with " << cloud->size() << " points." << std::endl;
+
+    // 可以在这里对点云进行进一步的处理，例如滤波、配准等
+
+    // 将pcl::PointCloud<pcl::PointXYZ>转换回sensor_msgs::PointCloud2
+    sensor_msgs::PointCloud2 output_msg;
+    pcl::toROSMsg(*cloud, output_msg);
+
+    // 发布处理后的点云消息
+    // 注意：发布前要设置正确的header等信息
+    // pub.publish(output_msg);
+}
+
+int main(int argc, char** argv)
+{
+    ros::init(argc, argv, "point_cloud_processing");
+    ros::NodeHandle nh;
+
+    // 订阅sensor_msgs::PointCloud2消息
+    ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2>("/input_point_cloud", 10, cloudCallback);
+    // 创建一个发布者，发布处理后的点云消息
+    ros::Publisher pub = nh.advertise<sensor_msgs::PointCloud2>("/output_point_cloud", 10);
+    // 进入ROS主循环，开始接收消息并处理
+    ros::spin();
+
+    return 0;
+}
+
+```
+
+- 创建一个ROS节点，订阅了话题名为`/input_point_cloud`的`sensor_msgs::PointCloud2`消息。
+- 在`cloudback`函数中将其转换为`pcl::PointCloud<pcl::PointXYZ>`进行处理（如滤波，配准）
+- 最后，将处理后的点云转换回 `sensor_msgs::PointCloud2` 并发布到名为 `/output_point_cloud` 的话题中。
+
+##### pcl::fromROSMsg()
+
+```cpp
+template<typename T>
+void fromROSMsg(const sensor_msgs::PointCloud2 &cloud, pcl::PointCloud<T> &pcl_cloud)
+{
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(cloud, pcl_pc2);
+    pcl::fromPCLPointCloud2(pcl_pc2, pcl_cloud);
+ }
+```
+
+- cloud
+
+  ros格式的消息
+
+- pcl_cloud
+
+  pcl格式的消息
+
+##### pcl::toROSMsg()
+
+```cpp
+template<typename T>
+void toROSMsg(const pcl::PointCloud<T> &pcl_cloud,sensor_msgs::PointCloud2 &cloud)
+{
+     pcl::PCLPointCloud2 pcl_pc2;
+     pcl::toPCLPointCloud2(pcl_cloud, pcl_pc2);
+     pcl_conversions::moveFromPCL(pcl_pc2, cloud);
+}
+```
+
+- pcl_cloud
+
+  pcl格式的消息
+
+- cloud
+
+  ros格式的消息
 
 # 七、从零创建ROS工程
 
@@ -1347,6 +1452,21 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 ## 自定义消息格式
 
 1. 在`msg`文件夹下创建`.msg`文件
+
+   如：
+
+   ```msg
+   # CustomMsg.msg
+   
+   Header header           # ROS standard message header
+   uint64 timebase         # The time of first point
+   uint32 point_num        # Total number of pointclouds
+   uint8 lidar_id          # Lidar device id number
+   uint8[3] rsvd           # Reserved use
+   CustomPoint[] points    # Pointcloud data
+   ```
+
+   
 
 2. `CmakeList.txt`
 
