@@ -148,9 +148,39 @@
     git push origin main
     ```
 
-    如果你的默认分支不是 `main`，将 `main` 替换为你的默认分支名称。
+    如果默认分支不是 `main`，将 `main` 替换为默认分支名称。
 
 这样，你就成功解决了冲突，并将更改推送到了远程仓库。
+
+##### 5、git add 特定文件夹出现报错
+
+```bash
+尚未暂存以备提交的变更：
+  （使用 "git add/rm <文件>..." 更新要提交的内容）
+  （使用 "git restore <文件>..." 丢弃工作区的改动）
+
+
+未跟踪的文件:
+  （使用 "git add <文件>..." 以包含要提交的内容）
+	.vscode/c_cpp_properties.json
+	build/cloud_merging/
+	devel/lib/cloud_merging/
+	devel/lib/pkgconfig/cloud_merging.pc
+	devel/share/cloud_merging/
+
+```
+
+不想跟踪上述的未跟踪文件。
+
+创建`.gitignore`文件，在其中添加想要忽略的文件或文件夹的路径。例如：
+
+```plaintext
+.vscode/
+build/
+devel/
+```
+
+
 
 # 零、git clone用法
 
@@ -366,4 +396,30 @@ error: 无法推送一些引用到 'https://github.com/letMeEmoForAWhile/Notes.g
 本地分支与远程仓库的分支名称不匹配。
 
 ## B、windows操作系统
+
+# 二、git push/pull 特定文件夹或者文件
+
+##### 方法1：使用`sparse-checkout：`（未实践）
+
+https://blog.csdn.net/yuyefuxiao521/article/details/132292012
+
+##### 方法2：使用`.gitignore`文件
+
+1、在根目录下创建或者`.gitignore`文件
+
+2、例如，要忽略所有.log文件和名为temp的文件夹，文件应该包含以下内容：
+
+```txt
+*.log
+temp/
+```
+
+3、保存并关闭
+
+4、使用以下命令将.gitignore文件添加到版本控制中
+
+```bash
+git add .gitignore
+git commit -m "Add .gitignore file"
+```
 

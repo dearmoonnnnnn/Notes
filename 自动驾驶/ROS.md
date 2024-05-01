@@ -1144,6 +1144,8 @@ https://blog.csdn.net/XCCCCZ/article/details/136142235
 - 由于`sensor_msgs::PointCloud2`更加灵活和高效，所以已弃用。
 - 数据字段包括`points`（一个3D点列表）和`channels`（关于点的额外数据，如强度）。
 
+  ![image-20240430110136856](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240430110136856.png)
+  
   ```cpp
   std_msgs/Header header
     uint32 seq
@@ -1166,6 +1168,8 @@ https://blog.csdn.net/XCCCCZ/article/details/136142235
 - 虽然更加高效，但直接使用它处理比较复杂。
 
 数据结构:
+
+![image-20240430110041982](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240430110041982.png)
 
 ```
 std_msgs/Header header
@@ -1415,7 +1419,13 @@ rosrun my_rosbag_recorder my_rosbag_recorder
    vim ~/.bashrc
    ```
 
-2. 在`.bashrc`文件中最后一行添加`source /home/dearmoon/shares/share_ubuntu/projects/bag_recorder/devel/setup.bash` 
+2. 在`.bashrc`文件中最后一行添加
+
+   ```bash
+   source /home/dearmoon/shares/share_ubuntu/projects/bag_recorder/devel/setup.bash
+   ```
+
+    
 
 3. source配置文件，使其立即生效
 
@@ -1439,7 +1449,7 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 
    - 第一个参数是生成的可执行文件名称，第二个参数为cpp源码文件
 
-3. 使用`target_link_libraries()`命令将你的包链接到你的可执行文件，确保它能够找到所有的依赖项。
+3. 使用`target_link_libraries()`命令将包链接到可执行文件，确保它能够找到所有的依赖项。
 
    ```cmake
     target_link_libraries(my_bag_recorder
@@ -1508,7 +1518,45 @@ rosrun my_rosbag_recorder my_rosbag_recorder
    rosbag_tools::CuostomMsg msg;
    ```
 
-   
+
+
+
+## 一个自定义包依赖另一个包
+
+假设包`example1`依赖包`example2`
+
+1、`example1`包的`package.xml`文件添加如下内容
+
+```xml
+<build_depend>example2</build_depend>
+<build_export_depend>example2</build_export_depend>
+<exec_depend>example2</exec_depend>
+```
+
+2、`example1`包的`CMakeLists.txt`添加如下内容
+
+```cmake
+find_package(catkin REQUIRED COMPONENTS
+  example2
+  ......
+)
+
+catkin_package(
+ INCLUDE_DIRS include
+#  LIBRARIES cloud_merging
+ CATKIN_DEPENDS rosbag roscpp sensor_msgs std_msgs example2
+ DEPENDS system_lib
+)
+
+include_directories(
+  src	# 添加这一行，才能找到example2包
+# include
+  ${catkin_INCLUDE_DIRS}
+)
+
+```
+
+
 
 # 八、nodelet
 
