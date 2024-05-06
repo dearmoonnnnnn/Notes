@@ -63,7 +63,7 @@ C:\Users\me\Programs> cl /EHsc prog1.cpp
 
 通过使用IO库，我们可以扩展main程序，使之能提示用户输入两个数，然后输出它们的和：
 
-```
+```c++
 #include <iostream>
 int main()
 {

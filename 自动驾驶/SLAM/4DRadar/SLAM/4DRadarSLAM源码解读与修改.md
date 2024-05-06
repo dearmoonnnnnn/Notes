@@ -124,6 +124,8 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 使用了简单的加权平均策略来整合IMU和激光雷达里程计的Roll和Pitch角度信息。
 
+##### 13、自我速度Twist的作用是什么，第二个节点用了时间同步回调函数，能否不使用自我速度
+
 ## B、概念
 
 ##### 1、tf变化
@@ -1150,7 +1152,41 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
 - 三个`nodelet`（`PreprocessingNodelet`、`RadarGraphSlamNodelet`、`ScanMatchingOdometryNodelet`）在创建时均会继承`nodelet::Nodelet`和`ParamServer`类
 - 注意ROS节点的参数服务器和ROS参数服务的区别。
 
+## G、其他工具
 
+### 1、radar_ego_velocity_estimator.cpp
+
+##### estimate()
+
+- 描述
+  - 估计雷达扫描中的自我速度
+- 输入参数
+  - `radar_scan_msg`
+    - 类型：`const sensor_msgs::PointCloud2& radar_scan_msg`
+    - 雷达扫描消息
+- 输出参数
+  - `v_r`
+    - 类型：`Vector3&`
+    - 存储估计得到的自我速度沿`x、y、z`的速度分量
+  - `sigma_v_r`
+    - 类型：`Vector3&`
+    - 速度估计的不确定性或标准差，即沿`x、y、z`的速度误差估计
+  - `inlier_radar_msg`
+    - 类型：`sensor_msgs::PointCloud2&`
+    - 存储那些被认定为与估计模型相符的点（即内点），这些点用于速度估计
+  - `outlier_radar_msg`
+    - 类型：`sensor_msgs::PointCloud2&`
+    - 存储那些被认为是噪声或不适用于速度估计的点（外点）。
+- 关键变量
+  - `v_pt`
+    - 变量类型：`Vector11`
+    - 代表一个有效的雷达目标点的特征向量，包含11个元素
+      - 点的三维坐标
+      - 点的信号强度
+      - 点的多普勒速度信息
+      - 相对雷达源的距离
+      - 方位角和俯仰角
+      - 归一化后的三维坐标
 
 #  二、运行自己的数据
 
@@ -1467,9 +1503,13 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 
 ##### 可能原因：
 
-您提供的日志消息表明雷达数据处理中存在两个问题:
+1. "To small valid_targets (< 2) in radar_scan (15)":
 
-1. "To small valid_targets (< 2) in radar_scan (15)":这条消息表明,在第15次雷达扫描中,检测到的有效目标少于2个。系统似乎需要最少数量的有效目标(可能由参数`config_.N_ransac_points`设置)才能正常工作,可能是为了执行RANSAC(随机抽样一致性)滤波或跟踪。
+   自我速度评估器中，筛选出的点过少
+
+   **解决方法：**
+
+   修改筛选策略，调大阈值
 
 2. "Warning: radar_data.rows() < config_.N_ransac_points":这个警告直接指出`radar_data`矩阵的行数少于配置的`config_.N_ransac_points`值。RANSAC是一种鲁棒的估计技术,常用于雷达和激光雷达数据处理中,用于过滤异常值和估计模型参数。它需要最少数量的数据点才能可靠地工作。
 
