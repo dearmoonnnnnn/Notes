@@ -41,6 +41,23 @@ http://www.seestudy.cn/?list_9/31.html
 
 CPU的核数
 
+##### 4、C++中`<thread>`库和`<pthread>`库的区别
+
+1. **接口风格**
+   - `<thread>`库是C++标准库的一部分，提供了面向对象的多线程接口，包括`std::thread`类和相关的线程管理函数。
+   - `pthread`是C语言的库，使用起来更加面向过程，需要使用函数来创建和管理线程，如`pthread_create`、`pthread_join`等。
+2. **使用平台**
+   - `<thread>`库是C++11标准引入的，在支持C++11标准的编译器和操作系统上可以使用，更加跨平台。
+   - pthread是POSIX标准的一部分，可以在支持POSIX的操作系统上使用，如Linux、Unix
+      - POSIX：
+         - Portable Operating System Interface for Unix，可移植操作系统接口，为了定义操作系统接口和编程环境的规范。
+         - POSIX标准的目的是提供一个统一的编程接口，便于开发人员编写可移植的应用程序，这些应用程序在符合POSIX标准的系统上都可以运行。
+
+3. **标准支持：**
+   - `<thread>`库是C++11标准的一部分，受到C++标准的约束和规范。
+   - pthread是POSIX标准的一部分，受到POSIX标准的约束和规范。
+
+
 ## 定义：
 
 ##### 1、进程
@@ -204,4 +221,6 @@ int main() {
     return 0;
 }
 ```
+
+# 二、线程函数中的数据未定义错误
 

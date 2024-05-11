@@ -391,6 +391,19 @@ T_init = [R_init | t_init]
   - 将gps数据存储到`gps_navsat_queue`队列中
   - `flush_gps_queue()`对该队列进行处理
 
+#### 4、自我速度twist数据流向
+
+##### processing_nodelet.cpp
+
+- 通过雷达点云的多普勒速度评估自我速度，得到`v_r`，并将`v_r`传给`twist`后发布。
+
+##### scan_matching_odometry_nodelet.cpp
+
+- 接收到时间同步的自我速度twist消息和点云消息后，调用`pointcloud()`函数。
+- `pointcloud()`函数中，计算当前帧和上一帧之间的位移`egovel_cum`，并调用`matching()`函数。
+- `matching()`函数中，
+  - 若启用自我速度：初始猜测变换矩阵 = 上一次扫描到扫描的变换 * `egovel_cum` * 扫描匹配的相对位姿变换
+
 ### 一、apps/preprocessing_nodelet.cpp
 
 #### 三个订阅者：
@@ -881,6 +894,28 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
     - 
 
 ##### 10、publish_odometry()
+
+- 描述
+
+  发布里程计信息
+
+- 输入参数
+
+  - `stamp`
+    - 变量类型：`const ros::Time&`
+    - 代表时间戳
+  - `father_frame_id`
+    - 变量类型：`const std::string&`
+    - 父帧ID
+  - `child_frame_id`
+    - 变量类型：`const std::string&`
+    - 子帧ID
+  - `pose_in`
+    - 变量类型：`const Eigen::Matrix4d&`
+    - 位姿矩阵
+  - `twist_in`
+    - 变量类型：`const geometry_msgs::TwistWithCovariance`
+    - 
 
 ##### 11、publish_scan_matching_status()
 

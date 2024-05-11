@@ -379,7 +379,7 @@ sudo systemctl restart mysql
 
 ### B、成员函数
 
-**1、WebServer()**
+##### 1、WebServer()
 
 - 描述
   - 构造函数，创建`http_conn`类对象`users`
@@ -392,14 +392,14 @@ sudo systemctl restart mysql
   - `users_timer`
     - 定时器
 
-**2、~WebServer()**
+##### 2、~WebServer()
 
 - 描述
   - 析构函数
   - 关闭`epoll`、监听套接字和两个管道
   - 释放内存变量的内存空间：`users`、`users_timer`、`m_pool`
 
-**3、init()**
+##### 3、init()
 
 - 描述
   - 传递参数
@@ -418,7 +418,7 @@ sudo systemctl restart mysql
   - close_log
   - actor_model
 
-**4、trig_mode()**
+##### 4、trig_mode()
 
 - 描述
   - 设置触发模式
@@ -430,18 +430,17 @@ sudo systemctl restart mysql
   - `m_CONNTrigmode`
     - 连接模式
 
-**5、log_write()**
+##### 5、log_write()
 
 - 描述
   - `m_close_log`为0则对日志示例进行初始化
 - 无参数
 - 无返回值
 
-**6、sql_pool()**
+##### **6、**sql_pool**()**
 
 - 描述
   - 数据库连接池函数，管理数据库连接
-
 
 ##### 7、thread_pool()
 
@@ -491,24 +490,26 @@ sudo systemctl restart mysql
 
 ### B、成员函数
 
-**1、Log()**
+##### **1、Log()**
 
 - 描述
   - 构造函数
   - 设置日志技术器为0
   - 异步标志为false
 
-**2、~Log()**
+##### **2、~Log()**
 
 - 描述
   - 析构函数
   - 关闭日志文件
 
-**3、init**
+##### **3、init**
 
 - 描述
   - 初始化多个参数
     - `max_queue_size`大于1，则设置为异步
+
+
 
 ## 2.1、block_queue,阻塞队列
 
@@ -530,7 +531,7 @@ sudo systemctl restart mysql
 
 ### B、成员函数
 
-**1、block_queue()**
+##### **1、block_queue()**
 
 - 描述
   - 构造函数
@@ -539,9 +540,74 @@ sudo systemctl restart mysql
     - 队列最大长度
     - 默认为1000
 
-## 3、sql_connection_pool.h
+## 3、CGImysql
 
 定义两个类：
 
-- connection_pool
-- connectionRAII
+### connection_pool类
+
+- 梅耶单例模式，保证唯一
+- list实现连接池
+- 连接池为静态大小
+- 互斥锁实现线程安全
+
+#### A、成员变量
+
+##### 私有：
+
+|    变量类型     |   变量名称   |        描述        |
+| :-------------: | :----------: | :----------------: |
+|      `int`      | `m_MaxConn`  |     最大连接数     |
+|      `int`      | `m_CurConn`  | 当前已使用的连接数 |
+|      `int`      | `m_FreeConn` |  当前空闲的连接数  |
+|   `locker`类    |    `lock`    |     互斥锁对象     |
+| `list<MYSQL *>` |  `connList`  |       连接池       |
+|     ==sem==     |  `reserve`   |       信号量       |
+
+##### 公有：
+
+| 变量类型 |     变量名称     |       描述       |
+| :------: | :--------------: | :--------------: |
+| `string` |     `m_url`      |     主机地址     |
+| `string` |     `m_Port`     |   数据库端口号   |
+| `string` |     `m_User`     | 登陆数据库用户名 |
+| `string` |   `m_PassWord`   |  登陆数据库密码  |
+| `string` | `m_DatabaseName` |   使用数据库名   |
+|  `int`   |  `m_close_log`   |     日志开关     |
+
+#### B、成员函数
+
+##### 1、connection_pool()
+
+- 描述
+  - 构造函数
+  - 当前已使用的连接数和当前空闲的连接数设置为0
+
+##### 2、GetInstance()
+
+- 描述
+  - 梅耶单例模式
+- 返回值
+  - `&connPool`，静态实例的引用
+
+##### 3、init()
+
+- 描述
+  - 初始化数据库连接参数，即上述公有变量
+  - 
+
+##### 4、GetConnection()
+
+##### 5、ReleaseConnection()
+
+##### 6、DestoryPool()
+
+##### 7、GetFreeConn()
+
+##### 8、~connection_pool()
+
+##### 9、connectionRAII()
+
+##### 10、~connectionRAII()
+
+### connectionRAII类
