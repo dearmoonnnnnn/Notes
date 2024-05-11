@@ -224,3 +224,224 @@ int main() {
 
 # 二、线程函数中的数据未定义错误
 
+## 1、传递临时变量的问题
+
+##### 问题描述：
+
+```c++
+#include <iostream>
+#include <thread>
+void foo(int& x) {
+    x += 1;
+}
+int main() {
+    std::thread t(foo, 1); // 传递临时变量
+    t.join();
+    return 0;
+}
+```
+
+- 函数`foo`接收一个整数引用作为参数，并将该引用加1。
+- 然后，我们创建一个名为`t`的线程，将`foo`函数和一个临时变量`1`作为参数传递给它。
+- 线程函数执行时，临时变量`1` 被销毁，从而导致**未定义行为**。
+
+##### 解决方案：
+
+将变量复制到一个持久的对象中，然后将该对象传递给线程。
+
+```c++
+#include <iostream>
+#include <thread>
+void foo(int& x) {
+    x += 1;
+}
+int main() {
+    int x = 1; // 将变量复制到一个持久的对象中
+    std::thread t(foo, std::ref(x)); // 将变量的引用传递给线程
+    t.join();
+    return 0;
+}
+```
+
+## 2、传递指针或引用指向局部变量的问题
+
+##### 问题描述1：临时变量的情况
+
+```c++
+#include<iostream>
+#include<thread>
+
+std::thread t;
+void foo(int& x){
+	X += 1;
+}
+
+void test(){
+	int a = 1;
+	t = std::thread(foo, std::ref(a));
+}
+
+int main()
+{
+	test();
+	t.join();
+	return 0;
+}
+```
+
+- `a`是`test`函数中的局部变量，只在test中有效，存在于栈中。
+- 在线程里无法取到a的地址，报错
+
+##### 问题描述2：指针的情况
+
+```c++
+#include<iostream>
+#include<thread>
+
+std::thread t;
+void foo(int *x){
+	std::cout << *x << std::endl;
+}
+
+int main()
+{
+	int* ptr = new int(1);
+	std::thread t(foo, ptr);
+    delete ptr;
+    
+    t.join();
+    return 0;
+
+}
+```
+
+- 将ptr传递给foo函数时，ptr已经被释放，指向的内存未知。
+- 容易报错，或者得到错误的输出。
+
+##### 问题描述3：类对象的情况
+
+```c++
+#include <iostream>
+#include <thread>
+
+class MyClass {
+public:
+    void func() {
+        std::cout << "Thread " << std::this_thread::get_id() 
+        << " started" << std::endl;
+        // do some work
+        std::cout << "Thread " << std::this_thread::get_id() 
+        << " finished" << std::endl;
+    }
+};
+
+int main() {
+    MyClass obj;
+    std::thread t(&MyClass::func, &obj);
+    // obj 被提前销毁了，会导致未定义的行为
+    t.join();
+    return 0;
+}
+```
+
+- obj对象在子线程未执行完就被销毁，导致程序崩溃或产生未定义的行为
+
+##### 解决方案1：
+
+使用全局变量，不要使用临时变量。
+
+##### 解决方案2：使用智能指针
+
+```c++
+#include <iostream>
+#include <thread>
+#include <memory>
+
+class MyClass {
+public:
+    void func() {
+        std::cout << "Thread " << std::this_thread::get_id() 
+        << " started" << std::endl;
+        // do some work
+        std::cout << "Thread " << std::this_thread::get_id() 
+        << " finished" << std::endl;
+    }
+};
+
+int main() {
+    // 创建指向MyClass对象的指针
+    std::shared_ptr<MyClass> obj = std::make_shared<MyClass>();
+    std::thread t(&MyClass::func, obj);
+    t.join();
+    return 0;
+}
+```
+
+- 当obj不被需要时，智能指针会自动调用析构函数，释放内存。
+
+**提问：为什么这里传入了obj作为参数?**
+
+- 因为线程的回调函数`func`是类的成员函数，类的成员函数有一个隐藏的变量this，表示指向实例化对象本身的指针。
+- 这里obj就作为this传入。
+
+## 3、入口函数为类的私有成员函数
+
+##### 问题描述：
+
+```c++
+#include<iostream>
+#include<thread>
+#include<memory>
+
+class A {
+	private:
+    	void foo(){
+    		std::cout << "Hello World" << std::endl;
+    	}
+}
+
+void thread_foo()
+{
+	std::shared_ptr<A> a = std::make_shared<A>();
+	std::thread t( &A::foo, a);
+	t.join();
+}
+
+int main()
+{
+	thread_foo();
+}
+```
+
+- 由于foo在A中是私有成员函数，无法被访问到
+
+##### 解决方案：使用友元函数
+
+```c++
+#include<iostream>
+#include<thread>
+#include<memory>
+
+class A {
+private:
+	friend void thread_foo();   
+    void foo(){
+    	std::cout << "Hello World" << std::endl;
+    }
+}
+
+void thread_foo()
+{
+	std::shared_ptr<A> a = std::make_shared<A>();
+	std::thread t( &A::foo, a);
+	t.join();
+}
+
+int main()
+{
+	thread_foo();
+}
+```
+
+- 将`thread_foo`设置为友元函数，使其可以访问类的私有成员函数。
+

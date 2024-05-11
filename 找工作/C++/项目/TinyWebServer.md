@@ -404,19 +404,20 @@ sudo systemctl restart mysql
 - 描述
   - 传递参数
 - 参数
-  - `port`
-    - 参数类型：`int`
-    - 服务器监听端口
-  - `user`
-  - passWord
-  - databaseName
-  - log_write
-  - opt_linger
-  - trigmode
-  - sql_num
-  - thread_num
-  - close_log
-  - actor_model
+  
+  |    变量名称    | 变量类型 |                  描述                   |
+  | :------------: | :------: | :-------------------------------------: |
+  |     `port`     |  `int`   |             服务器监听端口              |
+  |     `user`     | `string` |           数据库连接的用户名            |
+  |   `passWord`   | `string` |            数据库连接的密码             |
+  | `databaseName` | `string` |               数据库名称                |
+  |  `log_write`   |  `int`   |   日志写入设置，控制日志是否写入磁盘    |
+  |  `opt_linger`  |  `int`   | ==SO_LINGER选项设置，控制连接关闭行为== |
+  |   `trigmode`   |  `int`   | ==服务器触发模式，如轮询、边缘触发等==  |
+  |   `sql_num`    |  `int`   |          SQL连接池中的连接数量          |
+  |  `thread_num`  |  `int`   |            服务器工作线程数             |
+  |  `close_log`   |  `int`   |            是否关闭日志功能             |
+  | `actor_model`  |  `int`   |    是否使用==actor模型==进行并发处理    |
 
 ##### 4、trig_mode()
 
@@ -474,19 +475,19 @@ sudo systemctl restart mysql
 
 均为private
 
-|        变量类型         |    变量名称     |                描述                |
-| :---------------------: | :-------------: | :--------------------------------: |
-|         `char`          | `dir_name[128]` |               路径名               |
-|         `char`          | `log_name[128]` |             log文件名              |
-|          `int`          | `m_split_lines` |            日志最大行数            |
-|       `long long`       |    `m_count`    |      日志计数器，日志行数记录      |
-|          `int`          |    `m_today`    | 因为按天分类，记录当前时间是哪一天 |
-|        `FILE *`         |     `m_fp`      |         打开log的文件指针          |
-|        `char *`         |     `m_buf`     |       指向缓冲区的字符型指针       |
-| `block_queue<string> *` |  `m_log_queue`  |              阻塞队列              |
-|         `bool`          |  `m_is_async`   |           是否异步标志位           |
-|       `locker`类        |    `m_mutex`    |                                    |
-|          `int`          |  `m_close_log`  |          关闭日志的标志位          |
+|    变量名称     |        变量类型         |                描述                |
+| :-------------: | :---------------------: | :--------------------------------: |
+| `dir_name[128]` |         `char`          |               路径名               |
+| `log_name[128]` |         `char`          |             log文件名              |
+| `m_split_lines` |          `int`          |            日志最大行数            |
+|    `m_count`    |       `long long`       |      日志计数器，日志行数记录      |
+|    `m_today`    |          `int`          | 因为按天分类，记录当前时间是哪一天 |
+|     `m_fp`      |        `FILE *`         |         打开log的文件指针          |
+|     `m_buf`     |        `char *`         |       指向缓冲区的字符型指针       |
+|  `m_log_queue`  | `block_queue<string> *` |              阻塞队列              |
+|  `m_is_async`   |         `bool`          |           是否异步标志位           |
+|    `m_mutex`    |       `locker`类        |                                    |
+|  `m_close_log`  |          `int`          |          关闭日志的标志位          |
 
 ### B、成员函数
 
@@ -594,9 +595,30 @@ sudo systemctl restart mysql
 
 - 描述
   - 初始化数据库连接参数，即上述公有变量
-  - 
+  - 循环创建指定数量的数据库连接
+  
+- 输入参数
+
+  |  变量名称   | 变量类型 |             描述              |
+  | :---------: | :------: | :---------------------------: |
+  |    `url`    | `string` |         数据库的`url`         |
+  |   `User`    | `string` |      连接数据库的用户名       |
+  | `PassWord`  | `string` |       连接数据库的密码        |
+  |  `DBName`   | `string` |       要连接的数据库名        |
+  |   `Port`    |  `int`   |         数据库端口号          |
+  |  `MaxConn`  |  `int`   |      连接池中最大连接数       |
+  | `close_log` |  `int`   | 是否关闭日志记录，0表示不关闭 |
 
 ##### 4、GetConnection()
+
+- 描述：
+  - 当有请求时，从数据库连接池中返回一个可用连接，更新使用和空闲连接数。
+- 相关参数
+  - `reserve`
+    - 信号量实例
+- 返回值
+  - con
+    - MYSQL 指针，指向一个MYSQL数据库的连接实例。
 
 ##### 5、ReleaseConnection()
 
