@@ -1485,7 +1485,7 @@ roslaunch radar_graph_slam radar_graph_slam.launch
    - `/baraometer/filtered`
    - `/vectornav/imu`
 
-#### 问题2：命令行出现报错：
+#### 问题2：尝试创建 KD 树时输入的点云为空
 
 ![image-20240311113228252](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240311113228252.png)
 
@@ -1543,48 +1543,50 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 
 ![image-20240313142522953](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240313142522953.png)
 
-#### 错误3：命令行报错
+#### 问题3：有效点小于2
 
 ```bash
 [ INFO] [1711097189.752290720, 1696750139.451054050]: To small valid_targets (< 2) in radar_scan (15)
 [ INFO] [1711097193.176887109, 1696750149.712368178]: Warning: radar_data.rows() < config_.N_ransac_points
 ```
 
-##### 可能原因：
+##### 错误原因：
 
-1. "To small valid_targets (< 2) in radar_scan (15)":
+查看代码可发现，自我速度评估器`radar_ego_volocity_estimator.cpp`文件输出了上述错误。
 
-   自我速度评估器中，筛选出的点过少
+因此报错原因为自我速度评估器中筛选出的点过少。
 
-   **解决方法：**
+##### 解决方法1：
 
-   修改筛选策略，调大阈值
+修改自我速度评估器的阈值
 
-2. "Warning: radar_data.rows() < config_.N_ransac_points":这个警告直接指出`radar_data`矩阵的行数少于配置的`config_.N_ransac_points`值。RANSAC是一种鲁棒的估计技术,常用于雷达和激光雷达数据处理中,用于过滤异常值和估计模型参数。它需要最少数量的数据点才能可靠地工作。
+- 距离阈值
+  - `config_.min_dist`
+    - 原始值：1
+  - `config_.max_dist`
+    - 原始值：400
+- 强度阈值
+  - `config_.min_db`
+    - 原始值：10
+- 角度阈值
+  - `config_.azimuth_thresh_deg`
+    - 原始值：0.986111
+  - `config_.elevation_thresh_deg`
+    - 原始值：0.392699
 
-这些消息表明,雷达系统没有检测到足够的有效目标或数据点,这可能是由于以下原因:
+#### 警告4：四元数归一错误
 
-- 信噪比(SNR)较差,导致漏检
-- 障碍物或能见度有限,影响雷达性能
-- 雷达配置或校准不正确
-- 雷达硬件或固件问题
-- 恶劣的环境条件(暴雨、雾等)
+```bash
+[ WARN] [1715583673.975530943, 1695292812.529964256]: MSG to TF: Quaternion Not Properly Normalized
+[ INFO] [1715583673.975613916, 1695292812.529964256]: Initial IMU euler angles (RPY): -nan, nan, -nan
+[ INFO] [1715583673.975674263, 1695292812.529964256]: Initial Position Matrix = 
+-nan, nan, -nan, 0, 
+-nan, nan, -nan, 0, 
+-nan, -nan, -nan, 0, 
+0, 0, 0, 1, 
+```
 
-为了解决这些问题,您可以:
 
-1. 检查雷达配置参数,确保它们针对预期的工作条件和要求进行了适当设置。
-
-2. 验证雷达传感器的物理状况和对准情况。
-
-3. 分析原始雷达数据,评估信号质量和噪声水平。
-
-4. 考虑调整检测和跟踪算法,以更好地处理目标数量较少的情况,例如通过调整RANSAC参数,或在可用点不足时切换到替代方法。
-
-5. 通过将出现的情况与环境因素、系统状态和其他相关数据关联起来,调查目标数量较少的根本原因。
-
-解决这些雷达数据质量问题将有助于提高整个系统的可靠性和性能。
-
-##### 解决方法：数据增强
 
 ## D、数据增强
 
@@ -1597,8 +1599,6 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 - 超分辨率（Super Resolution）技术
 
   - https://arxiv.org/abs/2306.09839
-
-  
 
 - 点云配准方法
 

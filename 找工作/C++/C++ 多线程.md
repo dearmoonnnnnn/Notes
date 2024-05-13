@@ -8,7 +8,7 @@ https://www.bilibili.com/video/BV1d841117SH?p=2&vd_source=ddc1bcb1cabb9c324d56d9
 
 ##### 文档：
 
-http://www.seestudy.cn/?list_9/31.html
+http://www.seestudy.cn/
 
 ## 问题
 
@@ -67,6 +67,10 @@ CPU的核数
 ##### 2、线程
 
 线程就是进程中的进程。
+
+##### 3、线程安全
+
+如果多线程程序每一次的运行结果和单线程运行的结果始终是一样的，那么线程就是安全的。
 
 # 一、线程库的基本使用
 
@@ -445,3 +449,132 @@ int main()
 
 - 将`thread_foo`设置为友元函数，使其可以访问类的私有成员函数。
 
+# 三、互斥量解决多线程数据共享问题
+
+## 1、数据共享问题分析
+
+多个线程共享数据时，需要注意线程安全问题。
+
+- 如果多个线程同时访问同一个变量，并且**至少一个**线程对该变量进行了**写操作**，那么就会出现数据竞争问题。
+  - 可能会导致程序崩溃、产生未定义的结果，或者得到错误结果。
+
+##### 举例：
+
+```c++
+#include<iostream>
+#include<thread>
+
+int a = 0;
+
+void func(){
+	for (int i = 0; i <	1000; i++)
+		a += 1；
+}
+
+int main(){
+    std::thread t1(func);
+    std::thread t2(func);
+    
+    t1.join();
+    t2.join();
+    
+    std::cout << a << std::endl;
+    return 0;
+}
+```
+
+
+
+- 对于变量a=0，线程1对a进行+10000操作，线程2对a也进行+10000操作。
+- 预期线程1、2执行完后，a=20000。
+  - 由于两个线程同时访问变量a，产生数据竞争，最终a <  20000，且每次得到的结果不一样。
+
+##### 解决方法：互斥锁
+
+线程1对变量a进行操作时，不允许其他线程访问该数据。
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+int a = 0;
+std::mutex mtx;
+
+void func(){
+	for (int i = 0; i <	1000; i++)
+    {
+        // 写操作之前加锁
+		mtx.lock();
+        a += 1；
+        // 写操作结束之后解锁
+		mtx.unlock();
+    }
+}
+
+int main(){
+    std::thread t1(func);
+    std::thread t2(func);
+    
+    t1.join();
+    t2.join();
+    
+    std::cout << a << std::endl;
+    return 0;
+}
+```
+
+## 2、互斥量死锁
+
+##### 问题举例：
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+std::mutex m1;
+std::mutex m2;
+
+void func_1(){
+    for (int i = 0; i < 50; i++){
+		m1.lock();	// 获取互斥锁m1
+   	 	m2.lock();	// 获取互斥锁m2
+    	   
+    	m1.unlock();  	// 释放互斥锁m1
+    	m2.unlock();	// 释放互斥锁m2
+    }
+}
+
+void func_2(){
+    for (int i = 0; i < 50; i++){
+		m2.lock();	// 获取互斥锁m2
+    	m1.lock();	// 获取互斥锁m1
+    
+    	m1.unlock();	// 释放互斥锁m1
+    	m2.unlock();	// 释放互斥锁m2
+    }
+}
+
+
+int main(){
+    std::thread t1(func_1);
+    std::thread t2(func_2);
+    
+    t1.join();
+    t2.join();
+    
+    std::cout << "over" << std::endl;
+    return 0;
+}
+```
+
+- 运行结果：
+  - 程序卡死，无法输出`over`
+- 原因分析：
+  - 线程`t1`获取互斥锁`m1`的同时，线程`t2`同时获取了互斥锁`m2`。
+  - 这时线程`t1`希望获取互斥锁`m2`，而线程`t2`希望获得互斥锁`m1`，两者都在等待对方释放互斥锁，造成死锁。
+
+##### 解决方法：
+
+让两个线程都先获取m1，再获取m2
