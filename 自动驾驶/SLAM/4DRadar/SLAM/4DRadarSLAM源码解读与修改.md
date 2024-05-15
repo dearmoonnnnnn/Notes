@@ -1550,15 +1550,13 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 [ INFO] [1711097193.176887109, 1696750149.712368178]: Warning: radar_data.rows() < config_.N_ransac_points
 ```
 
-##### 错误原因：
+##### 错误原因1：
 
 查看代码可发现，自我速度评估器`radar_ego_volocity_estimator.cpp`文件输出了上述错误。
 
 因此报错原因为自我速度评估器中筛选出的点过少。
 
-##### 解决方法1：
-
-修改自我速度评估器的阈值
+##### 解决方法1：修改自我速度评估器的阈值
 
 - 距离阈值
   - `config_.min_dist`
@@ -1568,11 +1566,16 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 - 强度阈值
   - `config_.min_db`
     - 原始值：10
+  - 实际很多点强度小于10
 - 角度阈值
   - `config_.azimuth_thresh_deg`
     - 原始值：0.986111
   - `config_.elevation_thresh_deg`
     - 原始值：0.392699
+
+##### 错误原因2：雷达点信号强度转换错误
+
+
 
 #### 警告4：四元数归一错误
 
@@ -1730,8 +1733,6 @@ if __name__ == "__main__":
 
 ```
 
-##### 1.2、
-
 ## E、参数调整
 
 
@@ -1759,6 +1760,8 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 
 这种错误通常意味着程序试图访问未分配给它的内存区域或者试图访问已经释放的内存区域。
 
+总之，程序试图访问某些不存在的字段。
+
 #### 问题位置定位：
 
 1. 可能是imu时间戳混乱
@@ -1768,8 +1771,6 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 3. `preprocessing_nodelet` 执行完第八个`cloud_callback`后报错。
 4. 跑原作者数据集，启动imu融合就会报错
    - 排除是数据集的问题。
-
-5. 
 
 
 ## 2、利用激光雷达辅助，增强毫米波雷达数据
@@ -1781,3 +1782,4 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 数据采集的过程，图片
 
 ## 4、点云配准算法改进
+

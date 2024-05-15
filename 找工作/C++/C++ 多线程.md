@@ -578,3 +578,336 @@ int main(){
 ##### 解决方法：
 
 让两个线程都先获取m1，再获取m2
+
+# 四、lock_guard与unique_lock
+
+## 1、lock_guard
+
+##### 动机：
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+int shared_data = 0;
+std::mutex mtx;
+
+void func(){
+	for (int i = 0; i < 10000; i++){
+		mtx.lock();
+		shared_data++;
+		// mtx.unlock();
+	}
+}
+
+int main(){
+	std::thread t1(func);
+	std::thread t2(func);
+	
+	t1.join();
+	t2.join();
+	
+	std::cout << shared_data << std::endl;
+	return 0;
+}
+```
+
+- 加锁和解锁操作必须成对进行，若只加锁不解锁，程序报错
+
+##### 使用lock_guard:
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+int shared_data = 0;
+std::mutex mtx;
+
+void func(){
+	for (int i = 0; i < 10000; i++){
+		std::lock_guard<std::mutex> lg(mtx);
+		shared_data++;
+	}
+}
+
+int main(){
+	std::thread t1(func);
+	std::thread t2(func);
+	
+	t1.join();
+	t2.join();
+	
+	std::cout << shared_data << std::endl;
+	return 0;
+}
+```
+
+- 当`lock_guard`的构造函数被调用时，该互斥量会被自动锁定。
+- 当`lock_guard`的析构函数被调用时，该互斥量会被自动解锁。
+  - 因为是局部变量，作用域结束后会自动调用析构函数。
+- `std:lock_guard`对象不能被复制或移动，因此只能在**局部作用域**中使用。
+
+## 2、unique_lock
+
+##### 优势：
+
+相比于`lock_guard`，除了自动加锁，还能实现
+
+- 延迟加锁
+- 条件变量
+- 超时
+
+更加灵活
+
+##### 缺陷：
+
+占用资源更多
+
+##### 举例1：自动加锁
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+int shared_data = 0;
+std::mutex mtx;
+
+
+void func(){
+	for (int i = 0; i < 10000; i++){
+		std::unique_lock<std::mutex> lg(mtx);
+		shared_data++;
+	}
+}
+
+int main(){
+	std::thread t1(func);
+	std::thread t2(func);
+	
+	t1.join();
+	t2.join();
+	
+	std::cout << shared_data << std::endl;
+	return 0;
+}
+```
+
+- 同`lock_guard`
+  - 调用构造函数自动加锁
+  - 调用析构函数自动解锁
+
+##### 举例2：延迟加锁
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+int shared_data = 0;
+// std::mutex mtx;
+std::timed_mutex mtx;	// 支持对时间的操作，延迟加锁
+
+void func(){
+	for (int i = 0; i < 10000; i++){
+		// 构造但是不加锁
+		std::unique_lock<std::mutex> lg(mtx, std::defer_lock);
+        // 需要手动加锁
+        // lg.lock();
+        if (lg.try_lock_for(std::chrono::seconds(5)){
+        	shared_data++;    
+        }
+	}
+}
+
+int main(){
+	std::thread t1(func);
+	std::thread t2(func);
+	
+	t1.join();
+	t2.join();
+	
+	std::cout << shared_data << std::endl;
+	return 0;
+}
+```
+
+- 调用构造函数，多加了一个常量参数`std::defer_lock`。
+  - 这时构造函数不加锁，需要后面手动加锁：`lg.lock()`
+- 这时使用`try_lock_for(std::chrono::seconds(5))`
+  - 阻塞5秒后仍未获取锁，不再等待，直接返回。
+  - `try_lock_until()`类似，传递的参数是时间点。
+
+# 五、call_once与其使用场景
+
+单例设计模式，确保某个类只能创建一个实例。
+
+由于单例实例是全局唯一的，在多线程环境中使用单例模式时要考虑线程安全问题。
+
+## 单例模式：
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+class Log{
+public:
+	// 禁用拷贝构造和赋值构造
+	Log(const Log& log) = delete;
+	Log &operator = (const Log& log) = delete;
+	static Log& GetInstance(){
+		static Log log;		// 饿汉模式
+		return log;
+	}
+    
+    void PrintLog(std::string msg){
+        std::cout << _TIME_ << " " << msg << std::endl;
+    }
+    
+private:
+    Log(){};
+};
+
+int main(){
+	
+    Log::GetInstance().PrintLog("error");
+}
+```
+
+- 单例模式有两种
+
+  - 饿汉模式
+
+    - 一开始就创建实例
+    - 饿汉模式线程安全，因为实例是在类加载时创建的，而类加载是线程安全的。
+
+  - 懒汉模式
+
+    - 只在使用时创建实例
+    - 基本的懒汉模式非线程安全
+
+    ```cassandra
+    	static Log& GetInstance(){
+    		static Log *log = nullptr;		// 懒汉模式
+    		if (!log) log = new Log;
+    		
+    		return *log;
+    	}
+    ```
+
+## 懒汉模式下的多线程产生的问题：
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+static Log* log = nullptr;
+static std::once_flag once;
+
+class Log{
+public:
+	// 禁用拷贝构造和赋值构造
+	Log(const Log& log) = delete;
+	Log &operator = (const Log& log) = delete;
+	static Log& GetInstance(){
+		static Log *log = nullptr;		// 懒汉模式
+		if (!log) log = new Log;
+		
+		return *log;
+	}
+    
+    void PrintLog(std::string msg){
+        std::cout << _TIME_ << " " << msg << std::endl;
+    }
+    
+private:
+    Log(){};
+};
+
+void print_error()
+{
+    Log::GetInstance().PrintLog("error");
+}
+
+int main(){
+	
+    std::thread t1(print_error);
+    std::thread t2(print_error);
+    t1.join();
+    t2.join();
+    
+    return 0;
+}
+```
+
+- `t1`、`t2`同时调用`PrintLog`函数，同时判断`Log`为空，则会实例化两个`Log`对象
+
+## 使用call_once解决问题：
+
+##### call_once 用法：
+
+确保某个函数只会被调用一次。
+
+只能在线程中使用，不能在`main`中使用
+
+```c++
+void call_once(std::once_flag& flag, Callable&& func, Args&&... args);
+```
+
+- `flag`
+  - `std::once_flag`类型的对象
+  - 用于标记函数是否已经被调用
+- `func`
+  - 需要被调用的函数或可调用对象
+- `args`
+  - 函数或可调用对象的参数
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+class Log{
+public:
+	// 禁用拷贝构造和赋值构造
+	Log(const Log& log) = delete;
+	Log &operator = (const Log& log) = delete;
+	static Log& GetInstance(){
+		static Log *log = nullptr;		// 懒汉模式
+		std::call_once(&once, init);
+		
+		return *log;
+	}
+    
+    static void init(){
+        if (!log) log = new Log;
+    }
+    
+    void PrintLog(std::string msg){
+        std::cout << _TIME_ << " " << msg << std::endl;
+    }
+    
+private:
+    Log(){};
+};
+
+void print_error()
+{
+    Log::GetInstance().PrintLog("error");
+}
+
+int main(){
+	
+    std::thread t1(print_error);
+    std::thread t2(print_error);
+    t1.join();
+    t2.join();
+    
+    return 0;
+}
+```
+
+- 多个线程进入 `GetInstance()`，只有一个call_once会被调用
