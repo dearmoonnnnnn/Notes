@@ -75,6 +75,10 @@
 
 在将bag文件转换为txt文件时，第一行显示的点的数量通常由转换程序在读取bag文件时遇到的第一个点云消息的点的数量决定。这意味着第一行的点的数量可能不代表所有点云消息的实际数量，因为每一帧的点云数量可能不一样。
 
+##### 6、在info_convert_node文件的回调函数中添加输出， 命令行不现实输出
+
+`ars548_process.lanuch`文件中，启动`info_convert_node`时未添加参数：`output="screen"`
+
 # 一、根据HesaiLidar_Swift_ROS实现（同4DRaSLAM,未实现，弃用）
 
 ## 目前进展：

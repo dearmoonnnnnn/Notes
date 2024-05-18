@@ -911,3 +911,180 @@ int main(){
 ```
 
 - 多个线程进入 `GetInstance()`，只有一个call_once会被调用
+
+# 六、condition_variable与其使用场景
+
+## 1、生产者与消费者模型
+
+![image-20240516155709888](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240516155709888.png)
+
+- 生产者
+  - 向任务队列添加任务
+- 消费者
+  - 从任务队列中取出任务，并且使用**多线程**的方法完成
+- 若任务队列为空
+  - 消费者等待
+  - 生产者往任务队列中添加任务后，通知消费者
+
+## 2、条件变量的使用步骤
+
+1. 创建一个`std::condition_variable`对象
+2. 创建一个互斥锁std::mutex对象，用来保护共享资源的访问。
+   - 条件变量要和互斥锁共同使用
+3. 在需要等待条件变量的地方
+   - 使用互斥锁`std::unique_lock<std::mutex>`对象锁定互斥锁
+   - 调用`std::condition_variable::wait()`、`std::condition_variable::wait_for()`或`std::condition_variable::wait_until()`函数，等待条件变量。
+     - 这时候程序阻塞
+4. 在其他线程中，需要通知等待的线程时
+   - 调用`std::condition_variable::notify_one()`或`std::condition_variable::notify_all()`函数通知等待的线程。
+     - 若生产者只往空的任务队列中加入了一个任务，调用`notify_one()`,通知一个消费者来完成任务。
+     - 若生产者往空队列中添加了很多任务，调用`notify_all()`，通知所有消费者完成任务。
+
+##### 代码示例：
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+#include<string>
+#include<condition_variable>	//条件变量头文件 
+#include<queue> 				//任务队列头文件
+
+std::queue<int> g_queue;
+std::condition_variable g_cv;
+std::mutex mtx;
+
+// 生产者
+void Producer(){
+	for (int i = 0; i < 10; i++)
+	{	
+        { 
+        	std::unique_lock<std::mutex> lock(mtx);
+			g_queue.push(i);
+        
+        	// 通知消费者来取
+        	g.cv.notify_noe();
+            
+            std::cout << "Producer : " << i << std::endl;
+        }
+	}
+		std::this_thread::sleep_for(std::chrono::microseconds(100));
+}
+
+// 消费者
+void Consumer()
+{
+	while(1)
+	{
+        std::unique_lock<std::mutex> lock(mtx);
+        
+        // 若队列为空，就要等待
+        // g_cv.wait(lock, []() {return !g_queue.empty();
+    	//	});
+        bool isempty = g_queue.empty();
+        g_cv.wait(lock,!isempty);
+            
+		int value = g_queue.front();
+		g_queue.pop();
+        
+        std::cout << "Consumer : " << value << std::endl;
+	}
+}
+
+int main()
+{
+    std::thread t1(Producer);
+    std::thread t2(Consumer);
+    t1.join();
+    t2.join();
+    
+    return 0;
+}
+```
+
+# 七、C++11 跨平台线程池
+
+## 1、线程池图解
+
+![image-20240518101314980](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240518101314980.png)
+
+- 生产者
+  - 往任务队列中加任务
+- 线程池
+  - 即左边的矩阵框部分
+  - 调用线程数组取任务队列中取任务并完成
+
+##### 代码:
+
+```c++
+#include<iostream>
+#include<thread>
+#include<mutex>
+#include<string>
+#include<condition_variable>	//条件变量头文件 
+#include<queue> 				//任务队列头文件
+#include<vector>
+#include<function>
+
+class ThreadPool{
+public:
+    ThreadPool(int numThreads) : stop(false){
+        for (int i = 0; i < numThreads; i++){
+            // emplace_back 直接调用成员的构造函数，更加节省资源
+            // push_back 调用成员的拷贝构造
+            threads.emplace_back([this]{
+                while(1){
+                    std::unique_lock<std::mutex> lock(mtx);
+                    conition.wait(lock, (this){
+                        return !tasks.empty() || stop;
+                    });
+                    
+                    if (stop){
+                        return;
+                    }
+                    
+                    std::function<void()> task(std::move(tasks.front()));
+                    tasks.pop();
+                    
+                    lock.unlock();
+                    task();
+                }
+            	});
+        }
+    } 
+    
+    ~ThreadPool(){
+        {
+            std::unique_lock<std::mutex> lock(mtx);
+            stop = true;
+        }
+        
+        condition.notify_all();
+        for (auto& t : threads){
+            t.join();
+        }
+    }
+    
+    // 往任务列表中加任务，因为任务列表中的函数不知道有几个参数，所以使用模板
+    template<calss F,class... Args>
+    // 在模板中 && 是万能引用，根据实际参数为左值引用还是右值引用来决定是哪一种引用
+    void enqueue(F &&f, Args&&... args){
+        std::function<void()>task = 
+            std::bind(std::forward<F>(f), std::forward<Args>((args)...);
+        {
+            std::unique_lock<std::mutex> lock(mtx);
+            tasks.emplace_back(std::move(task));          
+        }
+        condition.notify_one();
+	} 
+    
+private:
+    std::vector<std::thread> threads; // 线程数组
+    std::queue<std::function<void>> tasks; // 任务队列
+    
+    std::mutex mtx; // 互斥锁
+    std::condition_variable condition; // 条件变量
+    
+    bool stop; // 线程池终止
+};
+```
