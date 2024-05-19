@@ -1427,8 +1427,6 @@ rosbag info cp_2022-02-26.bag
     nh.param<std::string>("radar_slam/pointCloudTopic", pointCloudTopic, "/ars548_process/detection_point_cloud");
     ```
 
-
-
 ##### 3、节点文件
 
 - `preprocessing_nodelet.cpp`
@@ -1452,6 +1450,21 @@ rosbag info cp_2022-02-26.bag
   ```cpp
   points_topic = private_nh.param<std::string>("points_topic", "/ars548_process/detection_point_cloud");
   ```
+  
+  修改关键帧相关参数
+  
+  ```c++
+   void intialize_params(){	
+      ......
+   	keyframe_delta_trans = pnh.param<double>("keyframe_delta_trans", 0.15);                 // 关键帧之间的最小平移距离
+      keyframe_delta_angle = pnh.param<double>("keyframe_delta_angle", 0.05);                 // 关键帧之间的最小旋转角度
+      keyframe_delta_time = pnh.param<double>("keyframe_delta_time", 0.1);                    // 关键帧之间的最小时间间隔
+  	......
+   }
+  ```
+  
+  
+
 
 
 ## C、运行

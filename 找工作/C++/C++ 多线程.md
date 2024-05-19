@@ -1030,8 +1030,9 @@ class ThreadPool{
 public:
     ThreadPool(int numThreads) : stop(false){
         for (int i = 0; i < numThreads; i++){
-            // emplace_back 直接调用成员的构造函数，更加节省资源
-            // push_back 调用成员的拷贝构造
+            // emplace 直接调用成员的构造函数，更加节省资源
+            // push 调用成员的拷贝构造
+            // 因为是队列，先进先出，不能用emplace_back和push_back
             threads.emplace_back([this]{
                 while(1){
                     std::unique_lock<std::mutex> lock(mtx);
@@ -1073,7 +1074,7 @@ public:
             std::bind(std::forward<F>(f), std::forward<Args>((args)...);
         {
             std::unique_lock<std::mutex> lock(mtx);
-            tasks.emplace_back(std::move(task));          
+            tasks.emplace(std::move(task));          
         }
         condition.notify_one();
 	} 
@@ -1087,4 +1088,22 @@ private:
     
     bool stop; // 线程池终止
 };
+                      
+                      
+int main() {
+    // 线程池中有4个线程
+    ThreadPool pool(4);
+	// 
+    for (int i = 0; i < 10; i++){
+        pool.enqueue([i]{
+            std::cout<< "task : " << i << "is running" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        	});
+    }
+    
+    return 0;
+}
 ```
+
+- 代码存在的问题
+  - `cout`没加锁，打印比较混乱。
