@@ -1206,6 +1206,10 @@ bool is_dense
 - 存在的目的是允许PCL与ROS之间轻松转换，而不丢失任何信息。
 - 虽然它与ROS消息非常匹配，但通常不会在PCL中直接使用这种格式来操作点云。相反，会将其转换为`pcl::PointCloud<T>`以进行大多数处理任务。
 
+数据结构：
+
+![image-20240520102156384](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240520102156384.png)
+
 ##### 6.1.4、pcl::PointCloud\<T> —— 标准的PCL数据结构
 
 - PCL中用于点云的标准且最常用的数据结构。
@@ -1214,6 +1218,8 @@ bool is_dense
 - 旨在为点云处理任务提供高效和用户友好的方式。
 
 具体的数据结构：
+
+![image-20240520103227482](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240520103227482.png)
 
 ```cpp
 template<typename PointT>
