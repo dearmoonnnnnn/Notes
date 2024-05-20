@@ -1198,7 +1198,7 @@ uint8[] data
 bool is_dense
 ```
 
-
+###### 提问：data字段和fields的区别
 
 ##### 6.1.3、pcl::PointCloud2 —— PCL数据结构，主要是为了与ROS兼容
 
