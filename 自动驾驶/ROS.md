@@ -1146,7 +1146,7 @@ https://blog.csdn.net/XCCCCZ/article/details/136142235
 
   ![image-20240430110136856](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240430110136856.png)
   
-  ```cpp
+  ```msg
   std_msgs/Header header
     uint32 seq
     time stamp
@@ -1196,12 +1196,11 @@ uint32 point_step
 uint32 row_step
 uint8[] data
 bool is_dense
-
 ```
 
 
 
-##### 6.1.3、pcl::PCLPointCloud2 —— PCL数据结构，主要是为了与ROS兼容
+##### 6.1.3、pcl::PointCloud2 —— PCL数据结构，主要是为了与ROS兼容
 
 - PCL的数据结构，与`sensor_msgs::PointCloud2`非常匹配。
 - 存在的目的是允许PCL与ROS之间轻松转换，而不丢失任何信息。
