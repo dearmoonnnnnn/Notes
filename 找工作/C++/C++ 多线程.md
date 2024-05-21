@@ -113,6 +113,11 @@ C++11引入的一个函数模板， 用于异步执行一个函数，返回一�
 - 用于在线程中产生一个值，并在另一个线程中获取这个值。
 - 通常与`future`和`async`一起使用。
 
+##### 9、std::atomic
+
+- 模板类，用于实现多线程环境下的原子操作。
+- 提供一种线程安全的方式来访问和修改共享变量，避免多线程环境中的数据竞争问题
+
 # 一、线程库的基本使用
 
 ## 1、创建线程
@@ -1262,5 +1267,45 @@ int main(){
 - 在主线程中使用`get_future()`函数获取`f`的`future`对象。
   - 使用`future`对象的`get()`函数获取函数的值。
 
-# 九、原子操作
+# 九、原子操作 atomic
 
+使用`std::atomic`避免数据竞争
+
+```c++
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <atomic>
+int shared_data = 0;
+
+// 原子变量，自带线程安全的访问方式
+std::aromic<int> shared_data = 0;
+
+void func() {
+	fot (int i = 0; i < 100000; ++i){
+		
+        // 原子操作不需要加锁
+		shared_data++;
+		
+	}
+}
+
+int main() {
+	std::thread t1(func);
+	std::thread t2(func);
+	t1.join();
+	t2.join();
+    
+    // 可以使用store()赋值, 最后输出为1
+    shared_data.store(1);
+    
+    // 可以使用load取值
+    // std::cout << "shared_data = " << shared_data.load << std::endl;
+	std::cout << "shared_data = " << shared_data << std::endl;
+    
+    return 0;
+}
+```
+
+- 优势
+  - 相比于使用互斥锁加锁
