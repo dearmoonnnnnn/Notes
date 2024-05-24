@@ -1,4 +1,8 @@
-# 相关资料：
+
+
+# 零、相关资料、问题和概念
+
+## 相关资料：
 
 - sql
 
@@ -12,9 +16,14 @@
 
   - 文档
 
-    https://huixxi.github.io/2020/06/02/%E5%B0%8F%E7%99%BD%E8%A7%86%E8%A7%92%EF%BC%9A%E4%B8%80%E6%96%87%E8%AF%BB%E6%87%82%E7%A4%BE%E9%95%BF%E7%9A%84TinyWebServer/#more
+    - 微信公众号
 
-# 零、问题和概念
+      https://mp.weixin.qq.com/s?__biz=MzAxNzU2MzcwMw==&mid=2649274278&idx=3&sn=5840ff698e3f963c7855d702e842ec47&chksm=83ffbefeb48837e86fed9754986bca6db364a6fe2e2923549a378e8e5dec6e3cf732cdb198e2&scene=0&xtrack=1#rd
+
+    - 一文读懂
+
+      https://huixxi.github.io/2020/06/02/%E5%B0%8F%E7%99%BD%E8%A7%86%E8%A7%92%EF%BC%9A%E4%B8%80%E6%96%87%E8%AF%BB%E6%87%82%E7%A4%BE%E9%95%BF%E7%9A%84TinyWebServer/#more
+
 
 ## 概念
 
@@ -140,6 +149,29 @@ CGI校验是指对CGI脚本进行验证和检查，以确保脚本的安全性�
 
 - 使用C/C++编程，使用POSIX线程（pthread）或`<thread>`头文件提供的线程库。
 - 如果是java，使用java的线程实现
+
+##### ==9、状态机（State Machine）==
+
+状态机是一种数学模型，描述一个系统在不同时间点可能处于的状态以及这些状态之间的转换。
+
+##### 10、RAII
+
+Resource Acquisition is Initialization，资源获取即初始化。
+
+核心思想
+
+- 将资源的获取和释放绑定在对象的生命周期中
+  - 通过构造函数获取资源
+  - 通过析构函数释放资源
+
+优点
+
+1. 资源管理自动化
+   - 减少内存泄漏和资源泄漏的风险
+2. 异常安全
+   - 确保资源在异常发生时也能被正确释放，从而避免资源泄漏
+3. 代码简介清晰
+   - 资源管理逻辑集中在构造函数和析构函数中，使得代码简洁、更易维护。
 
 
 
@@ -629,17 +661,50 @@ sudo systemctl restart mysql
   - `con`
     - `MYSQL`指针
 - 返回值
-  - bool
-    - 
+  - `bool`
+    - `true`：释放成功
 
 ##### 6、DestoryPool()
 
+- 描述
+  - 销毁数据库连接池
+    - 遍历数据库连接池，对每个连接执行`mysql_close()`
+
 ##### 7、GetFreeConn()
+
+- 描述
+  - 获取当前的空闲连接数
 
 ##### 8、~connection_pool()
 
+- 描述
+  - 析构函数
+    - 执行`DestroyPool()`
+
+### connectionRAII类
+
+#### 成员变量
+
+| 变量名称 |     变量类型      |        描述        |
+| :------: | :---------------: | :----------------: |
+| conRAII  |      MYSQL *      | 数据库连接对象指针 |
+|   pool   | connection_pool * |   连接池对象指针   |
+
 ##### 9、connectionRAII()
+
+- 描述
+  - 构造函数
+    - 创建对象时，从指定的数据库连接池中获取一个连接。
 
 ##### 10、~connectionRAII()
 
-### connectionRAII类
+- 描述
+  - 析构函数
+    - 销毁对象时，将连接放回数据库连接池。
+
+## 4、http连接处理类
+
+根据状态转移，通过主从状态机封装了http连接类。
+
+- 主状态机在内部调用从状态机
+
