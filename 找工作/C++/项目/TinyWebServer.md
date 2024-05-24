@@ -556,25 +556,25 @@ sudo systemctl restart mysql
 
 ##### 私有：
 
-|    变量类型     |   变量名称   |        描述        |
-| :-------------: | :----------: | :----------------: |
-|      `int`      | `m_MaxConn`  |     最大连接数     |
-|      `int`      | `m_CurConn`  | 当前已使用的连接数 |
-|      `int`      | `m_FreeConn` |  当前空闲的连接数  |
-|   `locker`类    |    `lock`    |     互斥锁对象     |
-| `list<MYSQL *>` |  `connList`  |       连接池       |
-|     ==sem==     |  `reserve`   |       信号量       |
+|   变量名称   |    变量类型     |        描述        |
+| :----------: | :-------------: | :----------------: |
+| `m_MaxConn`  |      `int`      |     最大连接数     |
+| `m_CurConn`  |      `int`      | 当前已使用的连接数 |
+| `m_FreeConn` |      `int`      |  当前空闲的连接数  |
+|    `lock`    |   `locker`类    |     互斥锁对象     |
+|  `connList`  | `list<MYSQL *>` |       连接池       |
+|  `reserve`   |     ==sem==     |       信号量       |
 
 ##### 公有：
 
-| 变量类型 |     变量名称     |       描述       |
-| :------: | :--------------: | :--------------: |
-| `string` |     `m_url`      |     主机地址     |
-| `string` |     `m_Port`     |   数据库端口号   |
-| `string` |     `m_User`     | 登陆数据库用户名 |
-| `string` |   `m_PassWord`   |  登陆数据库密码  |
-| `string` | `m_DatabaseName` |   使用数据库名   |
-|  `int`   |  `m_close_log`   |     日志开关     |
+|     变量名称     | 变量类型 |       描述       |
+| :--------------: | :------: | :--------------: |
+|     `m_url`      | `string` |     主机地址     |
+|     `m_Port`     | `string` |   数据库端口号   |
+|     `m_User`     | `string` | 登陆数据库用户名 |
+|   `m_PassWord`   | `string` |  登陆数据库密码  |
+| `m_DatabaseName` | `string` |   使用数据库名   |
+|  `m_close_log`   |  `int`   |     日志开关     |
 
 #### B、成员函数
 
@@ -621,6 +621,16 @@ sudo systemctl restart mysql
     - MYSQL 指针，指向一个MYSQL数据库的连接实例。
 
 ##### 5、ReleaseConnection()
+
+- 描述
+  - 释放当前使用的连接
+  - connList
+- 参数
+  - `con`
+    - `MYSQL`指针
+- 返回值
+  - bool
+    - 
 
 ##### 6、DestoryPool()
 

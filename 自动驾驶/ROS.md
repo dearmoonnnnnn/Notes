@@ -1137,6 +1137,74 @@ rosbag filter input.bag output.bag "topic != '/topic1' && topic != '/topic2'"
 
 https://blog.csdn.net/XCCCCZ/article/details/136142235
 
+##### 2、将`pcl::PointCloud<pcl::PointXYZI>`的数据转换为sensor_msgs::PointCloud2后，怎么获取点的强度信息？
+
+在`sensor_msgs::PointCloud2`消息中
+
+- `fields`数组描述点云数据中每个字段的信息，包括
+  - 名称
+  - 偏移量
+  - 数据类型
+  - 计数
+- `data`数组包含了实际的点云数据，每个点的数据按字节存储，并按fields数组的描述解析
+
+代码示例：
+
+```c++
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/PointField.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
+void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
+{
+    // 查找intensity字段的偏移量
+    int intensity_offset = -1;
+    for (const auto& field : cloud_msg->fields)
+    {
+        if (field.name == "intensity")
+        {
+            intensity_offset = field.offset;
+            break;
+        }
+    }
+
+    if (intensity_offset == -1)
+    {
+        ROS_ERROR("No intensity field found in PointCloud2 message.");
+        return;
+    }
+
+    // 计算每个点的步长
+    int point_step = cloud_msg->point_step;
+
+    // 遍历每个点，提取强度信息
+    for (size_t i = 0; i < cloud_msg->width * cloud_msg->height; ++i)
+    {
+        const uint8_t* point_data = &cloud_msg->data[i * point_step];
+        float intensity;
+        memcpy(&intensity, point_data + intensity_offset, sizeof(float));
+
+        // 打印或处理强度信息
+        ROS_INFO("Point %zu: intensity=%f", i, intensity);
+    }
+}
+
+int main(int argc, char** argv)
+{
+    ros::init(argc, argv, "pointcloud_intensity_extractor");
+    ros::NodeHandle nh;
+
+    ros::Subscriber sub = nh.subscribe("input_topic", 1, cloudCallback);
+
+    ros::spin();
+
+    return 0;
+}
+```
+
 ## 6.1 表示点云数据的四种方式
 
 ##### 6.1.1、sensor_msgs::PointCloud —— ROS message，已弃用
@@ -1197,8 +1265,6 @@ uint32 row_step
 uint8[] data
 bool is_dense
 ```
-
-###### 提问：data字段和fields的区别
 
 ##### 6.1.3、pcl::PointCloud2 —— PCL数据结构，主要是为了与ROS兼容
 
