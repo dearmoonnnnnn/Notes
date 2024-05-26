@@ -1,5 +1,3 @@
-
-
 # 零、相关资料、问题和概念
 
 ## 相关资料：
@@ -24,8 +22,9 @@
 
       https://huixxi.github.io/2020/06/02/%E5%B0%8F%E7%99%BD%E8%A7%86%E8%A7%92%EF%BC%9A%E4%B8%80%E6%96%87%E8%AF%BB%E6%87%82%E7%A4%BE%E9%95%BF%E7%9A%84TinyWebServer/#more
 
-
 ## 概念
+
+### 数据库相关
 
 ##### 1、MySQL
 
@@ -62,7 +61,26 @@ MySQL是一种关系型数据库管理系统。使用标准的SQL（Structured Q
   - 数据库会话是指应用程序与数据库之间的交互会话，包含了应用程序发送的SQL语句、数据库返回的结果集、事务信息等。
   - 每个数据库连接通常会关联一个数据库会话。
 
-##### 4、Web Server
+##### 4、RAII
+
+Resource Acquisition is Initialization，资源获取即初始化。
+
+核心思想
+
+- 将资源的获取和释放绑定在对象的生命周期中
+  - 通过构造函数获取资源
+  - 通过析构函数释放资源
+
+优点
+
+1. 资源管理自动化
+   - 减少内存泄漏和资源泄漏的风险
+2. 异常安全
+   - 确保资源在异常发生时也能被正确释放，从而避免资源泄漏
+3. 代码简介清晰
+   - 资源管理逻辑集中在构造函数和析构函数中，使得代码简洁、更易维护。
+
+##### 5、Web Server
 
 是一种软件或服务，运行在网络的计算机上，负责接收来自客户端的HTTP请求，并向客户端发送HTTP响应。
 
@@ -152,40 +170,42 @@ CGI校验是指对CGI脚本进行验证和检查，以确保脚本的安全性�
 - 使用C/C++编程，使用POSIX线程（pthread）或`<thread>`头文件提供的线程库。
 - 如果是java，使用java的线程实现
 
-##### ==9、状态机（State Machine）==
+### http相关
 
-状态机是一种数学模型，描述一个系统在不同时间点可能处于的状态以及这些状态之间的转换。
+##### 1、有限状态机（State Machine）
 
-类型：
+把**有限个变量**描述的状态变化过程，以==可构造可验证==的方式呈现出来。比如，封闭的有向图。
 
-- 有限状态机
-  - 本项目使用有限状态机实现http连接
-- 推理状态机
-- 梅里机器
-- 摩尔机器
-- 层次状态机
-- 等等
+带有状态转移的有限状态机示例代码。
 
-##### 10、RAII
+```c++
+STATE_MACHINE(){
+    State cur_State = type_A;
+    while(cur_State != type_C){
+        Package _pack = getNewPackage();
+        switch(){
+            case type_A:
+                process_pkg_state_A(_pack);
+                cur_State = type_B;
+                break;
+            case type_B:
+                process_pkg_state_B(_pack);
+                cur_State = type_C;
+                break;
+        }
+    }
+}
+```
 
-Resource Acquisition is Initialization，资源获取即初始化。
+- 该状态机包含三种状态
+  - type_A
+    - 初始状态
+  - type_B
+  - type_C
+    - 结束状态
+- 状态机当前状态记录在`cur_state`中，逻辑处理时，状态机先通过getNewPackage获取数据包，然后根据当前状态对数据进行处理，最后改变cur_state完成状态转移。
 
-核心思想
-
-- 将资源的获取和释放绑定在对象的生命周期中
-  - 通过构造函数获取资源
-  - 通过析构函数释放资源
-
-优点
-
-1. 资源管理自动化
-   - 减少内存泄漏和资源泄漏的风险
-2. 异常安全
-   - 确保资源在异常发生时也能被正确释放，从而避免资源泄漏
-3. 代码简介清晰
-   - 资源管理逻辑集中在构造函数和析构函数中，使得代码简洁、更易维护。
-
-##### 11、http报文格式
+##### 2、http报文格式
 
 http报文分为两种，必须按照特有的格式才能被识别。
 
@@ -746,17 +766,64 @@ sudo systemctl restart mysql
 2. **从状态机**读取数据，更新自身状态和接收数据，传给**主状态机**。
 3. 主状态机根据从状态机状态，更新自身状态，决定相应请求还是继续读取。
 
+### A、成员变量
 
+##### public
 
+|      变量名称       |      变量类型      |                             描述                             |
+| :-----------------: | :----------------: | :----------------------------------------------------------: |
+|   `FILENAME_LEN`    | `static const int` |                       文件名的最大长度                       |
+| `READ_BUFFER_SIZE`  | `static const int` |                        读缓冲区的大小                        |
+| `WRITE_BUFFER_SIZE` | `static const int` |                        写缓冲区的大小                        |
+|      `METHOD`       |       `enum`       |     `HTTP`请求方法的枚举<br />eg, `GET`、`POST`、`HEAD`      |
+|    `CHECK_STATE`    |       `enum`       | 检查HTTP连接状态的枚举<br />eg, `CHECK_STATE_REQUESTLINE`、`CHECK_STATE_HEADER` |
+|     `HTTP_CODE`     |       `enum`       | HTTP响应状态码的枚举<br />eg, `NO_REQUEST`、`GET_REQUEST`、`BAD_REQUEST` |
+|    `LINE_STATUS`    |       `enum`       | 行状态的枚举，用于检查HTTP请求或响应的行是否有效<br />eg,  `LINE_OK`、`LINE_BAD`、`LINE_OPEN` |
 
+##### public
 
+|    变量名称    |   变量类型   |                   描述                    |
+| :------------: | :----------: | :---------------------------------------: |
+|  `m_epollfd`   | `static int` | `epoll`文件描述符，用于监听所有连接的事件 |
+| `m_user_count` | `static int` |          当前使用该类的用户数量           |
+|    `mysql`     |  `MYSQL *`   |              `MYSQL`对象指针              |
+|   `m_state`    |    `int`     |               读为0，写为1                |
 
+##### private
 
-
-
-
-
-
+|             变量名称             |         变量类型          |                      描述                       |
+| :------------------------------: | :-----------------------: | :---------------------------------------------: |
+|            `m_sockfd`            |           `int`           |                套接字文件描述符                 |
+|           `m_address`            |    `sockadd_in` 结构体    |              存储客户段的地址信息               |
+|  `m_read_buf[READ_BUFFER_SIZE]`  |        `char` 数组        |       读取缓存区，存储从客户端接收的数据        |
+|           `m_read_idx`           |          `long`           |   读取索引，用于标记当前在读取缓存区中的位置    |
+|         `m_checked_idx`          |          `long`           |                    检查索引                     |
+|          `m_start_line`          |           `int`           |                   起始行索引                    |
+| `m_write_buf[WRiTE_BUFFER_SIZE]` |        `char` 数组        |       写入缓存区，存储要发送给客户的数据        |
+|          `m_write_idx`           |           `int`           |                    写入索引                     |
+|         `m_check_state`          |   `CHECK_STATE`枚举类型   |      检查状态，用于标记数据检查的当前状态       |
+|            `m_method`            |     `METHOD`枚举类型      |                 HTTP请求的方法                  |
+|   `m_real_file[FILENAME_LEN]`    |        `char` 数组        |                存储实际文件路径                 |
+|             `m_url`              |         `char *`          |               指向URL字符串的指针               |
+|           `m_version`            |         `char *`          |            指向HTTP版本字符串的指针             |
+|             `m_host`             |         `char *`          |             指向主机名字符串的指针              |
+|        `m_content_length`        |          `long`           |     内容长度变量，用于表示HTTP请求体的长度      |
+|            `m_linger`            |          `bool`           |      linger标志，==用于控制连接关闭行为==       |
+|         `m_file_address`         |         `char *`          |             指向文件存储地址的指针              |
+|          `m_file_state`          |   `struct stat` 结构体    |             用于存储文件的状态信息              |
+|            `m_iv[2]`             | `struct iovec` 结构体数组 |        用于存储要发送的多个数据块的信息         |
+|           `m_iv_cont`            |           `int`           | `iovec`计数，用于表示`m_iv`中已填充的数据块数量 |
+|              `cgi`               |           `int`           |        `cgi`标志，用于表示是否启用`POST`        |
+|            `m_string`            |         `char *`          |                 存储请求头数据                  |
+|         `bytes_to_send`          |           `int`           |                 需要发送字节数                  |
+|        `bytes_have_send`         |           `int`           |                  已发送字节数                   |
+|            `doc_root`            |         `char *`          |              文档根目录字符串指针               |
+|            `m_users`             |   `map<string, string>`   |    用户映射，用于存储用户名和密码的映射关系     |
+|           `m_TRIGMode`           |           `int`           |   `TRIG`模式标志，用于控制某种特定的处理模式    |
+|          `m_close_log`           |           `int`           |              控制是否关闭日志记录               |
+|         `sql_user[100]`          |        `char` 数组        |             定义`SQL`数据库的用户名             |
+|        `sql_passwd[100]`         |        `char`数组         |              定义`SQL`数据库的密码              |
+|         `sql_name[100]`          |        `char` 数组        |              定义`SQL`数据库的名称              |
 
 
 
