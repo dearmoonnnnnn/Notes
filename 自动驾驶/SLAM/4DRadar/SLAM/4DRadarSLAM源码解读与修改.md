@@ -1796,3 +1796,4 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 
 ## 4、点云配准算法改进
 
+使用GNC而不是RANSAC
