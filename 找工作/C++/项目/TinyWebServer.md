@@ -825,11 +825,37 @@ sudo systemctl restart mysql
 |        `sql_passwd[100]`         |        `char`数组         |              定义`SQL`数据库的密码              |
 |         `sql_name[100]`          |        `char` 数组        |              定义`SQL`数据库的名称              |
 
+### B、成员函数
 
+#### public
 
+##### 1、init()有参
 
+- 描述
+  - 初始化连接，外部调用初始化套接字地址
+  - 参数初始化
+  - 最后调用无参`init()`
+- 参数
+  - `sockfd`
+  - `addr`
+  - `root`
+  - `TRIGMode`
+  - `close_log`
+  - `user`
+  - `passwd`
+  - `sqlname`
 
+##### 2、close_conn()
 
+- 描述
+  - 关闭一个连接，客户总量减一
+
+##### 3、process()
+
+- 描述
+  - 处理HTTP连接的请求
+  - 调用`process_read()`，尝试读取HTTP请求
+- 
 
 
 

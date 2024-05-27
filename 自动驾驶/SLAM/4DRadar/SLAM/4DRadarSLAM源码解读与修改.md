@@ -1785,8 +1785,44 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 4. 跑原作者数据集，启动imu融合就会报错
    - 排除是数据集的问题。
 
-
 ## 2、利用激光雷达辅助，增强毫米波雷达数据
+
+### 2.1、slam预处理节点修改
+
+##### 动机：
+
+增强后的点云格式为`sensor_msgs::PointCloud2`，而原slam入口的点云回调函数参数为`sensor_msgs::PointCloud`，因此需要修改点云回调函数。
+
+##### 修改内容：
+
+1. 引入自定义点云头文件`point_xyzidv.h`
+2. 声明`pcl::PointCloud<pcl::PointXYZIDV>`类型的变量
+   - 使用fromROSMsg将输入点云转为上述类型
+   - 变量每一个点，得到它们的xyz坐标，信号强度和多普勒速度
+     - 将各个值填充到于原代码相同的部分
+
+
+### 2.2、自我速度评估器修改
+
+##### 动机：
+
+填充的激光雷达点
+
+##### 修改内容：
+
+- 添加头文件 `cmath`
+
+- 若点的`doppler`为`nan`，跳过
+
+### 2.3、参数文件修改
+
+##### 动机：
+
+当前点云话题为`/radar_merged`
+
+##### 修改内容：
+
+`params.yaml`和`utility_radar.h`文件中修改话题内容
 
 ## 3、自己采集的数据
 
