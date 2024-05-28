@@ -122,10 +122,6 @@ CGI校验是指对CGI脚本进行验证和检查，以确保脚本的安全性�
 
 `epoll`的名称源于`event poll`，指**事件轮询**。
 
-是linux中用于处理大量并发事件的I/O多路复用机制。
-
-`epoll`的命名包含了两个关键词：`event`和`poll`。
-
 - **event（事件）**
   - epoll是基于事件驱动的模型，关注文件描述符（即套接字）上的事件，如数据可读、数据可写、连接建立等。
 - **poll（轮询）**
@@ -145,6 +141,87 @@ CGI校验是指对CGI脚本进行验证和检查，以确保脚本的安全性�
     - 会一直通知直到文件描述符的状态变为不可读或不可写
 - 适用于==非阻塞I/O==
   - `epoll`通常与非阻塞I/O搭配使用，可以有效地处理大量并发连接而不阻塞线程或进程。
+
+代码举例：使用`epoll`处理基本的多客户端连接
+
+```c++
+#include <sys/epoll.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <iostream>
+
+#define MAX_EVENTS 10
+#define PORT 8080
+#define BUFFER_SIZE 1024
+
+// 设置文件描述符为非阻塞模式
+void set_non_blocking(int fd) {
+    int flags = fcntl(fd, F_GETFL, 0);
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+}
+
+int main() {
+    
+    // 创建监听套接字并绑定
+    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    set_non_blocking(listen_fd);
+
+    sockaddr_in server_addr{};
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(PORT);
+    bind(listen_fd, (sockaddr*)&server_addr, sizeof(server_addr));
+    listen(listen_fd, SOMAXCONN);
+
+   	// 创建epoll实例并添加监听套接字
+    int epoll_fd = epoll_create1(0);
+    epoll_event ev{}, events[MAX_EVENTS];
+    ev.events = EPOLLIN;
+    ev.data.fd = listen_fd;
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listen_fd, &ev);
+
+    // 事件循环
+    while (true) {
+        int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        for (int i = 0; i < nfds; ++i) {
+            if (events[i].data.fd == listen_fd) {
+                while (true) {
+                    sockaddr_in client_addr{};
+                    socklen_t client_len = sizeof(client_addr);
+                    int conn_fd = accept(listen_fd, (sockaddr*)&client_addr, &client_len);
+                    if (conn_fd < 0) {
+                        break;
+                    }
+                    set_non_blocking(conn_fd);
+                    ev.events = EPOLLIN | EPOLLET;
+                    ev.data.fd = conn_fd;
+                    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, conn_fd, &ev);
+                }
+            } else {
+                int client_fd = events[i].data.fd;
+                char buffer[BUFFER_SIZE];
+                while (true) {
+                    ssize_t count = read(client_fd, buffer, sizeof(buffer));
+                    if (count <= 0) {
+                        close(client_fd);
+                        break;
+                    }
+                    write(client_fd, buffer, count);
+                }
+            }
+        }
+    }
+
+    close(listen_fd);
+    close(epoll_fd);
+    return 0;
+}
+
+```
+
+- 使用`epoll`进行多路复用以处理多个客户端连接
+- 包括创建监听套接字、绑定端口、设置非阻塞模式、创建`epoll`实例、添加文件描述符到`epoll`实例、事件循环以及处理客户端连接和数据。
 
 ##### 7、线程池
 
@@ -405,15 +482,15 @@ sudo systemctl restart mysql
 
 ##### 1、基础变量
 
-| 变量类型 |    变量名称     |       描述        |
-| :------: | :-------------: | :---------------: |
-|  `int`   |    ` m_port`    |     监听端口      |
-| `char *` |    `m_root`     |    网站根目录     |
-|  `int`   | ` m_log_write`  |   日志写入方式    |
-|  `int`   | ` m_close_log`  |   日志是否关闭    |
-|  `int`   | ` m_actormodel` |     模型选择      |
-|  `int`   | ` m_pipefd[2]`  |  管道文件描述符   |
-|  `int`   |  ` m_epollfd`   | `epoll`文件描述符 |
+|    变量名称     | 变量类型 |       描述        |
+| :-------------: | :------: | :---------------: |
+|    ` m_port`    |  `int`   |     监听端口      |
+|    `m_root`     | `char *` |    网站根目录     |
+| ` m_log_write`  |  `int`   |   日志写入方式    |
+| ` m_close_log`  |  `int`   |   日志是否关闭    |
+| ` m_actormodel` |  `int`   |     模型选择      |
+| ` m_pipefd[2]`  |  `int`   |  管道文件描述符   |
+|  ` m_epollfd`   |  `int`   | `epoll`文件描述符 |
 
 ##### 2、数据库相关变量
 
@@ -433,28 +510,28 @@ sudo systemctl restart mysql
 
 ##### 3、线程池相关变量
 
-|         变量类型          |    变量名称    |         描述         |
-| :-----------------------: | :------------: | :------------------: |
-| `threadpool<http_conn> *` |    `m_pool`    | 线程池实例化对象指针 |
-|           `int`           | `m_thread_num` |      线程的数量      |
+|    变量名称    |         变量类型          |         描述         |
+| :------------: | :-----------------------: | :------------------: |
+|    `m_pool`    | `threadpool<http_conn> *` | 线程池实例化对象指针 |
+| `m_thread_num` |           `int`           |      线程的数量      |
 
 ##### 4、epoll_event
 
-|   变量类型    |      变量名称      |                    描述                    |
-| :-----------: | :----------------: | :----------------------------------------: |
-| `epoll_event` |      `events`      |            epoll实例化对象数组             |
-|     `int`     |    `m_listenfd`    |                 线程的数量                 |
-|     `int`     |   `m_OPT_LINGER`   | 在关闭套接字时是否等待未发送数据被发送完毕 |
-|     `int`     |    `m_TRIGMode`    |                  触发模式                  |
-|     `int`     | `m_LISTENTrigmode` |                  监听模式                  |
-|     `int`     |  `m_CONNTrigmode`  |                  连接模式                  |
+|      变量名称      |   变量类型    |                    描述                    |
+| :----------------: | :-----------: | :----------------------------------------: |
+|      `events`      | `epoll_event` |            epoll实例化对象数组             |
+|    `m_listenfd`    |     `int`     |                 线程的数量                 |
+|   `m_OPT_LINGER`   |     `int`     | 在关闭套接字时是否等待未发送数据被发送完毕 |
+|    `m_TRIGMode`    |     `int`     |                  触发模式                  |
+| `m_LISTENTrigmode` |     `int`     |                  监听模式                  |
+|  `m_CONNTrigmode`  |     `int`     |                  连接模式                  |
 
 ##### 5、定时器相关
 
-|    变量类型     |   变量名称    | 描述 |
-| :-------------: | :-----------: | :--: |
-| `client_data *` | `users_timer` |      |
-|     `Utils`     |    `utils`    |      |
+|   变量名称    |    变量类型     | 描述 |
+| :-----------: | :-------------: | :--: |
+| `users_timer` | `client_data *` |      |
+|    `utils`    |     `Utils`     |      |
 
 ### B、成员函数
 
@@ -751,6 +828,10 @@ sudo systemctl restart mysql
 
 ## 4、http连接处理类
 
+##### 流程图
+
+![图片](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/640)
+
 ##### 通过**主从状态机**封装http连接类：
 
 - 主状态机
@@ -844,20 +925,42 @@ sudo systemctl restart mysql
   - `user`
   - `passwd`
   - `sqlname`
+- 返回值
+  - 无
+
 
 ##### 2、close_conn()
 
 - 描述
   - 关闭一个连接，客户总量减一
+- 返回值
+  - 无
 
-##### 3、process()
+
+##### 3、==process()==
 
 - 描述
   - 处理HTTP连接的请求
   - 调用`process_read()`，尝试读取HTTP请求
-- 
+    - 如果没有读到请求，将此连接标记为可读
+  - 调用`process_write()`，尝试写操作
+    - 若写操作失败，关闭此连接
+  - 无论写操作成功与否，最后都标记此连接为可写，调用`modfd()`
+- 返回值
+  - 无
 
 
+##### 4、read_once()
+
+- 描述
+  - 循环读取客户数据，直到无数据可读或对方关闭连接
+  - 非阻塞ET工作模式下，需要一次性将数据读完
+- 返回值
+  - `bool`
+
+##### 5、write()
+
+- 描述
 
 
 
