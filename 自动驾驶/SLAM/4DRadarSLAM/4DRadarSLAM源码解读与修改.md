@@ -1785,6 +1785,10 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 4. 跑原作者数据集，启动imu融合就会报错
    - 排除是数据集的问题。
 
+
+
+==TODO: 使用GDB运行程序，找到段错误位置==
+
 ## 2、利用激光雷达辅助，增强毫米波雷达数据
 
 ### 2.1、slam预处理节点修改
