@@ -219,7 +219,7 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 
 修改完以上内容后，保存文件并重新编译你的ROS包，即可使用新的包名。
 
-##### 9、在roslaunch文件中，`<ndoe>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样
+##### 9、在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样
 
 在ROS的`roslaunch`文件中，`name`参数和`type`参数的作用有所不同。
 
