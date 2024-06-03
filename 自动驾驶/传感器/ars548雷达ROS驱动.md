@@ -180,92 +180,7 @@ https://github.com/wulang584513/ARS548-demo/tree/master
 
 https://github.com/letMeEmoForAWhile/RosDriverForARS548
 
-### 2.1、文件
-
-#### 1、ars548_process.launch
-
-启动四个节点
-
-- ars548_process_node：
-  - 发布三个话题：
-    - /ars548_process/object_list
-    - /ars548_process/detection_list
-    - /ars548_process/radar_status
-- test_radar_input_node
-  - 检测雷达的输入信号
-  - 发布车辆速度，车辆方向，偏航角等话题
-- info_convert_node
-  - 将object和detection列表的数据转换为rviz可以显示的数据格式。
-    1. 订阅ars548_process_node节点的两个话题：/ars548_process/object_list和ars548_process/detection_list
-    2. 经过格式转换后，发布成rviz可以显示的两个话题：/ars548_process/object_marker，显示object话题；/ars548_process/detection_point_cloud，显示detection话题。
-- rviz
-
-#### 2、udp_interface.cpp(忽略该部分)
-
-udp接口，从udp读取数据
-
-##### UDP三种通信模式
-
-UDP（用户数据报协议）是一个简单的面向消息的传输层协议。它不提供可靠性、流量控制或数据重组，这意味着应用程序在上层必须处理丢失、乱序或重复的数据报。但正因为这种简单性，UDP常常被用于那些需要快速、低延迟的通信，例如实时音频、视频或游戏。
-
-当涉及UDP通信时，主要有三种通信模式：单播、组播和广播。
-
-1. **UDP 单播 (Unicast)**:
-    - 单播是一对一的通信方式。消息从一个点发送到另一个点。
-    - 例如，当一个客户端向服务器发送一个请求，并从该服务器获取一个响应时，这就是单播。
-    - 在上述代码中的`initUdpUnicastClient`方法和`sendToRadar`方法，目的是实现单播通信。即，一个客户端向一个特定的服务器发送消息。
-
-2. **UDP 组播 (Multicast)**:
-    - 组播是一对多的通信方式。消息从一个点发送到多个订阅该组播组的端点。
-    - 组播地址是一个特定的IP地址范围（例如，IPv4的`224.0.0.0`到`239.255.255.255`）。
-    - 服务器向一个组播地址发送消息，然后所有订阅这个组播地址的客户端都会收到这个消息。
-    - 组播主要用于那些需要同时向多个订阅者发送相同数据的应用，例如流式视频服务或在线会议工具。
-    - 在上述代码中的`initUdpMulticastServer`方法和`receiveFromRadar`方法，目的是实现组播通信。即，服务器可以发送消息到一个组播组，并从这个组接收消息。
-
-3. **UDP 广播 (Broadcast)**:
-    - 广播是一对所有的通信方式。消息从一个点发送，然后网络上的所有机器都会接收它。
-    - 广播主要用于本地网络，并且不会跨路由器传递。
-    - 广播用于那些需要在本地网络上通知所有设备的情况，例如DHCP。
-
-总之，UDP单播是一对一的通信，UDP组播是一对多的通信，而UDP广播是一对所有的通信。上述代码中描述了如何创建一个UDP组播服务器和一个UDP单播客户端。
-
-##### 代码实现的函数
-
-- 组播服务器：
-  - socket_server_fd
-  - IPv4地址族，UDP通信协议，
-
-- 单播客户端
-- ==接收数据流==
-- void ProcessRadarData( char *data, int len):
-  - 处理三种类型的数据并发布，三种数据分别为 
-    - ObjectList
-    - DetectionList
-    - BasicStatus
-
-#### 3、data_process.cpp
-
-##### 作用
-
-实现数据处理
-
-##### 函数
-
-- processObjectListMessage(char *in, RadarObjectList *o_list):
-
-#### 4、data_struct.h
-
-#### 5、三个节点文件
-
-包含三个节点文件ars548_process_node、info_convert_node和test_radar_input_node。
-
-##### 5.1、ars548_process_node.cpp
-
-##### 5.2、info_convert_node.cpp
-
-##### 5.3、test_radar_input_node.cpp
-
-### 2.2、如何数据读取流
+### 2.1、如何数据读取流
 
 ##### 动机：
 
@@ -353,7 +268,7 @@ UDP（用户数据报协议）是一个简单的面向消息的传输层协议�
    - 在`nlohmann::json`库中，JSON对象、数组、字符串、数字、布尔值和null都是使用`nlohmann::json`类型来表示的。
    - 当你通过索引、键或其他方法访问`nlohmann::json`对象中的元素时，返回的仍然是`nlohmann::json`类型，不过其内部的实际数据可能是字符串、数字、布尔值、数组、对象或null。
 
-### 2.3、修改发布的点云消息，使其包含多普勒速度和强度信息
+### 2.2、修改发布的点云消息，使其包含多普勒速度和强度信息
 
 ##### 动机：
 
@@ -450,7 +365,9 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
 ```
 
-##### 报错：无法将`ars548_msg::DopplerPoint` 类型的对象添加到 `std::vector<geometry_msgs::Point32>`类型的容器中
+##### 报错：
+
+无法将`ars548_msg::DopplerPoint` 类型的对象添加到 `std::vector<geometry_msgs::Point32>`类型的容器中
 
 ![image-20240229192543291](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240229192543291.png)
 
@@ -552,7 +469,57 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 }
 ```
 
+### 2.4、RCS值错误
 
+##### 动机：
+
+原项目RCS数据类型定义错误，导致发布时该值与`wireshark`解析结果不符
+
+##### 修改文件1：detections.msg
+
+```
+int8 s_RCS 
+```
+
+修改为
+
+```
+uint32 s_RCS
+```
+
+![](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/8DBA9BAA54CCA7520C9C768E702328A0.png)
+
+- 查看编译器文件可知
+- `int8`
+  - 有符号字符型
+- `uint32`
+  - 无符号整型
+
+##### 修改文件2: data_struct.h
+
+`RadarDetection`结构体中
+
+```c++
+signed char s_RCS
+```
+
+修改为
+
+```c++
+unsigned int s_RCS
+```
+
+##### 修改文件3：info_convert_node.cpp
+
+```c++
+d_list->detection_array[num].s_RCS = (signed char)(in[base_index+33]);
+```
+
+修改为
+
+```c++
+d_list->detection_array[num].s_RCS = (static_cast<unsigned int>(*(in + base_index + 33)) & 0xFF);
+```
 
 ## 3、rosbag_tools
 
