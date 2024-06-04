@@ -1748,11 +1748,11 @@ if __name__ == "__main__":
 
 ## E、参数调整
 
-
-
 ### 1、关键帧相关参数
 
 `scan_matching_odometry_nodelet.cpp`节点`initialize_params()`函数中的相关参数 
+
+### 2、距离过滤、立群点去除相关参数
 
 # 三、修改思路
 
