@@ -120,11 +120,13 @@ APE+RPE
   - 格式
 
     ```
-    tx ty tz r00 r01 r02 r10 r11 r12 r20 r21 r22
+    r00 r01 r02 tx r10 r11 r12 ty r20 r21 r22 tz 
     ```
 
     - `tx, ty, tz`: 表示平移向量的三个分量（单位：米）
     - `r00, r01 ,r02, r10, r11, r12, r20, r21, r22`: 表示旋转矩阵的元素
+    
+  - 没有时间戳，使用该格式比较两个轨迹时，需要确保位姿的数量完全一致
 
 - EuRoc，CSV
 
@@ -138,8 +140,14 @@ APE+RPE
     - `p_RS_R_x, p_RS_R_y, p_RS_R_z`: 平移向量的三个分量
     - `q_RS_w, q_RS_x, q_RS_y, q_RS_z`：四元数的旋转部分
 
-- bag
+- `bag` & `bag2`
 
-- bag2
+  - 包含如下话题的bag文件
+    - `geometry_msgs/PoseStamped`
+    - `geometry_msgs/TransformStamped`
+    - `geometry_msgs/PoseWithCovarianceStamped`
+    - `geometry_msgs/PointStamped`
+    - `nav_msgs/Odometry`
+  - v1.9版之后 TF2 也被支持
 
 PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文件格式需要一致
