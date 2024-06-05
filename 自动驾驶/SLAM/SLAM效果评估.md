@@ -6,6 +6,8 @@
 
 Absolute Pose Error
 
+也是ATE
+
 **作用：**衡量估计的位姿与实际真实位姿之间的差异
 
 使用轨迹上对应时间点的估计位姿和地面真实位姿的欧几里得距离来计算。
@@ -39,9 +41,20 @@ $$
 
     - 等等
 
-##### 2、相对位姿误差（RPE）
+##### 2、绝对轨迹误差（ATE）
 
-Relative Pose Error
+**作用：**
+
+衡量估计轨迹与真实轨迹在绝对坐标系下的全局一致性。
+
+计算公式：
+$$
+\text{ATE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} \left\| \mathbf{T}_i - \mathbf{\hat{T}}_i \right\|^2}
+$$
+
+##### 3、相对位姿误差（RPE）
+
+Relative Pose Error，是相对误差（RE，Relative Error）的具体实现
 
 **作用：**衡量短时间间隔内的位姿估计误差
 
@@ -151,3 +164,39 @@ APE+RPE
   - v1.9版之后 TF2 也被支持
 
 PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文件格式需要一致
+
+# 二、rpg
+
+##### 安装
+
+1. 安装虚拟环境python2.7
+
+   ```bash
+   conda create -n rpg python=2.7
+   conda activate rpg
+   ```
+
+2. 安装依赖
+
+   ```bash
+   pip install numpy
+   pip install matplotlib 
+   pip install colorama 
+   pip install ruamel.yaml
+   ```
+
+3. 下载源码、编译安装
+
+   ```bash
+   mkdir -p rpg_eval_ws/src
+   cd rpg_eval_ws/src
+   git clone https://github.com/uzh-rpg/rpg_trajectory_evaluation
+   git clone https://github.com/catkin/catkin_simple
+   cd ..
+   catkin_make
+   source devel/setup.bash
+   rosrun rpg_trajectory_evaluation analyze_trajectory_single.py <result_folder>
+   ```
+
+   
+
