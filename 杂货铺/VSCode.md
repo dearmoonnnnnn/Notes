@@ -81,7 +81,7 @@ sudo apt install build-essential cmake git
 - Code Runner（可选）
   - 用于快速运行C++代码
 
-## 4、配置VSCode项目
+## 4（0）、配置VSCode项目（使用json）
 
 ### 4.1 项目架构：
 
@@ -123,7 +123,7 @@ sudo apt install build-essential cmake git
 
 ![image-20240605183229443](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240605183229443.png)
 
-##### 运行生成任务：
+##### 运行生成(构建)任务：
 
 生成tasks.json后，
 
@@ -152,9 +152,9 @@ sudo apt install build-essential cmake git
 - 修改`program`的值
   - `${workspaceFolder}/helloworld`
 
-### 4.4、配置CMake
+## 4（1） 、配置VSCode项目（使用CMake）
 
-##### CMakeLists
+##### 1、编写CMakeLists文件
 
 在工作区文件夹中创建`CMakeLists.txt`
 
@@ -168,16 +168,47 @@ project(MyCppProject)
 add_executable(my_cpp_project src/main.cpp)
 ```
 
-##### CMake Tools扩展
+##### 2、配置CMake Tools扩展
 
 使用CMake Tools扩展来配置CMake项目：
 
 1. 打开命令面板(`Ctrl+Shift+P`)，然后选择`CMake：Configure`
 2. 如果提示选择CMake工具链，选择安装的GCC编译器。
 
+##### 3、生成构建文件
 
+在终端进入项目根目录，输入以下命令
+
+```bash
+mkdir build
+cd build
+cmake ..
+```
+
+这将生成一个`Makefile`文件
+
+##### 4、运行构建（生成）任务
+
+`Ctrl+Shift+B`
+
+这会生成一个可执行文件
+
+##### 5、运行可执行文件
+
+在终端运行可执行文件
+
+```bash
+./helloworld
+```
+
+##### 6、调试
+
+- 方案一
+  - 同4（0），生成launch.json文件进行调试
+- 方案二
+  1. `Ctrl+Shift+P`
+  2. 运行`CMake: Debug`，启动调试会话
 
 # 二、插件
 
 通义灵码
-
