@@ -124,9 +124,9 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 使用了简单的加权平均策略来整合IMU和激光雷达里程计的Roll和Pitch角度信息。
 
-##### 13、自我速度Twist的作用是什么，第二个节点用了时间同步回调函数，能否不使用自我速度
+##### 13、command_callback如何才能调用？运行时，订阅者的消息来源是何处？
 
-##### 14、自我速度评估失败会怎么样
+
 
 ## B、概念
 
@@ -1836,3 +1836,12 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 ## 4、点云配准算法改进
 
 使用GNC而不是RANSAC
+
+# 四、定量评估
+
+输出轨迹代码定位
+
+当前猜测：
+
+radar_graph_slam_nodelet.cpp节点中的command_callback
+
