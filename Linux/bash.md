@@ -82,15 +82,14 @@ grep [options] pattern [files]
 
    这会列出所有包含“hello”文本的文件名。
 
-2. 在文件example.txt中搜索包含文本`hello`的行
+2. 在文件`example.txt`中搜索包含文本`hello`的行
 
    ```bash
    grep "hello" example.txt 
    ```
 
-   
 
-
+# chmod
 
 
 
