@@ -208,7 +208,7 @@ echo "Current date: $DATE"
 
 # 三、开机启动应用
 
-## 1、使用`rc.local`
+## 1、使用`rc.local`(未成功)
 
 将脚本添加到`/etc/rc.local`文件
 
