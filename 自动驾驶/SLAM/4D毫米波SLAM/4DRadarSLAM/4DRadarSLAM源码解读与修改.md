@@ -404,6 +404,10 @@ T_init = [R_init | t_init]
 - `matching()`函数中，
   - 若启用自我速度：初始猜测变换矩阵 = 上一次扫描到扫描的变换 * `egovel_cum` * 扫描匹配的相对位姿变换
 
+#### 5、conmand 数据流向
+
+
+
 ### 一、apps/preprocessing_nodelet.cpp
 
 #### 三个订阅者：
@@ -1746,14 +1750,6 @@ if __name__ == "__main__":
 
 ```
 
-## E、参数调整
-
-### 1、关键帧相关参数
-
-`scan_matching_odometry_nodelet.cpp`节点`initialize_params()`函数中的相关参数 
-
-### 2、距离过滤、立群点去除相关参数
-
 # 三、修改思路
 
 ## 1、IMU融合
@@ -1837,11 +1833,5 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 
 使用GNC而不是RANSAC
 
-# 四、定量评估
 
-输出轨迹代码定位
-
-当前猜测：
-
-`radar_graph_slam_nodelet.cpp`节点中的`command_callback`
 
