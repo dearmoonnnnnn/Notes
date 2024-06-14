@@ -235,8 +235,6 @@ sudo make uninstall
 ubuntu-drivers devices
 ```
 
-
-
 ## 5.1 安装驱动
 
 三种方法

@@ -970,7 +970,8 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
 
 ##### 12、conmand_callback()
 
-
+- 描述
+  - 若接收到`time`命令，输出扫描到扫描配准的耗费时间
 
 ### 三、apps/radar_graph_slam_nodelet.cpp
 
@@ -1180,9 +1181,14 @@ sync.reset(new message_filters::Synchronizer<ApproxSyncPolicy>(ApproxSyncPolicy(
     - 存储GPS数据的队列
   - `keyframes`
     - 关键帧队列
-  - last_gps_edge_index
+  - `last_gps_edge_index`
+    - 
 
 ##### 20、command_callback()
+
+- 描述
+  - 如果消息是`output_aftmapped`，则打开一个文件，将关键帧的位置和旋转信息写入文件中，并打印
+  - 如果消息是`time`，则计算并打印预滤波匹配时间、扫描上下文时间、里程计检查时间和优化时间的中位数。
 
 ## D、launch文件
 
