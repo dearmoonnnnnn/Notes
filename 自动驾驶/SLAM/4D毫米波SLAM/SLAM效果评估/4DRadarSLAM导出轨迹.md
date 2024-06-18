@@ -16,19 +16,23 @@
   
       // 创建一个命令消息
       std_msgs::String command_msg;
-      command_msg.data = "time";  // 你可以在这里更改为 "point_distribution" 或 "hello"
+      command_msg.data = "time";  // 可以在这里更改为 "point_distribution" 或 "output_aftmapped"
   
-      // 等待发布者和订阅者连接
-      ros::Duration(1.0).sleep();
+      // 设置发布频率
+      ros::Rate loop_rate(60);  // Hz
   
-      // 发布命令
-      command_pub.publish(command_msg);
-      ROS_INFO("Published command: %s", command_msg.data.c_str());
+      while (ros::ok()) {
+          // 发布命令
+          command_pub.publish(command_msg);
+          ROS_INFO("Published command: %s", command_msg.data.c_str());
   
-      ros::spinOnce();
+          ros::spinOnce();
+          loop_rate.sleep();  // 控制发送频率
+      }
   
       return 0;
   }
+  
   ```
 
 或
@@ -48,11 +52,14 @@
   ```
 
 
-# 定量评估
-
-输出轨迹代码定位
-
-当前猜测：
+# 代码修改
 
 `radar_graph_slam_nodelet.cpp`节点中的`command_callback`
 
+- 修改输出路径
+
+  ```cpp
+  fout.open("/home/dearmoon/datasets/NWU/日晴不颠簸低速3/estimated/stamped_pose_graph_estimate.txt", ios::out);
+  ```
+
+  

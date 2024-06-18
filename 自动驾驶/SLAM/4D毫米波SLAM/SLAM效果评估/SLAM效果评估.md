@@ -198,5 +198,17 @@ PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文�
    rosrun rpg_trajectory_evaluation analyze_trajectory_single.py <result_folder>
    ```
 
-   
+
+##### 可用的数据格式：
+
+`EuRoc`格式
+
+##### 简单示例：
+
+```cpp
+source devel/setup.bash
+rosrun rpg_trajectory_evalution analyze_trajectory_single.py <result_folder>
+```
+
+`<result_folder>`存放真值和估计值
 
