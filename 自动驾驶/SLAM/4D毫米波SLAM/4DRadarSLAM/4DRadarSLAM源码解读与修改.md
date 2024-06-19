@@ -601,6 +601,9 @@ T_init = [R_init | t_init]
 
 - 描述
   - 下采样函数，用于减少点云密度
+  - 方法，在`initializeParams()`函数中确定
+    - `VOXELGRID`
+    - `APPROX_VOXELGRID`
 - 参数
   - `cloud`
     - 类型：`const pcl::PointCloud<PointT>::ConstPtr&`
