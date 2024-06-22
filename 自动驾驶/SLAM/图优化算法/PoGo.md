@@ -113,7 +113,7 @@ PoGO-net架构
 
 根据先前的工作，不再使用二进制来表示$z_{ij}$，而是用边消息$m_{\widetilde{r}_{ij}}^l$的确定性函数$g$来表示
 
-- $z_{ij}^l = g(\omega_{\gamma^l} (m_ {\widetilde{r}_{ij} } ^l) ,\epsilon^l)$
+- $ z_{ij}^l = g(\omega_{\gamma^l} (m_ {\widetilde{r}_{ij} } ^l) ,\epsilon^l) $
 
 ......
 
