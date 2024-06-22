@@ -93,7 +93,7 @@
 
 ## 常见错误
 
-##### 错误1：无法推送一些引用到...
+##### 1、无法推送一些引用到...
 
 ```bash
  ! [rejected]        main -> main (fetch first)
@@ -184,7 +184,7 @@ error: 无法推送一些引用到 'https://github.com/letMeEmoForAWhile/Notes.g
 
 这样，你就成功解决了冲突，并将更改推送到了远程仓库。
 
-##### 错误2、git add 特定文件夹出现报错
+##### 2、git add 特定文件夹出现报错
 
 ```bash
 尚未暂存以备提交的变更：
@@ -212,7 +212,7 @@ build/
 devel/
 ```
 
-##### 错误3：error: 源引用规格 main 没有匹配 error: 无法推送一些引用到 'origin'
+##### 3：error: 源引用规格 main 没有匹配 error: 无法推送一些引用到 'origin'
 
 **错误原因**：
 
@@ -225,6 +225,10 @@ git branch -M [仓库名]
 ```
 
 修改本地分支名称
+
+##### 4、Github 无法正确显示 latex 公式
+
+
 
 # 零、git clone用法
 
@@ -426,4 +430,12 @@ temp/
 git add .gitignore
 git commit -m "Add .gitignore file"
 ```
+
+
+
+
+
+
+
+
 
