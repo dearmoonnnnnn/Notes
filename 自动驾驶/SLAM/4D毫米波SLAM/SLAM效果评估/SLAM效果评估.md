@@ -216,6 +216,61 @@ APE+RPE
 
 PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文件格式需要一致
 
+## 结果图解释:
+
+##### 1、轨迹对比图
+
+![img](https://raw.githubusercontent.com/MichaelGrupp/evo/master/doc/assets/markers.png)
+
+**横纵坐标**：
+
+- **横坐标（x）**：表示机器人在 x 轴方向上的位置，单位为米（m）。
+- **纵坐标（y）**：表示机器人在 y 轴方向上的位置，单位为米（m）。
+- **z 坐标**：表示机器人在 z 轴方向上的位置，单位为米（m）。
+
+**图例**：
+
+- **reference（灰色虚线）**：真实的轨迹。
+- **trajectory（蓝色实线）**：估计的轨迹。
+
+##### 2：误差统计图
+
+![evo](https://raw.githubusercontent.com/MichaelGrupp/evo/master/doc/assets/res_stats.png)
+
+**横纵坐标**：
+
+- **横坐标（APE (m)）**：绝对位姿误差（APE）的统计值，单位为米（m）。
+- **纵坐标**：误差统计指标，包括标准差（std）、均方根误差（rmse）、最小值（min）、中位数（median）、平均值（mean）、最大值（max）。
+
+**图例**：
+
+- **KITTI_00_ORB（蓝色条形）**：ORB-SLAM 系统在 KITTI_00 数据集上的误差统计结果。
+- **KITTI_00_SPTAM（绿色条形）**：SPTAM 系统在 KITTI_00 数据集上的误差统计结果。
+
+##### 3、小提琴图
+
+![evo](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/res_violin.png)
+
+**横纵坐标**：
+
+- **横坐标**：不同的 SLAM 系统（KITTI_00_ORB 和 KITTI_00_SPTAM）。
+- **纵坐标（APE (m)）**：绝对位姿误差（APE），单位为米（m）。
+
+**图例**：
+
+- **KITTI_00_ORB（蓝色）**：ORB-SLAM 系统在 KITTI_00 数据集上的误差分布。
+- **KITTI_00_SPTAM（绿色）**：SPTAM 系统在 KITTI_00 数据集上的误差分布。
+
+**小提琴图**：
+
+- **外形轮廓**：表示误差的分布形状和概率密度。轮廓越宽的地方表示该误差值的出现频率越高。
+
+- **中间的白点**：表示数据的中位数。
+
+- **黑色粗线**：表示数据的上下四分位数（即 25th 和 75th 百分位数）。
+
+- **细线（须）**：表示数据的范围（通常是 1.5 倍的四分位距以内的数据点）。
+
 # 二、rpg (ATE + RPE)
 
 ##### 安装
@@ -269,7 +324,7 @@ rosrun rpg_trajectory_evalution analyze_trajectory_single.py <result_folder>
 
 ![mh05_rel_translation_error](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/mh05_rel_translation_error.png)
 
-**含义**：相对平移误差（Relative Translation Error，ATE）
+**含义**：相对平移误差（Relative Translation Error，RTE）
 
 - **描述**：展示了轨迹中相邻时间点之间的平移（均方根）误差。
 - **用途**：评估SLAM算法短时间尺度内的平移精度
