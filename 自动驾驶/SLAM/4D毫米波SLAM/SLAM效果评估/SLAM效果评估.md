@@ -2,11 +2,9 @@
 
 ## 概念：
 
-##### 1、绝对位姿误差(APE)
+##### ==1、绝对位姿误差(APE)==
 
 Absolute Pose Error
-
-也是ATE
 
 **作用：**衡量估计的位姿与实际真实位姿之间的差异
 
@@ -41,7 +39,9 @@ $$
 
     - 等等
 
-##### 1（1）、绝对轨迹误差（ATE）
+##### 2、绝对轨迹误差（ATE）
+
+Absolute Trajectory Error
 
 **作用：**
 
@@ -52,7 +52,7 @@ $$
 \text{ATE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} \left\| \mathbf{T}_i - \mathbf{\hat{T}}_i \right\|^2}
 $$
 
-##### 2、相对位姿误差（RPE）
+##### 3、相对位姿误差（RPE）
 
 Relative Pose Error，是相对误差（RE，Relative Error）的具体实现
 
