@@ -41,7 +41,7 @@ $$
 
     - 等等
 
-##### 2、绝对轨迹误差（ATE）
+##### 1（1）、绝对轨迹误差（ATE）
 
 **作用：**
 
@@ -52,7 +52,7 @@ $$
 \text{ATE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} \left\| \mathbf{T}_i - \mathbf{\hat{T}}_i \right\|^2}
 $$
 
-##### 3、相对位姿误差（RPE）
+##### 2、相对位姿误差（RPE）
 
 Relative Pose Error，是相对误差（RE，Relative Error）的具体实现
 
@@ -84,23 +84,64 @@ $$
 
 ##### 1、如何将自己生成的轨迹转换为txt文档
 
-相关SLAM项目中有输出轨迹的模块。
+见
+
+https://github.com/letMeEmoForAWhile/Notes/blob/main/%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/SLAM/4D%E6%AF%AB%E7%B1%B3%E6%B3%A2SLAM/SLAM%E6%95%88%E6%9E%9C%E8%AF%84%E4%BC%B0/4DRadarSLAM%E5%AF%BC%E5%87%BA%E8%BD%A8%E8%BF%B9.md
+
+##### 2、什么是箱线图，为什么使用箱线图表示评估结果
+
+**箱线图图例解释**
+
+- **箱体（Box）**：表示数据的四分位范围（IQR， Interquartile Range）
+  - 箱体底部是第一个四分位数（Q1），表示数据中25%的值。
+  - 箱体顶部是第三个四分位数（Q3），表示数据中75%的值。
+  - 箱体内的水平线是中位数。
+- **胡须（Whiskers）**：表示除去异常值以外的数据范围
+  - 下胡须从Q1延伸到最小值（不低于 Q1 - 1.5*IQR）
+  - 上胡须从Q3延伸到最大值（不高于 Q3 + 1.5*IQR）
+- **异常值（Outliers）**：如果有，会显示为箱体和胡须之外的单独点。
+
+
+
+**以 `rel_translation_error.pdf` 为例**
+
+![mh05_rel_translation_error](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/mh05_rel_translation_error.png)
+
+- 横坐标
+  - 距离
+- 纵坐标
+  - 相对平移误差，相邻点之间的平移误差
+- 每一个距离只有一个点，为什么会有统计误差？
+  - 横坐标9米的箱线图，表示 0-9米内，所有相邻点对之间的平移误差的统计。
 
 ## 相关资料
 
-- evo：https://github.com/MichaelGrupp/evo
+- evo：
 
-  https://zhuanlan.zhihu.com/p/259349163
+  - 项目地址
 
-  https://zhuanlan.zhihu.com/p/672731463
+    https://github.com/MichaelGrupp/evo
 
-  https://blog.csdn.net/u010196944/article/details/129384012
+  - 博客
 
-- rpg项目地址：
+    https://zhuanlan.zhihu.com/p/259349163
 
-  [uzh-rpg/rpg_trajectory_evaluation: Toolbox for quantitative trajectory evaluation of VO/VIO (github.com)](https://github.com/uzh-rpg/rpg_trajectory_evaluation)
+    https://zhuanlan.zhihu.com/p/672731463
 
-# 一、EVO
+    https://blog.csdn.net/u010196944/article/details/129384012
+
+- rpg
+
+  - 项目地址：
+
+    [uzh-rpg/rpg_trajectory_evaluation: Toolbox for quantitative trajectory evaluation of VO/VIO (github.com)](https://github.com/uzh-rpg/rpg_trajectory_evaluation)
+
+  - 安装与使用
+
+    https://blog.csdn.net/Android_WPF/article/details/132589717
+
+
+# 一、evo (APE + RPE)
 
 APE+RPE
 
@@ -165,7 +206,7 @@ APE+RPE
 
 PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文件格式需要一致
 
-# 二、rpg
+# 二、rpg (ATE + RPE)
 
 ##### 安装
 
@@ -212,3 +253,13 @@ rosrun rpg_trajectory_evalution analyze_trajectory_single.py <result_folder>
 
 `<result_folder>`存放真值和估计值
 
+## 结果图解释：
+
+##### 1、`rel_translation_error.pdf`
+
+![mh05_rel_translation_error](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/mh05_rel_translation_error.png)
+
+**含义**：相对平移误差（Relative Translation Error，ATE）
+
+- **描述**：展示了轨迹中相邻时间点之间的平移（均方根）误差。
+- **用途**：评估SLAM算法短时间尺度内的平移精度
