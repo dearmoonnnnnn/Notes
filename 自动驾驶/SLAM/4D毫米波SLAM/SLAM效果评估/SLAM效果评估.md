@@ -2,7 +2,7 @@
 
 ## 概念：
 
-##### ==1、绝对位姿误差(APE)==
+##### 1、绝对位姿误差(APE)
 
 Absolute Pose Error
 
@@ -37,22 +37,13 @@ $$
       \| \mathbf{x} \|_2 = \left( \sum_{i=1}^{n} |x_i|^2 \right)^{1/2}
       $$
 
-    - 等等
+- 
 
-##### 2、绝对轨迹误差（ATE）
-
-Absolute Trajectory Error
-
-**作用：**
-
-衡量估计轨迹与真实轨迹在绝对坐标系下的全局一致性。
-
-计算公式：
 $$
 \text{ATE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} \left\| \mathbf{T}_i - \mathbf{\hat{T}}_i \right\|^2}
 $$
 
-##### 3、相对位姿误差（RPE）
+##### 2、相对位姿误差（RPE）
 
 Relative Pose Error，是相对误差（RE，Relative Error）的具体实现
 
@@ -79,6 +70,19 @@ $$
 - 组合变换$\mathbf{T}^{-1}_{i+1} \mathbf{T}_i$
   - 将第$i$个时间点的位姿从原点坐标系变换到第$i+1$个时间点的坐标系中。
   - 从而得到第$i$个时间点到第$i+1$个时间点的相对位姿变化。
+
+##### 3、ATE和RTE
+
+绝对轨迹误差，相对轨迹误差
+
+**和APE、RPE的区别**：
+
+![60e107aec977f9fc709f645a18eede79](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/60e107aec977f9fc709f645a18eede79.png)
+
+- ATE和RTE需要轨迹对齐
+  - 左边是未对齐直接计算轨迹的误差
+  - 右边是对齐后的误差
+- APE和RPE不进行轨迹对齐，直接计算位姿的误差
 
 ## 问题：
 
@@ -116,29 +120,33 @@ https://github.com/letMeEmoForAWhile/Notes/blob/main/%E8%87%AA%E5%8A%A8%E9%A9%BE
 
 ## 相关资料
 
-- evo：
+##### 评价指标：
 
-  - 项目地址
+[SLAM中的位姿与轨迹评价指标:APE、RPE、ATE、RTE_ape计算 slam-CSDN博客](https://blog.csdn.net/lovely_yoshino/article/details/128505833)
 
-    https://github.com/MichaelGrupp/evo
+##### evo：
 
-  - 博客
+- 项目地址
 
-    https://zhuanlan.zhihu.com/p/259349163
+  https://github.com/MichaelGrupp/evo
 
-    https://zhuanlan.zhihu.com/p/672731463
+- 博客
 
-    https://blog.csdn.net/u010196944/article/details/129384012
+  https://zhuanlan.zhihu.com/p/259349163
 
-- rpg
+  https://zhuanlan.zhihu.com/p/672731463
 
-  - 项目地址：
+  https://blog.csdn.net/u010196944/article/details/129384012
 
-    [uzh-rpg/rpg_trajectory_evaluation: Toolbox for quantitative trajectory evaluation of VO/VIO (github.com)](https://github.com/uzh-rpg/rpg_trajectory_evaluation)
+##### rpg
 
-  - 安装与使用
+- 项目地址：
 
-    https://blog.csdn.net/Android_WPF/article/details/132589717
+  [uzh-rpg/rpg_trajectory_evaluation: Toolbox for quantitative trajectory evaluation of VO/VIO (github.com)](https://github.com/uzh-rpg/rpg_trajectory_evaluation)
+
+- 安装与使用
+
+  https://blog.csdn.net/Android_WPF/article/details/132589717
 
 
 # 一、evo (APE + RPE)
