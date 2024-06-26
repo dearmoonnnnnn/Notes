@@ -4,6 +4,14 @@
 
 `scan_matching_odometry_nodelet.cpp`节点`initialize_params()`函数中的相关参数 
 
+
+
+
+
+
+
+
+
 ## 2、点云融合阈值调整
 
 距离参数

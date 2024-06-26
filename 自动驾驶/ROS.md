@@ -1747,3 +1747,6 @@ rostopic echo -b <bag_name>.bag -p /<topic_name> > <new_name>.txt
 rostopic echo -b data1.bag -p /tag_detections > data1.txt
 ```
 
+# 十一、使用参数服务器
+
+## 1、
