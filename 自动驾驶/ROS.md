@@ -1749,4 +1749,44 @@ rostopic echo -b data1.bag -p /tag_detections > data1.txt
 
 # 十一、使用参数服务器
 
-## 1、
+## 1、设置参数
+
+##### 通过launch文件：
+
+```xml
+<launch>
+    <node name="param_test" pkg="your_package_name" type="param_test_node" output="screen">
+        <param name="outlier_removal_method" value="RADIUS"/>
+    </node>
+</launch>
+```
+
+##### 通过命令行：
+
+```sh
+rosparam set /param_test/outlier_removal_method RADIUS
+rosrun your_package_name param_test_node
+```
+
+## 2、获取参数
+
+```cpp
+#include <ros/ros.h>
+#include <string>
+
+int main(int argc, char** argv) {
+    ros::init(argc, argv, "param_test");
+    ros::NodeHandle nh;
+    ros::NodeHandle private_nh("~");
+
+    std::string outlier_removal_method = private_nh.param<std::string>("outlier_removal_method", "STATISTICAL");
+
+    ROS_INFO("Outlier removal method: %s", outlier_removal_method.c_str());
+
+    ros::spin();
+    return 0;
+}
+```
+
+- 如果参数服务器中存在`outlier_removal_method`参数且值为`RADIUS`，那么运行时该参数的值将是`RADIUS`。
+- 如果参数服务器中没有设置该参数，那么运行时该参数的值将是`STATISTICAL`，这是默认值。
