@@ -160,11 +160,13 @@ sudo apt install texlive-full
 
 
 
-# 二、
+# 二、语法
 
 ```latex
 \textnormal{}
 ```
 
 当你在一个部分使用了特定的字体样式（如粗体、斜体等），可以用 `\textnormal` 恢复部分文本的默认样式。
+
+# 三、Latex 自定义样式
 
