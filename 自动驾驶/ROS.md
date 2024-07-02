@@ -1788,5 +1788,5 @@ int main(int argc, char** argv) {
 }
 ```
 
-- 如果参数服务器中存在`outlier_removal_method`参数且值为`RADIUS`，那么运行时该参数的值将是`RADIUS`。
-- 如果参数服务器中没有设置该参数，那么运行时该参数的值将是`STATISTICAL`，这是默认值。
+- 如果参数服务器中存在 `outlier_removal_method` 参数且值为 `RADIUS` ，那么运行时该参数的值将是 `RADIUS` 。
+- 如果参数服务器中没有设置该参数，那么运行时该参数的值将是 `STATISTICAL` ，这是默认值。
