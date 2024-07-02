@@ -1790,3 +1790,33 @@ int main(int argc, char** argv) {
 
 - 如果参数服务器中存在 `outlier_removal_method` 参数且值为 `RADIUS` ，那么运行时该参数的值将是 `RADIUS` 。
 - 如果参数服务器中没有设置该参数，那么运行时该参数的值将是 `STATISTICAL` ，这是默认值。
+
+# 十二、定时器
+
+```cpp
+#include <ros/ros.h>
+#include <ros/console.h>
+
+void timerCallback(const ros::WallTimerEvent& event) {
+    // 打印定时器触发的时间信息
+    ROS_INFO("Timer expected to trigger at: %f", event.current_expected.toSec());
+    ROS_INFO("Timer actually triggered at: %f", event.current_real.toSec());
+    ROS_INFO("Last timer expected to trigger at: %f", event.last_expected.toSec());
+    ROS_INFO("Last timer actually triggered at: %f", event.last_real.toSec());
+    ROS_INFO("Time since last trigger: %f seconds", (event.current_real - event.last_real).toSec());
+}
+
+int main(int argc, char** argv) {
+    ros::init(argc, argv, "timer_example");
+    ros::NodeHandle nh;
+
+    // 创建一个WallTimer，每1秒触发一次timerCallback
+    ros::WallTimer timer = nh.createWallTimer(ros::WallDuration(1.0), timerCallback);
+
+    // 进入ROS事件循环
+    ros::spin();
+
+    return 0;
+}
+```
+
