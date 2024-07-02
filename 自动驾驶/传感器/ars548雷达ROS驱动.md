@@ -142,7 +142,7 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 
 总的来说，这个构造函数设置了Convert类的一些初值，并为这个类与Pandar LiDAR数据的处理进行了初始化。它也似乎具有动态重新配置的功能，允许在运行时修改某些参数。
 
-# 二、根据ARS548-demo实现(直接跳转4、具体步骤)
+# 二、根据ARS548-demo实现
 
 ## 1、整体思路：
 
