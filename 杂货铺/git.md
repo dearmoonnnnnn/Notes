@@ -1,3 +1,9 @@
+[TOC]
+
+
+
+
+
 # 零、概念与问题
 
 ## 概念
@@ -228,7 +234,38 @@ git branch -M [仓库名]
 
 ##### 4、Github 无法正确显示 latex 公式
 
+渲染成网页，暂未实现
 
+##### 5、GitHub 无法正确显示 typora 自动生成的内容目录
+
+#### 方法二：使用工具自动生成目录
+
+使用一些 Markdown 工具或插件来自动生成目录，然后将生成的目录插入到文档中。
+
+例如，使用 `markdown-toc` 工具：
+
+1. 安装 `markdown-toc`：
+
+   ```bash
+   npm install -g markdown-toc
+   ```
+
+2. 在你的 Markdown 文件中添加一个占位符，例如 `<!-- TOC -->`：
+
+   ```markdown
+   <!-- TOC -->
+   
+   ## Introduction
+   ...
+   ```
+
+3. 运行 `markdown-toc` 工具生成目录：
+
+   ```bash
+   markdown-toc -i your-markdown-file.md
+   ```
+
+4. 这会自动在 `<!-- TOC -->` 位置插入生成的目录。
 
 # 零、git clone用法
 
