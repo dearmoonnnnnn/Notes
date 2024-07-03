@@ -1,38 +1,50 @@
 <!--ts-->
 * [零、概念与问题](#零概念与问题)
+   
    * [概念](#概念)
-            * [1、工作目录（Working Directory)](#1工作目录working-directory)
-            * [2、暂存区（Staging Area）](#2暂存区staging-area)
-            * [3、本地仓库（Local Repository）](#3本地仓库local-repository)
+        
+        * [1、工作目录（Working Directory)](#1工作目录working-directory)
+        * [2、暂存区（Staging Area）](#2暂存区staging-area)
+        *  [3、本地仓库（Local Repository）](#3本地仓库local-repository)
+        
    * [问题](#问题)
-            * [1、在执行git commit时，为什么要用邮箱和用户名来验证身份信息，而不是用github的用户名和密码？](#1在执行git-commit时为什么要用邮箱和用户名来验证身份信息而不是用github的用户名和密码)
-            * [2、在执行git push时，需要github用户名和密码进行验证，已确保用户名和密码正确，但仍验证失败。](#2在执行git-push时需要github用户名和密码进行验证已确保用户名和密码正确但仍验证失败)
-            * [3、如何使用个人访问令牌（Personal）验证？](#3如何使用个人访问令牌personal验证)
+        
+        - [1、在执行git commit时，为什么要用邮箱和用户名来验证身份信息，而不是用github的用户名和密码？](#1在执行git-commit时为什么要用邮箱和用户名来验证身份信息而不是用github的用户名和密码)
+        
+        - [2、在执行git push时，需要github用户名和密码进行验证，已确保用户名和密码正确，但仍验证失败。](#2在执行git-push时需要github用户名和密码进行验证已确保用户名和密码正确但仍验证失败)
+        - [3、如何使用个人访问令牌（Personal）验证？](#3如何使用个人访问令牌personal验证)
+        
    * [常见错误](#常见错误)
-            * [1、无法推送一些引用到...](#1无法推送一些引用到)
-            * [2、git add 特定文件夹出现报错](#2git-add-特定文件夹出现报错)
-            * [3：error: 源引用规格 main 没有匹配 error: 无法推送一些引用到 'origin'](#3error-源引用规格-main-没有匹配-error-无法推送一些引用到-origin)
-            * [4、Github 无法正确显示 latex 公式](#4github-无法正确显示-latex-公式)
+   
+        * [1、无法推送一些引用到...](#1无法推送一些引用到)
+        *  [2、git add 特定文件夹出现报错](#2git-add-特定文件夹出现报错)
+        * [3：error: 源引用规格 main 没有匹配 error: 无法推送一些引用到 'origin'](#3error-源引用规格-main-没有匹配-error-无法推送一些引用到-origin)
+        * [4、Github 无法正确显示 latex 公式](#4github-无法正确显示-latex-公式)
+   
 * [一、git clone用法](#一git-clone用法)
+   
    * [1、下载特定分支](#1下载特定分支)
    * [2、递归下载](#2递归下载)
-            * [动机：](#动机)
-            * [用法：](#用法)
+        * [动机：](#动机)
+        * [用法：](#用法)
+   
 * [一、将本地项目添加到github仓库中](#一将本地项目添加到github仓库中)
+   
    * [A、linux操作系统](#alinux操作系统)
-            * [1、初始化本地仓库](#1初始化本地仓库)
-            * [2、将文件添加到暂存区](#2将文件添加到暂存区)
-            * [3、提交更改](#3提交更改)
-            * [4、关联远程仓库](#4关联远程仓库)
-            * [5、推送到远程仓库](#5推送到远程仓库)
-            * [github创建空仓库后的提示：](#github创建空仓库后的提示)
-            * [create a new repository on the command line：](#create-a-new-repository-on-the-command-line)
-            * [push an existing repository from the command line](#push-an-existing-repository-from-the-command-line)
-            * [本地项目已经与远程仓库关联，当本地项目产生部分更新时，如何推送到github](#本地项目已经与远程仓库关联当本地项目产生部分更新时如何推送到github)
+        * [1、初始化本地仓库](#1初始化本地仓库)
+        * [2、将文件添加到暂存区](#2将文件添加到暂存区)
+        * [3、提交更改](#3提交更改)
+        * [4、关联远程仓库](#4关联远程仓库)
+        * [5、推送到远程仓库](#5推送到远程仓库)
+        * [github创建空仓库后的提示：](#github创建空仓库后的提示)
+        * [create a new repository on the command line：](#create-a-new-repository-on-the-command-line)
+        * [push an existing repository from the command line](#push-an-existing-repository-from-the-command-line)
+        * [本地项目已经与远程仓库关联，当本地项目产生部分更新时，如何推送到github](#本地项目已经与远程仓库关联当本地项目产生部分更新时如何推送到github)
    * [B、windows操作系统](#bwindows操作系统)
+   
 * [二、git push/pull 特定文件夹或者文件](#二git-pushpull-特定文件夹或者文件)
-            * [方法1：使用sparse-checkout：（未实践）](#方法1使用sparse-checkout未实践)
-            * [方法2：使用.gitignore文件](#方法2使用gitignore文件)
+        * [方法1：使用sparse-checkout：（未实践）](#方法1使用sparse-checkout未实践)
+        * [方法2：使用.gitignore文件](#方法2使用gitignore文件)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 <!-- Added by: dearmoon, at: 2024年 07月 03日 星期三 15:39:00 CST -->
