@@ -21,14 +21,14 @@
 - [一、将本地项目添加到github仓库中](#一将本地项目添加到github仓库中)
   - [6. A、linux操作系统](#6-alinux操作系统)
         - [1、初始化本地仓库](#1初始化本地仓库)
-        - [2、将文件添加到暂存区](#2将文件添加到暂存区)
-        - [3、提交更改](#3提交更改)
-        - [4、关联远程仓库](#4关联远程仓库)
-        - [5、推送到远程仓库](#5推送到远程仓库)
-        - [github创建空仓库后的提示：](#github创建空仓库后的提示)
-        - [create a new repository on the command line：](#create-a-new-repository-on-the-command-line)
-        - [push an existing repository from the command line](#push-an-existing-repository-from-the-command-line)
-        - [本地项目已经与远程仓库关联，当本地项目产生部分更新时，如何推送到github](#本地项目已经与远程仓库关联当本地项目产生部分更新时如何推送到github)
+            - [2、将文件添加到暂存区](#2将文件添加到暂存区)
+            - [3、提交更改](#3提交更改)
+            - [4、关联远程仓库](#4关联远程仓库)
+            - [5、推送到远程仓库](#5推送到远程仓库)
+            - [github创建空仓库后的提示：](#github创建空仓库后的提示)
+            - [create a new repository on the command line：](#create-a-new-repository-on-the-command-line)
+            - [push an existing repository from the command line](#push-an-existing-repository-from-the-command-line)
+            - [本地项目已经与远程仓库关联，当本地项目产生部分更新时，如何推送到github](#本地项目已经与远程仓库关联当本地项目产生部分更新时如何推送到github)
   - [7. B、windows操作系统](#7-bwindows操作系统)
 - [二、git push/pull 特定文件夹或者文件](#二git-pushpull-特定文件夹或者文件)
         - [方法1：使用`sparse-checkout：`（未实践）](#方法1使用sparse-checkout未实践)
@@ -441,6 +441,8 @@ git push -u origin main
 只需要执行2、3、5步骤
 
 ##  7. <a name='Bwindows'></a>B、windows操作系统
+
+使用
 
 # 二、git push/pull 特定文件夹或者文件
 
