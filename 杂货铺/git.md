@@ -43,8 +43,10 @@
    * [B、windows操作系统](#bwindows操作系统)
    
 * [二、git push/pull 特定文件夹或者文件](#二git-pushpull-特定文件夹或者文件)
+        
         * [方法1：使用sparse-checkout：（未实践）](#方法1使用sparse-checkout未实践)
         * [方法2：使用.gitignore文件](#方法2使用gitignore文件)
+        
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 <!-- Added by: dearmoon, at: 2024年 07月 03日 星期三 15:39:00 CST -->
