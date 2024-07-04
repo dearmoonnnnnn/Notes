@@ -1,5 +1,8 @@
-- [零、概念](#零概念)
-        - [1、GFM](#1gfm)
+- [零、概念和问题](#零概念和问题)
+  - [概念](#概念)
+        - [1. GFM](#1-gfm)
+  - [问题](#问题)
+        - [1. 生成的目录在手机端无法跳转](#1-生成的目录在手机端无法跳转)
 - [一、GFM TOC](#一gfm-toc)
         - [动机：](#动机)
   - [**1. Linux**](#1-linux)
@@ -11,16 +14,25 @@
     - [1.3 项目3：naokazuterada/MarkdownToc](#13-项目3naokazuteradamarkdowntoc)
     - [1.4 项目4：](#14-项目4)
     - [1.5 VSCode Markdown All in One (采用)](#15-vscode-markdown-all-in-one-采用)
+        - [存在的问题：](#存在的问题)
   - [**2. Windows**](#2-windows)
 
 
-# 零、概念
+# 零、概念和问题
 
-##### 1、GFM
+## 概念
+
+##### 1. GFM
 
 - `Github Flavored Markdown`
 - 是 Github 针对 Markdown 进行的一些扩展和改进。GFM 是 Github 用来解析和渲染 Markdown 文档的标准
   - README 文件、Issues、Pull Requests 等地方使用 GFM
+
+## 问题
+
+##### 1. 生成的目录在手机端无法跳转
+
+经实验，只有纯英文的目录可调转
 
 # 一、GFM TOC
 
@@ -93,7 +105,18 @@ https://github.com/gtaifu/gfm_toc_generator
    - 输入 `Create Table of Contents` 并选择它。
 3. **插入目录**：
    - 插件会自动生成目录并插入到你的文件中。
-4. `ctrl + shift + v` 边编写边预览
+4. **在 VSCode 中预览 Markdown 文件**
+   - `ctrl + shift + v` 
+5. **更新现有目录**
+   - 在 typora 中更新 md 文加内容后
+   - 打开 VSCode , 按 `ctrl + s` 保存文件，即可自动更新目录
+
+##### 存在的问题：
+
+若一级标题和二级标题的下一行是五级标题，五级标题的目录不会换行
+
+
 
 ## **2. Windows**
 
+# 二、跳转到其他 markdown 文件
