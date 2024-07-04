@@ -6,15 +6,15 @@
 - 是 Github 针对 Markdown 进行的一些扩展和改进。GFM 是 Github 用来解析和渲染 Markdown 文档的标准
   - README 文件、Issues、Pull Requests 等地方使用 GFM
 
-# 一、生成 Github 中能显示的可跳转目录
+# 一、GFM TOC
 
 ##### 动机：
 
 Github 中不会显示内容目录，阅读笔记较为繁琐，因此需要生成目录。
 
-## **1、Linux**
+## **1. Linux**
 
-### 项目1：Github-Markdown-Toc
+### 1.1 项目1：Github-Markdown-Toc
 
 使用开源项目 [github-markdown-toc](https://github.com/ekalinin/github-markdown-toc.git)
 
@@ -48,15 +48,35 @@ chmod a+x gh-md-toc
 
 与 github 不兼容
 
-### 项目2：redcarpet
+### 1.2 项目2：redcarpet
 
 https://github.com/github/markup/issues/904
 
 
 
-### 项目3：naokazuterada/MarkdownToc
+### 1.3 项目3：naokazuterada/MarkdownToc
 
 https://github.com/naokazuterada/MarkdownTOC
+
+
+
+### 1.4 项目4：
+
+https://github.com/gtaifu/gfm_toc_generator
+
+
+
+### 1.5 VSCode Markdown All in One
+
+1. **安装插件**：
+   - 打开 VS Code，点击左侧的扩展（Extensions）图标。
+   - 搜索 `Markdown All in One` 并安装。
+2. **生成目录**：
+   - 打开你的 Markdown 文件。
+   - 使用快捷键 `Ctrl+Shift+P` 打开命令面板。
+   - 输入 `Create Table of Contents` 并选择它。
+3. **插入目录**：
+   - 插件会自动生成目录并插入到你的文件中。
 
 ## **2、Windows**
 
