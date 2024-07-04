@@ -1,3 +1,19 @@
+- [零、概念](#零概念)
+        - [1、GFM](#1gfm)
+- [一、GFM TOC](#一gfm-toc)
+        - [动机：](#动机)
+  - [**1. Linux**](#1-linux)
+    - [1.1 项目1：Github-Markdown-Toc](#11-项目1github-markdown-toc)
+        - [1. 下载](#1-下载)
+        - [2. 使用](#2-使用)
+        - [3. 问题：](#3-问题)
+    - [1.2 项目2：redcarpet](#12-项目2redcarpet)
+    - [1.3 项目3：naokazuterada/MarkdownToc](#13-项目3naokazuteradamarkdowntoc)
+    - [1.4 项目4：](#14-项目4)
+    - [1.5 VSCode Markdown All in One (采用)](#15-vscode-markdown-all-in-one-采用)
+  - [**2. Windows**](#2-windows)
+
+
 # 零、概念
 
 ##### 1、GFM
@@ -44,7 +60,7 @@ chmod a+x gh-md-toc
 
 3. 修改文加内容后，再次输入该命令后即可刷新目录。
 
-##### 问题：
+##### 3. 问题：
 
 与 github 不兼容
 
@@ -66,7 +82,7 @@ https://github.com/gtaifu/gfm_toc_generator
 
 
 
-### 1.5 VSCode Markdown All in One
+### 1.5 VSCode Markdown All in One (采用)
 
 1. **安装插件**：
    - 打开 VS Code，点击左侧的扩展（Extensions）图标。
@@ -77,6 +93,7 @@ https://github.com/gtaifu/gfm_toc_generator
    - 输入 `Create Table of Contents` 并选择它。
 3. **插入目录**：
    - 插件会自动生成目录并插入到你的文件中。
+4. `ctrl + shift + v` 边编写边预览
 
-## **2、Windows**
+## **2. Windows**
 
