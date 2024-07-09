@@ -120,3 +120,28 @@ https://github.com/gtaifu/gfm_toc_generator
 ## **2. Windows**
 
 # 二、跳转到其他 markdown 文件
+
+直接使用超链接
+
+```markdown
+[链接文本](文件路径)
+```
+
+假设文件结构
+
+```arduino
+project/
+│
+├── README.md
+├── docs/
+│   ├── introduction.md
+│   ├── setup.md
+│   └── usage.md
+```
+
+在 `README.md` 中链接到 `introduction.md`
+
+```markdown
+[Introduction](./docs/introduction.md)
+```
+
