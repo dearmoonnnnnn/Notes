@@ -78,9 +78,28 @@ https://zhuanlan.zhihu.com/p/681929781
 
 
 
-# 二、具体项目
+# 二、静态调用图项目
 
-## 1. 静态调用图
+## 1 自维护解释器
 
-### 1.1 自维护解释器
+### 1.1 cflow
 
+0. **资料**：https://fangliang.blog.csdn.net/article/details/135805306
+
+1. **安装**
+
+   ```bash
+   sudo apt-get install cflow
+   sudo apt-get install graphviz
+   ```
+
+   - 直接使用 `apt` 安装
+   - `graphviz` 用于在最后一步将 `dot` 文件转为图片
+
+貌似只能用于 C 语言
+
+# 三、VSCode扩展
+
+- Graph Graph
+- Crabviz
+- callgraph.dev
