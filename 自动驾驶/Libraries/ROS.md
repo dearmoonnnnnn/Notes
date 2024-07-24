@@ -1741,6 +1741,17 @@ include_directories(
 
 # 九、catkin_make
 
+## 在一个系统上并行管理和运行同一个项目的不同版本
+
+假设有两个版本的 4DRadarSLAM 项目
+
+- 该项目依赖于 barometer_bmp388、fast_apdgicp、ndt_omp
+  - catkin_ws/src 目录下包含 4DRadarSLAM、barometer_bmp388、fast_apdgicp、ndt_omp
+
+建议创建新的 `catkin_ws` 工作空间。并在其中包含另一个版本的 4DRadarSLAM，同时也要将依赖包（`barometer_bmp388`, `fast_apdgicp`, `ndt_omp`）包含在新的工作空间中。
+
+
+
 # 十、格式转换
 
 ## 1、bag包转png
