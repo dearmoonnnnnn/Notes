@@ -1748,9 +1748,82 @@ include_directories(
 - 该项目依赖于 barometer_bmp388、fast_apdgicp、ndt_omp
   - catkin_ws/src 目录下包含 4DRadarSLAM、barometer_bmp388、fast_apdgicp、ndt_omp
 
-建议创建新的 `catkin_ws` 工作空间。并在其中包含另一个版本的 4DRadarSLAM，同时也要将依赖包（`barometer_bmp388`, `fast_apdgicp`, `ndt_omp`）包含在新的工作空间中。
+### 步骤
 
+1. **创建新的 `catkin_ws` 工作空间：**
 
+   ```sh
+   mkdir -p ~/new_catkin_ws/src
+   cd ~/new_catkin_ws/src
+   ```
+
+2. **将另一个版本的 `4DRadarSLAM` 复制到新的工作空间：**
+
+   ```sh
+   cp -r /path/to/another/version/of/4DRadarSLAM ~/new_catkin_ws/src/
+   ```
+
+3. **将依赖包复制到新的工作空间：**
+
+   你可以选择将依赖包也复制到新的工作空间中，或者在新工作空间的 `CMakeLists.txt` 和 `package.xml` 中添加对这些包的依赖。
+
+   ```sh
+   cp -r ~/catkin_ws/src/barometer_bmp388 ~/new_catkin_ws/src/
+   cp -r ~/catkin_ws/src/fast_apdgicp ~/new_catkin_ws/src/
+   cp -r ~/catkin_ws/src/ndt_omp ~/new_catkin_ws/src/
+   ```
+
+4. **编译新的工作空间：**
+
+   ```sh
+   cd ~/new_catkin_ws
+   catkin_make
+   ```
+
+5. **切换工作空间环境：**
+
+   每次运行不同版本的项目时，记得切换到对应的工作空间环境。
+
+   - 切换到原来的工作空间环境：
+
+     ```sh
+     source ~/catkin_ws/devel/setup.bash
+     ```
+
+   - 切换到新的工作空间环境：
+
+     ```sh
+     source ~/new_catkin_ws/devel/setup.bash
+     ```
+
+### 注意事项
+
+- 如果两个版本的 `4DRadarSLAM` 之间有依赖关系冲突，确保它们在各自独立的工作空间中运行。
+- 使用独立的工作空间可以避免依赖包版本冲突，确保每个版本的项目可以正确编译和运行。
+
+### 示例目录结构
+
+原来的 `catkin_ws` 目录结构：
+
+```
+catkin_ws/
+├── src/
+│   ├── 4DRadarSLAM/
+│   ├── barometer_bmp388/
+│   ├── fast_apdgicp/
+│   └── ndt_omp/
+```
+
+新的 `catkin_ws` 目录结构：
+
+```
+new_catkin_ws/
+├── src/
+│   ├── 4DRadarSLAM/  (另一个版本)
+│   ├── barometer_bmp388/
+│   ├── fast_apdgicp/
+│   └── ndt_omp/
+```
 
 # 十、格式转换
 

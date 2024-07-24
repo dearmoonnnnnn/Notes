@@ -20,6 +20,44 @@
 
 
 
+## 原始项目 ReadMe
+
+The mapping quality largely depends on the parameter setting. In  particular, scan matching parameters have a big impact on the result.  Tune the parameters accoding to the following instructions:
+
+### 3.1 Point cloud registration
+
+
+
+- ***registration_method***
+
+This parameter allows to change the registration method to be used for odometry estimation and loop detection. Our code gives five options: ICP, NDT_OMP, FAST_GICP, FAST_APDGICP, FAST_VGICP.
+
+FAST_APDGICP is the implementation of our proposed  Adaptive Probability Distribution GICP, it utilizes OpenMP for  acceleration. Note that FAST_APDGICP requires extra parameters. Point uncertainty parameters:
+
+- ***dist_var***
+- ***azimuth_var***
+- ***elevation_var***
+
+*dist_var* means the uncertainty of a point’s range measurement at 100m range, *azimuth_var* and *elevation_var* denote the azimuth and elevation angle accuracy (degree)
+
+### 3.2 Loop detection
+
+
+
+- ***accum_distance_thresh***: Minimum distance beteen two edges of the loop
+- ***min_loop_interval_dist***: Minimum distance between a new loop edge and the last one
+- ***max_baro_difference***: Maximum altitude difference beteen two edges' odometry
+- ***max_yaw_difference***: Maximum yaw difference beteen two edges' odometry
+- ***odom_check_trans_thresh***: Translation threshold of Odometry Check
+- ***odom_check_rot_thresh***: Rotation threshold of Odometry Check
+- ***sc_dist_thresh***: Matching score threshold of Scan Context
+
+### 3.3 Other parameters
+
+
+
+All the configurable parameters are available in the launch file. Many are similar to the project ***hdl_graph_slam***.
+
 # 一、关键帧相关参数
 
 `scan_matching_odometry_nodelet.cpp`节点`initialize_params()`函数中的相关参数 
@@ -66,6 +104,15 @@
 - `map_cloud_update_interval`
 
 # 五、闭环检测相关参数
+
+## 开关
+
+`radar_graph_slam.launch` 中的 `enable_loop_closure` 
+
+- true
+- false
+
+
 
 Scancontext.h
 
