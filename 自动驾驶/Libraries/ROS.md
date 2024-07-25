@@ -1,16 +1,16 @@
 - [零、问题和概念](#零问题和概念)
   - [资料](#资料)
-        - [1、Autolabor教程](#1autolabor教程)
+        - [1. Autolabor教程](#1-autolabor教程)
   - [问题](#问题)
-        - [1、如何知道一个bag文件中的数据结构](#1如何知道一个bag文件中的数据结构)
-        - [2、话题和消息的关系](#2话题和消息的关系)
-        - [3、node和nodelet的关系](#3node和nodelet的关系)
-        - [4、一个节点可以发布或者接收多个主题吗](#4一个节点可以发布或者接收多个主题吗)
-        - [5、nodelet节点在launch中配置的时候，节点所在的包(pkg)为什么是nodelet](#5nodelet节点在launch中配置的时候节点所在的包pkg为什么是nodelet)
-        - [6、将melodic版本下能够跑通的项目迁移到noetic版本中](#6将melodic版本下能够跑通的项目迁移到noetic版本中)
-        - [7、将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is\_dense，该怎么填充后者的这些数据字段?](#7将sensor_msgpointcloud的数据转为pclpointcloudpclpointxyz的数据但是前者没有widthheight和is_dense该怎么填充后者的这些数据字段)
-        - [8、如何修改ROS包的名称](#8如何修改ros包的名称)
-        - [9、在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样](#9在roslaunch文件中node标签中的name参数和type参数的区别是什么为什么它们的值一样)
+        - [1. 如何知道一个bag文件中的数据结构](#1-如何知道一个bag文件中的数据结构)
+        - [2. 话题和消息的关系](#2-话题和消息的关系)
+        - [3. node和nodelet的关系](#3-node和nodelet的关系)
+        - [4. 一个节点可以发布或者接收多个主题吗](#4-一个节点可以发布或者接收多个主题吗)
+        - [5. nodelet节点在launch中配置的时候，节点所在的包(pkg)为什么是nodelet](#5-nodelet节点在launch中配置的时候节点所在的包pkg为什么是nodelet)
+        - [6. 将melodic版本下能够跑通的项目迁移到noetic版本中](#6-将melodic版本下能够跑通的项目迁移到noetic版本中)
+        - [7. 将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is\_dense，该怎么填充后者的这些数据字段?](#7-将sensor_msgpointcloud的数据转为pclpointcloudpclpointxyz的数据但是前者没有widthheight和is_dense该怎么填充后者的这些数据字段)
+        - [8. 如何修改ROS包的名称](#8-如何修改ros包的名称)
+        - [9. 在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样](#9-在roslaunch文件中node标签中的name参数和type参数的区别是什么为什么它们的值一样)
   - [概念](#概念)
         - [1、节点](#1节点)
         - [2、ROS Master](#2ros-master)
@@ -83,6 +83,10 @@
   - [问题](#问题-2)
         - [1、nodelet定义的三种句柄有什么区别](#1nodelet定义的三种句柄有什么区别)
 - [九、catkin\_make](#九catkin_make)
+  - [在一个系统上并行管理和运行同一个项目的不同版本](#在一个系统上并行管理和运行同一个项目的不同版本)
+    - [步骤](#步骤)
+    - [注意事项](#注意事项)
+    - [示例目录结构](#示例目录结构)
 - [十、格式转换](#十格式转换)
   - [1、bag包转png](#1bag包转png)
   - [2、bag转pcd](#2bag转pcd)
@@ -99,7 +103,7 @@
 
 ## 资料
 
-##### 1、Autolabor教程
+##### 1. Autolabor教程
 
  http://www.autolabor.com.cn/book/ROSTutorials/
 
@@ -107,7 +111,7 @@
 
 ## 问题
 
-##### 1、如何知道一个bag文件中的数据结构
+##### 1. 如何知道一个bag文件中的数据结构
 
 **使用rosbag命令行工具**
 
@@ -131,7 +135,7 @@
 
 **将bag文件转换为txt文件，用文本编辑器查看，见“十、格式转换”**
 
-##### 2、话题和消息的关系
+##### 2. 话题和消息的关系
 
 在ROS（Robot Operating System）中，话题（Topic）和消息（Message）之间存在明确的关系，这种关系对于理解ROS的通信机制至关重要。以下是话题和消息之间的关系概述：
 
@@ -156,7 +160,7 @@
 
 总之，**话题是数据传输的通道，而消息是在这些通道上实际传输的数据**。通过这种发布-订阅机制，ROS节点可以灵活、高效地进行通信。
 
-##### 3、node和nodelet的关系
+##### 3. node和nodelet的关系
 
 `node` 和 `nodelet` 都是ROS (Robot Operating System) 中的核心概念，但它们之间存在一些关键差异。以下是它们的关系和区别：
 
@@ -186,7 +190,7 @@
 
 总的来说，`node`和`nodelet`都是ROS中进行任务和算法处理的实体，但`nodelet`提供了一种更高效的方法，特别是当需要在算法之间交换大型数据时。
 
-##### 4、一个节点可以发布或者接收多个主题吗
+##### 4. 一个节点可以发布或者接收多个主题吗
 
 是的，一个节点可以发布多个主题。同样地，一个节点也可以订阅多个主题。在ROS中，节点的设计经常需要与多个其他节点通信，因此它们可能需要发布和/或订阅多个不同的主题。
 
@@ -197,7 +201,7 @@
 
 因此，单个节点可以与ROS网络中的多个主题互动，既作为发布者又作为订阅者。这种灵活性使得ROS的节点可以在复杂的系统中灵活地工作，同时保持相对的解耦。
 
-##### 5、nodelet节点在launch中配置的时候，节点所在的包(pkg)为什么是nodelet
+##### 5. nodelet节点在launch中配置的时候，节点所在的包(pkg)为什么是nodelet
 
 ```xml
 <node pkg="nodelet" type="nodelet" name="radar_graph_slam_nodelet" args="load radar_graph_slam/RadarGraphSlamNodelet $(arg nodelet_manager)" output="screen">
@@ -213,11 +217,11 @@
   - 而**nodelet可执行文件**存在于**nodelet包**中，所以节点所在的包为nodelet包。
   - 上例`load radar_graph_slam/RadarGraphSlamNodelet $(arg nodelet_manager)`相当于加载nodelet插件
 
-##### 6、将melodic版本下能够跑通的项目迁移到noetic版本中
+##### 6. 将melodic版本下能够跑通的项目迁移到noetic版本中
 
 修改workspace/src路径下的CMakeList.txt即可。直接将neotic中能跑通的CMakeList.txt文件内容拷贝。
 
-##### 7、将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is_dense，该怎么填充后者的这些数据字段?
+##### 7. 将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is_dense，该怎么填充后者的这些数据字段?
 
 由于 `sensor_msgs::PointCloud` 消息类型没有 `width`、`height` 和 `is_dense` 这些字段,因此在将其转换为 `pcl::PointCloud<pcl::PointXYZ>` 时,我们无法直接获取这些信息。
 
@@ -274,7 +278,7 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 
 根据您的具体情况,您可能需要调整这些设置。例如,如果您知道点云数据是有序的,并且知道其尺寸,则可以相应地设置 `width` 和 `height`。如果您确定点云数据中没有无效点,则可以直接将 `is_dense` 设置为 `true`。
 
-##### 8、如何修改ROS包的名称
+##### 8. 如何修改ROS包的名称
 
 要修改自己创建的ROS包的名称，需要修改以下几个地方：
 
@@ -316,7 +320,7 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 
 修改完以上内容后，保存文件并重新编译你的ROS包，即可使用新的包名。
 
-##### 9、在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样
+##### 9. 在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样
 
 在ROS的`roslaunch`文件中，`name`参数和`type`参数的作用有所不同。
 
@@ -869,8 +873,9 @@ PS：roslaunch命令执行launch文件时，首先会判断是否启动了roscor
 
      ```xml
      <!-- 必要属性 -->
-     <!-- name：节点名称; pkg：节点所属的包; type：节点类型，，即可执行文件名称-->
-     <!-- name和type经常使用同一个值，它们的区别见问题9 -->
+     <!-- name：节点名称; pkg：节点所属的包; type：节点类型，即可执行文件名称-->
+     <!-- type 值需要与 CMakeList.txt 中 add_executable 的第一个参数匹配，它们都表示可执行文件名称 -->
+     <!-- name 和 type 经常使用同一个值，它们的区别见问题 9 -->
      
      <!-- 可选属性 -->
      <!-- args = "XXX XXX XXX"：将参数传递给节点; output = "log | screen": 日志发送目标(log日志文件或者屏幕) -->
