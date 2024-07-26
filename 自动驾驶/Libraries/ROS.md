@@ -950,11 +950,12 @@ PS：roslaunch命令执行launch文件时，首先会判断是否启动了roscor
      <!-- type = "str | int | double | yaml" ：可选，指定参数类型，如果未指定，roslaunch会根据一定规则尝试确定参数类型 -->
      
      <launch>
-         <!-- 在launch内，node外 -->
+         <!-- 两种情况-->
+         <!-- 1. 在launch内，node外 -->
          <!-- 向参数服务器设置一个名称为param_A, 类型为int， 值为100的参数-->
      	<param name="param_A" type = "int" value = "100" />
      	
-         <!-- 在node内-->
+         <!-- 2. 在node内-->
          <!-- 也会在参数服务器中设置参数，但参数存在前缀-->
          <node name="talker" pkg="rospy_tutorials" type="talker" />>
          	<param name="param_B" type="double" value="3.14" /> 
@@ -962,15 +963,15 @@ PS：roslaunch命令执行launch文件时，首先会判断是否启动了roscor
          
      </launch>
      ```
-
+     
      启动launch文件后，在cmd中查看参数服务器中的参数
-
+     
      ```bash
      rosparm list 
      ```
-
+     
      显示：
-
+     
      ```bash
      /param_A
      /talker/param_B
