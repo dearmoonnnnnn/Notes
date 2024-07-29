@@ -60,7 +60,15 @@ All the configurable parameters are available in the launch file. Many are simil
 
 # 一、关键帧相关参数
 
-`scan_matching_odometry_nodelet.cpp`节点`initialize_params()`函数中的相关参数 
+## 1. radar_graph_slam.launch
+
+##### 1. key_delta_trans_front_end
+
+- 即 `scan_matching_odometry_nodelet.cpp` 中的 `keyframe_delta_trans` 参数
+
+##### 2. key_delta_angle
+
+- 即 
 
 
 
@@ -105,16 +113,32 @@ All the configurable parameters are available in the launch file. Many are simil
 
 # 五、闭环检测相关参数
 
-## 开关
+## radar_graph_slam.launch
 
-`radar_graph_slam.launch` 中的 `enable_loop_closure` 
+##### 1.  `enable_loop_closure` 
+
+开关
 
 - true
 - false
 
+##### 2. min_loop_interval_dist
+
+==新回环边和上一个回环边之间的最小距离==
+
+##### 3. sc_dist_thresh
+
+扫描上下文的距离阈值
+
+- 原始为 0.5	
+
+##### 4. sc_azimuth_range
+
+扫描上下文的角度阈值
 
 
-Scancontext.h
+
+## Scancontext.h 
 
 - `SC_DIST_THRES`
   - 扫描上下文的距离阈值
