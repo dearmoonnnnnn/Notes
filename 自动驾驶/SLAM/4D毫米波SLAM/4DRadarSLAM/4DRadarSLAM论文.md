@@ -297,3 +297,4 @@ gt_odom.txt : ground truth 文件，通过什么收集，GPS？
 # -1、思考
 
 关键帧的选择策略是否可以改进，比如参考ORB_SLAM2的方案、
+
