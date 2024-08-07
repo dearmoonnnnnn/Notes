@@ -247,6 +247,49 @@ cmake ..
   1. `Ctrl+Shift+P`
   2. 运行`CMake: Debug`，启动调试会话
 
-# 二、插件
+# 二、Windows 搭建 C++ 开发环境
 
-通义灵码
+## 1. 安装必要的工具
+
+### 1.1 安装编译器
+
+可选三种编译器
+
+1. 安装Visual Studio Build Tools
+   - [Microsoft C++ 生成工具 - Visual Studio](https://visualstudio.microsoft.com/zh-hans/visual-cpp-build-tools/)
+   - 在里面选中 MSVC 编译器、CMake 和 Windows SDK 
+
+2. MinGW-w64
+   - [MinGW-w64 - for 32 and 64 bit Windows download | SourceForge.net](https://sourceforge.net/projects/mingw-w64/)
+   - 下载完成后对压缩包进行解压
+   - 添加环境变量
+     - [MinGW-w64的安装详细步骤(c/c++的编译器gcc、g++的windows版，win10、win11真实可用）-CSDN博客](https://blog.csdn.net/qq_44918090/article/details/132190274)
+     - 将 bin 路径添加到 path 变量中
+   - 验证安装
+     - 在 `cmd` 中 输入 `g++ -v`，查看是否有出现版本信息
+3. Clang
+
+### 1.2 安装 CMake
+
+- [Download CMake](https://cmake.org/download/)
+
+- 选择 `.msi` 文件，按照提示完成安装
+
+## 2. 安装 VSCode (插件)
+
+同 Ubuntu 下的操作
+
+## 3. 配置VSCode
+
+
+
+#### 3.1 编写 `CMakeLists.txt`
+
+同 ubuntu 
+
+#### 3.2 配置 CMake Kit
+
+- 在 VSCode 中打开命令面板 (`Ctrl+Shift+P`)，运行 `CMake: Select a Kit`
+
+- 选择与编译器相关的 Kit
+  -  MinGW-w64 通常显示为类似 `GCC 10.2.0 x86_64-w64-mingw32`
