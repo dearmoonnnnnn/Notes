@@ -336,6 +336,40 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 
 在很多情况下，`name`参数和`type`参数可以使用相同的值，特别是当你只启动一个节点时。但是，如果你需要启动多个相同类型的节点，你需要使用`name`参数为它们分配不同的名称，以免冲突。因此，为了避免混淆，建议在`roslaunch`文件中明确指定`name`参数和`type`参数的值。
 
+##### 10. 在 node 节点内设置参数，为什么读取不到?
+
+`launch`
+
+```xml
+<node pkg="cloud_merging" name="12345" type="cloud_merging"  output="screen">
+
+    <param name="output_bag_path"  value = "bbbbbbb" />
+
+</node>
+```
+
+`cloud_merging.cpp`
+
+```cpp
+std::string output_bag_path = nh.param<std::string>("/output_bag_path", "aaaaaaa");  
+```
+
+因为在节点内设置参数，参数存在前缀，使用 `rosparam list` 命令查看，可得
+
+```
+/12345/output_bag_path
+/rosdistro
+/roslaunch/uris/host_dearmoon_ubuntu__41435
+/rosversion
+/run_id
+```
+
+因此 `cloud_merging.cpp` 中应该加上前缀
+
+```cpp
+std::string output_bag_path = nh.param<std::string>("/12345/output_bag_path", "aaaaaaa"); 
+```
+
 ## 概念
 
 ##### 1、节点
