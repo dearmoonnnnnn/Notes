@@ -259,8 +259,10 @@ cmake ..
    - [Microsoft C++ 生成工具 - Visual Studio](https://visualstudio.microsoft.com/zh-hans/visual-cpp-build-tools/)
    - 在里面选中 MSVC 编译器、CMake 和 Windows SDK 
 
-2. MinGW-w64
-   - [MinGW-w64 - for 32 and 64 bit Windows download | SourceForge.net](https://sourceforge.net/projects/mingw-w64/)
+2. MinGW-w64（推荐）
+   - [[Download x86_64-8.1.0-release-win32-sjlj-rt_v6-rev0.7z (MinGW-w64 - for 32 and 64 bit Windows) (sourceforge.net)](https://sourceforge.net/projects/mingw-w64/files/Toolchains targetting Win64/Personal Builds/mingw-builds/8.1.0/threads-win32/sjlj/x86_64-8.1.0-release-win32-sjlj-rt_v6-rev0.7z/download)](https://sourceforge.net/projects/mingw-w64/)
+     - 选择 `Files`
+     - 在下面找到 `x86_64-win43-sjlj`
    - 下载完成后对压缩包进行解压
    - 添加环境变量
      - [MinGW-w64的安装详细步骤(c/c++的编译器gcc、g++的windows版，win10、win11真实可用）-CSDN博客](https://blog.csdn.net/qq_44918090/article/details/132190274)
@@ -280,8 +282,6 @@ cmake ..
 同 Ubuntu 下的操作
 
 ## 3. 配置VSCode
-
-
 
 #### 3.1 编写 `CMakeLists.txt`
 
