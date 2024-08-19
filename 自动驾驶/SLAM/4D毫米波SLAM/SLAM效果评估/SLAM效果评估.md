@@ -328,3 +328,18 @@ rosrun rpg_trajectory_evalution analyze_trajectory_single.py <result_folder>
 
 - **描述**：展示了轨迹中相邻时间点之间的平移（均方根）误差。
 - **用途**：评估SLAM算法短时间尺度内的平移精度
+
+
+
+# 三、评估 4DRadarSLAM
+
+[导出数据](./4DRadarSLAM导出轨迹.md)：
+
+- 数据格式：tum 格式 
+  - timestamp tx ty tz qx qy qz qw
+
+
+
+真值：
+
+- 
