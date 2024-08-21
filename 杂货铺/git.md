@@ -16,8 +16,8 @@
   - [1、下载特定分支](#1下载特定分支)
   - [2、递归下载](#2递归下载)
         - [动机：](#动机)
-        - [用法：](#用法)
-        - [`.gitmodules`文件](#gitmodules文件)
+            - [用法：](#用法)
+            - [`.gitmodules`文件](#gitmodules文件)
 - [二、将本地项目添加到github仓库中](#二将本地项目添加到github仓库中)
   - [A、linux操作系统](#alinux操作系统)
         - [1、初始化本地仓库](#1初始化本地仓库)
@@ -452,7 +452,7 @@ https://blog.csdn.net/yuyefuxiao521/article/details/132292012
 
 ##### 方法2：使用`.gitignore`文件
 
-1、在根目录下创建或者`.gitignore`文件
+1、在根目录下创建`.gitignore`文件
 
 2、例如，要忽略所有.log文件和名为temp的文件夹，文件应该包含以下内容：
 
@@ -460,6 +460,8 @@ https://blog.csdn.net/yuyefuxiao521/article/details/132292012
 *.log
 temp/
 ```
+
+- 对所有层级的 `temp/` 文件夹和 `*.log` 都生效
 
 3、保存并关闭
 

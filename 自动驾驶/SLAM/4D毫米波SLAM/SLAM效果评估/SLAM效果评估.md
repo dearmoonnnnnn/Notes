@@ -316,7 +316,10 @@ source devel/setup.bash
 rosrun rpg_trajectory_evalution analyze_trajectory_single.py <result_folder>
 ```
 
-`<result_folder>`存放真值和估计值
+`<result_folder>`存放真值和估计值，名称要对应
+
+- `stamped_groundtruth.txt`
+- `stamped_traj_estimate.txt`
 
 ## 结果图解释：
 
