@@ -16,7 +16,6 @@ ROS相关
 SLAM 相关
 
 - [毫米波点云预处理](./自动驾驶/SLAM/4D毫米波SLAM/4DRadarSLAM/毫米波点云预处理.md)
-  - 数据预处理
 - [图优化 & 闭环检测](./自动驾驶/SLAM/4D毫米波SLAM/4DRadarSLAM/图优化与闭环检测.md)
 - [4DRadarSLAM源码解读与修改思路](./自动驾驶/SLAM/4D毫米波SLAM/4DRadarSLAM/4DRadarSLAM源码解读与修改.md)
 - [4DRadarSLAM调参](./自动驾驶/SLAM/4D毫米波SLAM/4DRadarSLAM/4DRadarSLAM调参.md)
