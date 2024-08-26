@@ -18,15 +18,22 @@
 
 ## 问题
 
+##### 1. `scan_matching_nodelet` 和 `radar_graph_slam_nodelet` 为什么都需要各自的关键帧参数，它们的关键帧有什么区别
 
+- `scan_matching_nodelet` 
+  - 负责实时里程计估计，使用扫描匹配的方法来估计机器人的移动。
+  - 关键帧参数决定什么时候关键帧被创造
+  - 关键帧更加频繁
+- `radar_graph_slam_nodelet` 
+  - 负责创建和优化位姿图
+  - 关键帧参数决定什么时候新的关键帧应该被加入到位姿图中
+  - 关键帧更加稀疏
 
 ## 原始项目 ReadMe
 
 The mapping quality largely depends on the parameter setting. In  particular, scan matching parameters have a big impact on the result.  Tune the parameters accoding to the following instructions:
 
 ### 3.1 Point cloud registration
-
-
 
 - ***registration_method***
 
@@ -41,8 +48,6 @@ FAST_APDGICP is the implementation of our proposed  Adaptive Probability Distrib
 *dist_var* means the uncertainty of a point’s range measurement at 100m range, *azimuth_var* and *elevation_var* denote the azimuth and elevation angle accuracy (degree)
 
 ### 3.2 Loop detection
-
-
 
 - ***accum_distance_thresh***: Minimum distance beteen two edges of the loop
 - ***min_loop_interval_dist***: Minimum distance between a new loop edge and the last one
@@ -62,21 +67,29 @@ All the configurable parameters are available in the launch file. Many are simil
 
 ## 1. radar_graph_slam.launch
 
-##### 1. key_delta_trans_front_end
+##### 1. keyframe_delta_trans_front_end
 
 - 即 `scan_matching_odometry_nodelet.cpp` 中的 `keyframe_delta_trans` 参数
+- 平移阈值
 
-##### 2. key_delta_angle
+##### 2. keyframe_delta_trans_back_end
 
-- 即 
+- `radar_graph_slam_nodelet` 中的 `key_frame_delta_trans_back` 参数
+- 平移阈值
 
+##### 3. keyframe_delta_angle
 
+- `scan_matching_odometry_nodelet` 和 `radar_graph_slam_nodelet` 中的`keyframe_delta_angle`
+  - 两者取值相同
 
+- 旋转阈值
 
+##### 4. keyframe_min_size 
 
-
-
-
+- 两个节点都存在
+  - `scan_matching_odometry_nodelet` 中为 100
+  - `radar_graph_slam_nodelet` 中为 500
+- 关键帧中包含的最小数据量
 
 # 二、点云融合阈值调整
 
