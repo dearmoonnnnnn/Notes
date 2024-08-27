@@ -136,7 +136,7 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 
 # 日雪不颠簸运行
 
-##### 问题1：Too Large transform
+## 问题1：Too Large transform
 
 ```
 Too large transform!!  1.50411[m] 0.114139[degree] Ignore this frame (1705378405.049944000) 
@@ -151,6 +151,8 @@ Too large transform!!  1.50411[m] 0.114139[degree] Ignore this frame (1705378405
 
 ##### 尝试方法1：调大相关参数
 
+运行成功，并且成功闭环。但存在问题2
 
+## 问题2：网格太小，轨迹超出了网格范围
 
-##### 尝试方法2：关闭 `enable_transform_thresholding` 开关
+![image-20240827163519697](https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240827163519697.png)
