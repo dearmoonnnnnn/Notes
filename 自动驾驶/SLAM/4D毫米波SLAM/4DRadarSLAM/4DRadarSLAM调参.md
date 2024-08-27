@@ -59,8 +59,6 @@ FAST_APDGICP is the implementation of our proposed  Adaptive Probability Distrib
 
 ### 3.3 Other parameters
 
-
-
 All the configurable parameters are available in the launch file. Many are similar to the project ***hdl_graph_slam***.
 
 # 一、关键帧相关参数
@@ -71,11 +69,13 @@ All the configurable parameters are available in the launch file. Many are simil
 
 - 即 `scan_matching_odometry_nodelet.cpp` 中的 `keyframe_delta_trans` 参数
 - 平移阈值
+- 原始值：0.5
 
 ##### 2. keyframe_delta_trans_back_end
 
 - `radar_graph_slam_nodelet` 中的 `key_frame_delta_trans_back` 参数
 - 平移阈值
+- 原始值：2
 
 ##### 3. keyframe_delta_angle
 
@@ -83,6 +83,8 @@ All the configurable parameters are available in the launch file. Many are simil
   - 两者取值相同
 
 - 旋转阈值
+
+- 原始值：0.2612
 
 ##### 4. keyframe_min_size 
 

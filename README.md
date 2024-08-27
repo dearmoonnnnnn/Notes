@@ -19,6 +19,7 @@ SLAM 相关
 - [图优化 & 闭环检测](./自动驾驶/SLAM/4D毫米波SLAM/4DRadarSLAM/图优化与闭环检测.md)
 - [4DRadarSLAM源码解读与修改思路](./自动驾驶/SLAM/4D毫米波SLAM/4DRadarSLAM/4DRadarSLAM源码解读与修改.md)
 - [4DRadarSLAM调参](./自动驾驶/SLAM/4D毫米波SLAM/4DRadarSLAM/4DRadarSLAM调参.md)
+- [运行过程与错误解决](./自动驾驶/SLAM/4D毫米波SLAM/4DRadarSLAM/4DRadarSLAM运行与错误解决.md)
 - [定量评估](./自动驾驶/SLAM/4D毫米波SLAM/SLAM效果评估/SLAM效果评估.md)
 
 
