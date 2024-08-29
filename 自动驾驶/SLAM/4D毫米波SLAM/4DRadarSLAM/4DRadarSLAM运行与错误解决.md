@@ -156,3 +156,25 @@ Too large transform!!  1.50411[m] 0.114139[degree] Ignore this frame (1705378405
 ## 问题2：网格太小，轨迹超出了网格范围
 
 ![image-20240827163519697](https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240827163519697.png)
+
+## 问题3：闭环检测时，导出的轨迹发生变化，导致文件被覆盖，数据丢失
+
+## 问题4： ROS节点崩溃
+
+在最后进行优化时，ROS 节点崩溃，报错信息如下：
+
+```bash
+process has died [pid 149488, exit code -9, cmd /opt/ros/noetic/lib/nodelet/nodelet manager __name:=radarslam_nodelet_manager __log:=/home/dearmoon/.ros/log/41d886c0-65d4-11ef-a2cc-257cb301ef5d/radarslam_nodelet_manager-2.log].
+```
+
+### 可能原因：内存不足
+
+在终端中使用 `dmesg` 命令查看  发现有 "Out of memory" 错误信息。
+
+```bash
+[438708.999901] Out of memory: Killed process 149488 (nodelet) total-vm:33448568kB, anon-rss:11658504kB, file-rss:0kB, shmem-rss:0kB, UID:1000 pgtables:47916kB oom_score_adj:0
+```
+
+### 解决方法：
+
+换电脑

@@ -63,3 +63,12 @@
   ```
 
   
+
+# 方法2 ： 
+
+运行 SLAM 时，使用 ROS record记录轨迹话题：`/radar_graph_slam/aftmapped_odom`
+
+```bash
+rosbag record -O stamped_traj_estimate.bag /radar_graph_slam/aftmapped_odom
+```
+

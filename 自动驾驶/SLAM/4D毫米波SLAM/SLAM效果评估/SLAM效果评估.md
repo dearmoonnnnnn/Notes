@@ -309,11 +309,17 @@ PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文�
 
 `EuRoc`格式
 
-##### 简单示例：
+##### 示例： 作为 ROS 包
 
-```cpp
+```bash
 source devel/setup.bash
 rosrun rpg_trajectory_evalution analyze_trajectory_single.py <result_folder>
+```
+
+##### 示例：作为 python 脚本
+
+```bash
+python2 analyze_trajectory_single.py <result_folder> 
 ```
 
 `<result_folder>`存放真值和估计值，名称要对应
@@ -345,4 +351,21 @@ rosrun rpg_trajectory_evalution analyze_trajectory_single.py <result_folder>
 
 真值：
 
-- 
+- 数据格式：tum 格式 
+  - timestamp tx ty tz qx qy qz qw
+
+
+
+
+
+运行rpg
+
+```bash
+source devel/setup.bash
+python2 analyze_trajectory_single.py <result_folder> 
+```
+
+`<result_folder>`存放真值和估计值，名称要对应
+
+- `stamped_groundtruth.txt`
+- `stamped_traj_estimate.txt`

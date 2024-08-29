@@ -1256,6 +1256,24 @@ rosbag filter input.bag output.bag "topic != '/topic1' && topic != '/topic2'"
 
 保留话题：使用 `==`
 
+
+
+## 5.5 rosbag record
+
+记录某个特定的话题
+
+```bash
+rosbag record /example_topic
+```
+
+指定输出文件名
+
+```bash
+rosbag record -O my_bagfile.bag /example_topic
+```
+
+
+
 # 六、PCL库
 
 ## 相关资料
