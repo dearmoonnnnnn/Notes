@@ -1,3 +1,46 @@
+# 零、精简版
+
+1. 安装ROS
+
+2. 安装ROS相关库，apt 方式
+
+   ```bash
+   sudo apt-get install ros-XXX-geodesy ros-XXX-pcl-ros ros-XXX-nmea-msgs ros-XXX-libg2o
+   ```
+
+   根据ROS版本，将`XXX`替换为`melodic`或者`noetic`
+
+3. 安装第三方库 GTSAM，源码方式，版本选择为`4.0.3`
+
+   ```bash
+    git clone -b 4.0.3 https://github.com/borglab/gtsam.git
+   ```
+
+   ```bash
+   cd gtsam
+   mkdir build && cd build
+   cmake ..
+   cmake --build .
+   sudo make install
+   ```
+
+4. 安装 `ROS` 项目：进入 `catkin_ws` 下的 `src`, 安装如下项目
+
+   ```bash
+   git clone [项目链接]
+   ```
+
+   - 4DRadarSLAM
+   - [fast_apdgicp](https://github.com/zhuge2333/fast_apdgicp)
+   - [ndt_omp](https://github.com/koide3/ndt_omp)
+   - [barometer_bmp3888](https://github.com/zhuge2333/barometer_bmp388)
+
+5. 在 `catkin_ws` 下，编译
+
+   ```bash
+   catkin_make
+   ```
+
 # 一、依赖
 
 ## 1.1 Ubuntu和ROS
