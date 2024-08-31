@@ -41,6 +41,35 @@
    catkin_make
    ```
 
+6. 添加环境变量
+
+   1. 打开环境变量文件
+
+      ```bash
+      sudo  vim ~/.bashrc
+      ```
+
+   2. 在文件最后加入语句
+
+      ```bash
+      source ~/catkin_ws/devel/setup.bash
+      export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:~/catkin_ws/
+      ```
+
+      注意：~/catkin_ws/表示自己的ros工作空间目录，
+
+      经实验，只需加入第一行。
+
+   3. 保存并退出后，执行以下命令
+
+      ```bash
+      source ~/.bashrc
+      ```
+
+   
+
+
+
 # 一、依赖
 
 ## 1.1 Ubuntu和ROS
