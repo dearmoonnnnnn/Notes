@@ -1,4 +1,14 @@
-# 1、日晴不颠簸低速3 
+# 零、问题 & 概念
+
+##### 1. `max_diff_trans` 和 `max_acceptable_trans` 都是 `scan_matching_odometry_nodelet` 中的平移变换阈值，它们的区别是什么？
+
+`max_diff_trans` : 用于检测两个相邻帧的平移变换的大小差异。主要用于滤除由于噪声或错误匹配导致的异常大平移。
+
+`max_acceptable_trans` : 用于限制整个系统可以接受的最大平移变换。这可能是多个帧累积后的结果，而不仅仅是相邻帧之间的变换。
+
+
+
+# 一、日晴不颠簸低速3 
 
 ```bash
 roslaunch radar_graph_slam radar_graph_slam.launch
@@ -134,7 +144,7 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 0, 0, 0, 1, 
 ```
 
-# 2、日雪不颠簸运行 | 融合阈值 5 
+# 二、日雪不颠簸运行 | 融合阈值 5 
 
 ## 问题1：Too Large transform
 
@@ -146,8 +156,22 @@ Too large transform!!  1.50411[m] 0.114139[degree] Ignore this frame (1705378405
 
 在 `scan_matching_odometry_nodelet` 中，相邻关键帧之间的平移和旋转超过了特定阈值。
 
-- `max_diff_trans`
-- `max_diff_angle`
+- `max_diff_trans` : 允许的帧间最大平移变化
+  - 原值：0.3
+  - 当前值：2
+
+- `max_diff_angle` ：允许的帧间最大旋转变化
+  - 原值：0.8
+  - 当前值：1.5 
+
+- `max_acceptable_trans` ：前端位姿变化的可接受范围
+  - 原值：1.0
+  - 当前值：3.0
+
+- `max_acceptable_angle` ：最大可接受的旋转角度
+  - 原值：3
+  - 
+
 
 ##### 尝试方法1：调大相关参数
 
@@ -159,6 +183,12 @@ Too large transform!!  1.50411[m] 0.114139[degree] Ignore this frame (1705378405
 
 ## 问题3：闭环检测时，导出的轨迹发生变化，导致文件被覆盖，数据丢失
 
+##### 尝试方法1：在闭环检测调整轨迹之后，再收集数据。
+
+
+
+
+
 ## 问题4： ROS节点崩溃
 
 在最后进行优化时，ROS 节点崩溃，报错信息如下：
@@ -167,7 +197,7 @@ Too large transform!!  1.50411[m] 0.114139[degree] Ignore this frame (1705378405
 process has died [pid 149488, exit code -9, cmd /opt/ros/noetic/lib/nodelet/nodelet manager __name:=radarslam_nodelet_manager __log:=/home/dearmoon/.ros/log/41d886c0-65d4-11ef-a2cc-257cb301ef5d/radarslam_nodelet_manager-2.log].
 ```
 
-### 可能原因：内存不足
+##### 可能原因：内存不足
 
 在终端中使用 `dmesg` 命令查看  发现有 "Out of memory" 错误信息。
 
@@ -175,6 +205,8 @@ process has died [pid 149488, exit code -9, cmd /opt/ros/noetic/lib/nodelet/node
 [438708.999901] Out of memory: Killed process 149488 (nodelet) total-vm:33448568kB, anon-rss:11658504kB, file-rss:0kB, shmem-rss:0kB, UID:1000 pgtables:47916kB oom_score_adj:0
 ```
 
-### 解决方法：
+##### 解决方法1：换电脑
 
-换电脑
+新电脑出现问题3，且暂无法解决
+
+##### 解决方法2：关闭其他程序，节省内存空间
