@@ -209,6 +209,6 @@ process has died [pid 149488, exit code -9, cmd /opt/ros/noetic/lib/nodelet/node
 
 新电脑重新出现问题1，且无法通过调整参数的方法解决。
 
-TODO：猜测可能是电脑性能太好，运行过快，可尝试放慢rosbag包的播放速度
+TODO：猜测可能是电脑性能太好，运行过快，可尝试放慢 bag 包的播放速度
 
 ##### 解决方法2：关闭其他程序，节省内存空间
