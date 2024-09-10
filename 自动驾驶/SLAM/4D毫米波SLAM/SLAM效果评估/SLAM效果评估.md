@@ -92,6 +92,7 @@ $$
   - 位姿的误差
 - R：相对
   - 相邻帧之间变化的误差
+  - 关注局部片段之间的相对运动
 
 第二个字母
 
@@ -349,6 +350,14 @@ python2 analyze_trajectory_single.py <result_folder>
 - `stamped_groundtruth.txt`
 - `stamped_traj_estimate.txt`
 
+
+
+##### 测评多个轨迹：
+
+参考
+
+[SLAM轨迹精度测评(TUM格式)-CSDN博客](https://blog.csdn.net/weixin_41469272/article/details/119885449?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1-119885449-blog-113811380.235^v43^pc_blog_bottom_relevance_base8&spm=1001.2101.3001.4242.2&utm_relevant_index=4)
+
 ## 结果图解释：
 
 ##### 1、`rel_translation_error.pdf`
@@ -421,6 +430,8 @@ python2 analyze_trajectory_single.py <result_folder>
 
 - 基于 SIM(3) 对齐的平移误差，表示轨迹估计中平移部分的误差。
 - 用于评估在不同位置上的平移误差，尤其在包含尺度调整过的对齐过程中，平移误差的表现。
+
+
 
 # 三、评估 4DRadarSLAM
 
