@@ -77,12 +77,34 @@ $$
 
 **和APE、RPE的区别**：
 
-![60e107aec977f9fc709f645a18eede79](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/60e107aec977f9fc709f645a18eede79.png)
+<img src="https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/60e107aec977f9fc709f645a18eede79.png" alt="60e107aec977f9fc709f645a18eede79" style="zoom: 33%;" />
 
 - ATE和RTE需要轨迹对齐
   - 左边是未对齐直接计算轨迹的误差
   - 右边是对齐后的误差
 - APE和RPE不进行轨迹对齐，直接计算位姿的误差
+
+##### 总结：
+
+第一个字母
+
+- A：绝对
+  - 位姿的误差
+- R：相对
+  - 相邻帧之间变化的误差
+
+第二个字母
+
+- P：位姿
+- T：轨迹
+
+第三个字母
+
+- E：误差
+
+
+
+
 
 ## 问题：
 
@@ -220,7 +242,7 @@ PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文�
 
 ##### 1、轨迹对比图
 
-![img](https://raw.githubusercontent.com/MichaelGrupp/evo/master/doc/assets/markers.png)
+<img src="https://raw.githubusercontent.com/MichaelGrupp/evo/master/doc/assets/markers.png" alt="img" style="zoom:67%;" />
 
 **横纵坐标**：
 
@@ -235,7 +257,7 @@ PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文�
 
 ##### 2：误差统计图
 
-![evo](https://raw.githubusercontent.com/MichaelGrupp/evo/master/doc/assets/res_stats.png)
+<img src="https://raw.githubusercontent.com/MichaelGrupp/evo/master/doc/assets/res_stats.png" alt="evo" style="zoom:67%;" />
 
 **横纵坐标**：
 
@@ -249,7 +271,7 @@ PS: 使用evo评估两条轨迹的绝对位姿误差时，待比较的两者文�
 
 ##### 3、小提琴图
 
-![evo](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/res_violin.png)
+<img src="https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/res_violin.png" alt="evo" style="zoom:67%;" />
 
 **横纵坐标**：
 
@@ -336,9 +358,69 @@ python2 analyze_trajectory_single.py <result_folder>
 **含义**：相对平移误差（Relative Translation Error，RTE）
 
 - **描述**：展示了轨迹中相邻时间点之间的平移（均方根）误差。
-- **用途**：评估SLAM算法短时间尺度内的平移精度
+- **用途**：评估SLAM算法短时间尺度内的平移精度，适用于局部一致性的评估
 
+##### 2. `rel_translation_error_perc.pdf`
 
+<img src="https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240910155148394.png" alt="image-20240910155148394" style="zoom:67%;" />
+
+**含义**：相对平移误差的百分比表示（Relative Translation Error percentage）
+
+- 相对平移误差的百分比表示，通常是相对于运动距离的百分比。这是相对平移误差的归一化版本，用于消除因不同轨迹长度导致的误差范围不同。
+- 有助于不同轨迹的平移误差比较，特别是当运动范围不同或不同数据集的运动距离差异较大时。
+
+##### 3. `rel_yaw_error.pdf`
+
+<img src="https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240910155303990.png" alt="image-20240910155303990" style="zoom: 67%;" />
+
+**含义**：Relative Yaw Error
+
+- 相邻帧之间的相对偏航角误差。
+  - 偏航角：绕 z 轴的旋转，RYE 衡量的是轨迹估计中的方向误差。
+
+##### 4.  `rotation_error_sim3_-1.pdf`
+
+<img src="https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240910155805401.png" alt="image-20240910155805401" style="zoom: 67%;" />
+
+**含义**：Rotation Error（SIM3）
+
+- 使用 SIM(3) **对齐**方法计算的旋转误差。SIM(3) 不仅考虑旋转和平移，还考虑尺度变换。
+- 用于处理不同尺度的估计和真实轨迹，特别是重建场景或位姿的尺度不一致时。
+
+##### 5. `scale_error_sim3_-1.pdf`
+
+<img src="https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240910160102877.png" alt="image-20240910160102877" style="zoom: 67%;" />
+
+**含义**：Scale Error(SIM3)
+
+- SIM(3) 对齐中的尺度误差。SIM(3)考虑了轨迹对齐时可能存在的缩放差异，尺度误差表示在轨迹估计与真实轨迹之间的尺度不一致性。
+- 用于测量 SLAM 系统在全局尺度估计中的偏差，特别是在基于视觉或稀疏特征的 SLAM 系统中，尺度误差通常反映了深度估计的不准确性。
+
+##### 6. `trajectory_side_sim3_-1.pdf`
+
+<img src="https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240910160605784.png" alt="image-20240910160605784" style="zoom:67%;" />
+
+**含义**：Trajectory Side View（sim3）
+
+- 基于SIM(3) 对齐的轨迹侧视图，显示了估计轨迹和真实轨迹在侧面视角上的差异。
+
+##### 7. `trajectory_top_sim3_-1.pdf`
+
+<img src="https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240910161257168.png" alt="image-20240910161257168" style="zoom: 67%;" />
+
+**含义**：Trajectory Top View
+
+- 基于 SIM(3) 对齐的轨迹顶视图，显示估计轨迹和真实轨迹在俯仰角上的差异。
+- 便于分析轨迹在二位平面上的位置误差。
+
+##### 8. `translation_error_sim3_-1.pdf`
+
+<img src="https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240910161319761.png" alt="image-20240910161319761" style="zoom:67%;" />
+
+**含义**：Translation Error (SIM3)
+
+- 基于 SIM(3) 对齐的平移误差，表示轨迹估计中平移部分的误差。
+- 用于评估在不同位置上的平移误差，尤其在包含尺度调整过的对齐过程中，平移误差的表现。
 
 # 三、评估 4DRadarSLAM
 
