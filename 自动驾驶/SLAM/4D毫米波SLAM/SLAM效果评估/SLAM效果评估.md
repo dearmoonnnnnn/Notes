@@ -89,9 +89,9 @@ $$
 第一个字母
 
 - A：绝对
-  - 位姿的误差
+  - 真值与估计值直接的误差
 - R：相对
-  - 相邻帧之间变化的误差
+  - 真值与估计值相邻帧之间变化的误差
   - 关注局部片段之间的相对运动
 
 第二个字母
@@ -391,7 +391,7 @@ python2 analyze_trajectory_single.py <result_folder>
 
 <img src="https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20240910155805401.png" alt="image-20240910155805401" style="zoom: 67%;" />
 
-**含义**：Rotation Error（SIM3）
+**含义**：Rotation Error, SIM(3）
 
 - 使用 SIM(3) **对齐**方法计算的旋转误差。SIM(3) 不仅考虑旋转和平移，还考虑尺度变换。
 - 用于处理不同尺度的估计和真实轨迹，特别是重建场景或位姿的尺度不一致时。
