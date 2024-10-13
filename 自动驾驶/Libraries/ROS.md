@@ -1292,7 +1292,7 @@ rosbag record -O my_bagfile.bag /example_topic
 
 https://blog.csdn.net/XCCCCZ/article/details/136142235
 
-##### 2、将`pcl::PointCloud<pcl::PointXYZI>`的数据转换为sensor_msgs::PointCloud2后，怎么获取点的强度信息？
+##### 2、将 `pcl::PointCloud<pcl::PointXYZI>` 的数据转换为sensor_msgs::PointCloud2后，怎么获取点的强度信息？
 
 在`sensor_msgs::PointCloud2`消息中
 
@@ -1460,9 +1460,9 @@ class PointCloud
 
 ```
 
-## 6.2 当我们同时使用ROS和PCL时，典型的工作流如下：
+## 6.2 当我们同时使用 ROS 和 PCL 时，典型的工作流如下：
 
-1. 在一个ROS节点中接收一个`sensor_msgs::PointCloud2`消息的点云。
+1. 在一个ROS节点中接收一个 `sensor_msgs::PointCloud2` 消息的点云。
 2. 如果需要使用pcl处理它，我们会将其转换为`pcl::PointCloud<T>`，进行处理。
 3. 最后将其转换回`sensor_msgs::PointCloud2`，用以发布或者在ROS中进一步使用。<!-- 在ROS的pcl_conversions包中有函数，可以方便地在这些类型之间转换 -->
 
@@ -1559,18 +1559,18 @@ void toROSMsg(const pcl::PointCloud<T> &pcl_cloud,sensor_msgs::PointCloud2 &clou
 
 # 七、从零创建ROS工程
 
-##### 1、在ROS的工作目录下使用catkin_create_pkg命令创建一个新的ROS包。
+##### 1、在 ROS 的工作目录下使用 catkin_create_pkg 命令创建一个新的ROS包。
 
-假设工作目录是`catkin_ws`
+假设工作目录是 `catkin_ws`
 
 ```bash
 cd ~/catkin_ws/src
 catkin_create_pkg my_bag_recorder std_msgs sensor_msgs rosbag roscpp
 ```
 
-上述命令在catkin_ws/src目录下创建一个名为`my_rosbag_recorder`的新ROS包
+上述命令在 `catkin_ws/src` 目录下创建一个名为 `my_rosbag_recorder` 的新ROS包
 
-- `catkin_create_pkg`参数：
+- `catkin_create_pkg` 参数：
 
   ```bash
   catkin_create_pkg <package_name> [depend1] [depend2] [depend3] ...
@@ -1582,13 +1582,13 @@ catkin_create_pkg my_bag_recorder std_msgs sensor_msgs rosbag roscpp
 
 ##### 2、编写C++程序（节点）
 
-在`my_rosbag_recorder`包的`src`目录下，创建c++源文件，如`my_rosbag_recorder.cpp`，并编写代码
+在 `my_rosbag_recorder` 包的`src`目录下，创建c++源文件，如`my_rosbag_recorder.cpp`，并编写代码
 
 ##### 3、编辑CMakeLists.txt文件
 
-`catkin_create_pkg`会自动完成该步
+`catkin_create_pkg` 会自动完成该步
 
-在`my_rosbag_recorder`包的根目录下，打开`CMakeLists.txt`文件，添加适当的rosbag依赖项。
+在 `my_rosbag_recorder` 包的根目录下，打开 `CMakeLists.txt` 文件，添加适当的 `rosbag` 依赖项。
 
 ```cmake
 find_package(catkin REQUIRED COMPONENTS
@@ -1607,7 +1607,7 @@ target_link_libraries(rosbag_recorder
 
 ##### 4、构建工程
 
-回到ROS工作区目录，执行以下命令编译工程
+回到 `ROS` 工作区目录，执行以下命令编译工程
 
 ```bash
 catkin_make
@@ -1627,11 +1627,11 @@ roscore
 rosrun my_rosbag_recorder my_rosbag_recorder
 ```
 
-- rosrun参数：第一个参数为ROS包的名称，第二个参数为ROS包中编写的节点的执行文件的名称。	
+- rosrun 参数：第一个参数为ROS包的名称，第二个参数为ROS包中编写的节点的执行文件的名称。	
 
 ## 遇到的问题：
 
-##### 1、执行rosrun时显示包找不到
+##### 1、执行 rosrun 时显示包找不到
 
 **原因**： 
 
@@ -1639,13 +1639,13 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 
 **解决方法**：
 
-1. 打开/.bashrc文件
+1. 打开 `/.bashrc` 文件
 
    ```bash
    vim ~/.bashrc
    ```
 
-2. 在`.bashrc`文件中最后一行添加
+2. 在 `.bashrc` 文件中最后一行添加
 
    ```bash
    source /home/dearmoon/shares/share_ubuntu/projects/bag_recorder/devel/setup.bash
