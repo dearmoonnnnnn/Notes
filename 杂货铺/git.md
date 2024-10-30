@@ -32,7 +32,7 @@
   - [B、windows操作系统](#bwindows操作系统)
 - [三、git push/pull 特定文件夹或者文件](#三git-pushpull-特定文件夹或者文件)
         - [方法1：使用`sparse-checkout：`（未实践）](#方法1使用sparse-checkout未实践)
-        - [方法2：使用`.gitignore`文件](#方法2使用gitignore文件)
+            - [方法2：使用`.gitignore`文件](#方法2使用gitignore文件)
 
 
 # 零、概念与问题
@@ -463,6 +463,7 @@ temp/
 
 - 对所有层级的 `temp/` 文件夹和 `*.log` 都生效
 - windows 和 Linux 中都用 `/`
+- 也可以直接写 `temp`
 
 3、保存并关闭
 
