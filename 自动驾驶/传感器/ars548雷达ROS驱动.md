@@ -469,7 +469,14 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 }
 ```
 
-### 2.4、RCS值错误
+### 2.4、RCS值错误（忽略）
+
+##### 修正：
+
+- 实际上是 wireshark （插件）解析结果错误
+  - wireshark 中RCS值大部分为 200 以上
+  - 插件作者认为 RCS 使用的单位为 $m^2$
+- 从字节流中解析，并且使用原数据类型时，RCS 值为很小的负值，单位为 $dbm^2$
 
 ##### 动机：
 
