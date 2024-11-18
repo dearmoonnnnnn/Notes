@@ -370,6 +370,12 @@ std::string output_bag_path = nh.param<std::string>("/output_bag_path", "aaaaaaa
 std::string output_bag_path = nh.param<std::string>("/12345/output_bag_path", "aaaaaaa"); 
 ```
 
+##### 11.  bag 文件中的 %time 和 filed.header.stamp 有什么区别
+
+- %time 表示 bag 文件的时间戳，指消息被记录到 `bag` 文件中的时间
+
+- `filed.header.stamp` 表示消息的时间戳，是传感器采集时的时间戳。
+
 ## 概念
 
 ##### 1、节点

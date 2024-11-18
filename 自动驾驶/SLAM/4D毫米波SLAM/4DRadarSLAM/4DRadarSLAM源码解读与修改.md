@@ -258,7 +258,7 @@ T_init = [R_init | t_init]
 
 ##### 1.1、preprocessing_nodelet
 
-被`points_sub`订阅，进入`cloud_callback`函数，转为`radarcloud_raw`、`radarcloud_xyzi`
+被 `points_sub` 订阅，进入 `cloud_callback` 函数，转为 `radarcloud_raw` 、 `radarcloud_xyzi`
 
 - `radarcloud_raw`
   - 包含位置信息、强度和多普勒速度
@@ -290,13 +290,13 @@ T_init = [R_init | t_init]
 
 .......
 
-#### 2、imu数据流动方向
+#### 2、imu 数据流动方向
 
 ##### 2.1 preprocessing_nodelet
 
-被`imu_sub`订阅，传入IMU回调函数`imu_callback`。
+被 `imu_sub` 订阅，传入 IMU 回调函数 `imu_callback`。
 
-- 将原始的IMU数据进行坐标轴的旋转，使其和livox坐标系对齐。被`imu_pub`以`/imu`话题发布。
+- 将原始的IMU数据进行坐标轴的旋转，使其和 livox 坐标系对齐。被 `imu_pub`以 `/imu` 话题发布。
 
 ##### 2.2 scan_matching_odometry_nodelet
 
@@ -307,9 +307,9 @@ T_init = [R_init | t_init]
 - 使用预定义的`extQRPY`对IMU的方向进行去扰动，得到`imu_quat_deskew`。这是为了补偿IMU安装时的方向偏差，使IMU方向和激光雷达方向对齐。
 - 根据去扰动后的imu数据，创建新的IMU数据，添加到`imu_queue`队列中
 
-若`enable_imu_fusion`为`true`，发生的事情：
+若 `enable_imu_fusion` 为 `true`，发生的事情：
 
-- `matching()`函数中
+- `matching()` 函数中
 
   ```cpp
    if(keyframe_updater->decide(Eigen::Isometry3d(odom_s2s_now), stamp)) {
@@ -326,7 +326,7 @@ T_init = [R_init | t_init]
     - 若启用点云到地图的配准，传入参数`odom_s2m_now`
     - 若未启用点云到地图的配准，传入参数`odom_s2s_now`
 
-- `transformUpdate`函数
+- `transformUpdate` 函数
 
 ##### 2.3 radar_graph_slam_nodelet
 
@@ -1214,37 +1214,37 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
 
 ## A、问题
 
-##### 1、在预处理节点中，cloud_callback函数的参数eagel_msg包含哪些信息，与自己采集的ars548传感器数据有什么不同
+##### 1、在预处理节点中，cloud_callback 函数型参 eagel_msg 包含哪些信息，与自己采集的 ars548 传感器数据有什么不同
 
-查看bag文件的具体内容，需要将其转换为txt文件，参考如下链接：https://blog.csdn.net/jppdss/article/details/130029063
+查看 bag 文件的具体内容，需要将其转换为 txt 文件，参考如下链接：https://blog.csdn.net/jppdss/article/details/130029063
 
-- 查看作者提供的bag文件
+- 查看作者提供的 bag 文件
 
-  1. 在bag文件的路径下，使用`rosbga info`查看bag文件相关信息
+  1. 在 bag 文件的路径下，使用 `rosbga info` 查看 bag 文件相关信息
 
      ```bash
      rosbag info cp_2022-02-26.bag
      ```
 
-     可知，原话题为：`/radar_enhanced_pcl`。PS：在`params.yaml`文件中也可知该信息。
+     可知，原话题为：`/radar_enhanced_pcl`。PS：在 `params.yaml` 文件中也可知该信息。
 
      消息类型为：`sensor_msgs/PointCloud`
 
-  2. 保存该话题为txt文件
+  2. 保存该话题为 txt 文件
 
      ```bash
      rostopic echo -b cp_2022-02-26.bag -p /radar_enhanced_pcl > cp_2022-02-26-radar_enhanced_pcl.txt
      ```
 
-     ctrl+c提前结束转换，避免文件过大，导致无法打开
+     ctrl + c 提前结束转换，避免文件过大，导致无法打开
 
-  3. 查看txt文件
+  3. 查看 txt 文件
 
      ![image-20240227144636257](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240227144636257.png)
 
      ![image-20240227144854629](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240227144854629.png)
 
-     通过txt的第一行可知，该话题包含了
+     通过 txt 第一行可知，该话题包含了
 
      - 时间：`%time`
      - 序列号：`field.header.seq`
@@ -1258,7 +1258,7 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
 
 - 查看自己数据的消息内容
 
-  1. 在bag文件的路径下，使用`rosbga info`查看bag文件相关信息
+  1. 在 bag 文件的路径下，使用 `rosbga info` 查看bag文件相关信息
 
      ```bash
      rosbag info RiQingBanShiNeiDiSu3.bag
@@ -1266,13 +1266,13 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
 
      得到点云话题为：`/ars548_process/detection_point_cloud`
 
-  2. 保存该话题为txt文件
+  2. 保存该话题为 txt 文件
 
      ```bash
      rostopic echo -b RiQingBanShiNeiDiSu3.bag -p /ars548_process/detection_point_cloud > RiQingBanShiNeiDiSu3.txt
      ```
 
-  3. 查看txt文件
+  3. 查看 txt 文件
 
      ![image-20240227153954708](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240227153954708.png)
 
@@ -1284,7 +1284,7 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
      - 坐标系：`field.header.frame_id`
      - 37个点：`filed.points[0-36].x`,`filed.points[0-36].y`,`filed.points[0-36].z`
 
-- `eagle_msg`和自己采集的ars548数据区别如下：
+- `eagle_msg` 和自己采集的 ars548 数据区别如下：
 
   1. 点的数量差距很大。
 
@@ -1293,16 +1293,16 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
   
      **当前解决思路：**点云融合。
   
-  2. 两者的消息格式都为`sensor_msgs/PointCloud`，但是消息内容有区别
+  2. 两者的消息格式都为 `sensor_msgs/PointCloud`，但是消息内容有区别
   
      - `eagle_msg`数据拥有多普勒速度和信号强度信息
-     - ars548未收集到多普勒速度和信号强度信息。
+     - ars548 未收集到多普勒速度和信号强度信息。
   
      **原因：**
   
      点云消息类型都为：`sensor_msgs/PointCloud`，但是点的消息格式不同。
   
-     **当前解决思路：**重新从原始的ars548传感器数据流中获取点的信息，定义新的点消息类型，使其包含多普勒速度。
+     **当前解决思路：**重新从原始的 ars548 传感器数据流中获取点的信息，定义新的点消息类型，使其包含多普勒速度。
 
 ##### 2、原作者提供的数据，包含两种点云数据`/radar_enhanced_pcl`和`/radar_trk`，它们有什么区别？
 
@@ -1320,11 +1320,11 @@ rosbag info cp_2022-02-26.bag
 ```
 
 - `/radar_enhanced_pcl`：
-  - 经过了增强处理，比如去噪声、配准等。
-  - 也是`preprocessing_nodelet`用的点云数据。
+  - 经过了**增强**处理，比如去噪声、配准等。
+  - 也是 `preprocessing_nodelet` 用的点云数据。
 - `/radar_trk`
-  - 可能是原始的点云数据。
-  - 转换为txt后，发现该话题一帧也只有53个点。而`/radar_enhanced_pcl`一帧有6000多个点。
+  - **原始**的点云数据。
+  - 转换为 txt 后，发现该话题一帧也只有 53个 点。而`/radar_enhanced_pcl`一帧有6000多个点。
 
 ## B、需要修改的文件:
 
@@ -1446,7 +1446,7 @@ rosbag info cp_2022-02-26.bag
 
 ##### 动机：
 
-采集到的ars548点云数据过于稀疏，一帧30-60个点，且包含很多噪声。而运行4DRadarSlam所使用的点云数据一帧包含了6000多个点。
+采集到的 ars548 点云数据过于稀疏，一帧30-60个点，且包含很多噪声。而运行4DRadarSlam 所使用的点云数据一帧包含了 6000 多个点。
 
 ##### 方法：
 

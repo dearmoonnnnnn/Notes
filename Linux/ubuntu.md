@@ -203,6 +203,14 @@ uname -m
 - 若输出为`armv71`或类似，说明使用的是32位的ARM架构
 - 若输出为`aarch64`，则表示系统为64位的ARM架构，选择arm64或者aarch64版本
 
+##### 安装 deb 文件
+
+```bash
+sudo dpkg -i package_name.deb
+```
+
+
+
 ### B、源码安装
 
 手动编译、安装
