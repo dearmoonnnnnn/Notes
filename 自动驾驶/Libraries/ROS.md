@@ -3,16 +3,16 @@
         - [1. Autolabor教程](#1-autolabor教程)
   - [问题](#问题)
         - [1. 如何知道一个 bag 文件中的数据结构](#1-如何知道一个-bag-文件中的数据结构)
-        - [2. 话题和消息的关系](#2-话题和消息的关系)
-        - [3. node 和 nodelet 的关系](#3-node-和-nodelet-的关系)
-        - [4. 一个节点可以发布或者接收多个主题吗](#4-一个节点可以发布或者接收多个主题吗)
-        - [5. nodelet 节点在 launch 中配置的时候，节点所在的包 (pkg) 为什么是 nodelet](#5-nodelet-节点在-launch-中配置的时候节点所在的包-pkg-为什么是-nodelet)
-        - [6. 将 melodic 版本下能够跑通的项目迁移到 noetic 版本中](#6-将-melodic-版本下能够跑通的项目迁移到-noetic-版本中)
-        - [7. 将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is\_dense，该怎么填充后者的这些数据字段?](#7-将sensor_msgpointcloud的数据转为pclpointcloudpclpointxyz的数据但是前者没有widthheight和is_dense该怎么填充后者的这些数据字段)
-        - [8. 如何修改ROS包的名称](#8-如何修改ros包的名称)
-        - [9. 在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样](#9-在roslaunch文件中node标签中的name参数和type参数的区别是什么为什么它们的值一样)
-        - [10. 在 node 节点内设置参数，为什么读取不到?](#10-在-node-节点内设置参数为什么读取不到)
-        - [11.  bag 文件中的 %time 和 filed.header.stamp 有什么区别](#11--bag-文件中的-time-和-filedheaderstamp-有什么区别)
+            - [2. 话题和消息的关系](#2-话题和消息的关系)
+            - [3. node 和 nodelet 的关系](#3-node-和-nodelet-的关系)
+            - [4. 一个节点可以发布或者接收多个主题吗](#4-一个节点可以发布或者接收多个主题吗)
+            - [5. nodelet 节点在 launch 中配置的时候，节点所在的包 (pkg) 为什么是 nodelet](#5-nodelet-节点在-launch-中配置的时候节点所在的包-pkg-为什么是-nodelet)
+            - [6. 将 melodic 版本下能够跑通的项目迁移到 noetic 版本中](#6-将-melodic-版本下能够跑通的项目迁移到-noetic-版本中)
+            - [7. 将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is\_dense，该怎么填充后者的这些数据字段?](#7-将sensor_msgpointcloud的数据转为pclpointcloudpclpointxyz的数据但是前者没有widthheight和is_dense该怎么填充后者的这些数据字段)
+            - [8. 如何修改ROS包的名称](#8-如何修改ros包的名称)
+            - [9. 在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样](#9-在roslaunch文件中node标签中的name参数和type参数的区别是什么为什么它们的值一样)
+            - [10. 在 node 节点内设置参数，为什么读取不到?](#10-在-node-节点内设置参数为什么读取不到)
+            - [11.  bag 文件中的 %time 和 filed.header.stamp 有什么区别](#11--bag-文件中的-time-和-filedheaderstamp-有什么区别)
   - [概念](#概念)
         - [1、节点](#1节点)
         - [2、ROS Master](#2ros-master)
@@ -127,27 +127,31 @@
 
 ##### 1. 如何知道一个 bag 文件中的数据结构
 
-**使用 rosbag 命令行工具**
+1. 使用 rosbag 命令行工具
 
-1. **查看 bag 文件中的话题和消息数**
+   1. **查看 bag 文件中的话题和消息数**
 
-   ```bash
-   rosbag info <your_bag_file.bag>
-   ```
+      ```bash
+      rosbag info <your_bag_file.bag>
+      ```
 
-2. 查看特定话题的消息的内容
 
-   ```bash
-   rosbag echo -n 1 <your_bag_file.bag> <topic_name>
-   ```
+   2. 查看特定话题的消息的内容
 
-3. 查看消息的定义
+      ```bash
+      rosbag echo -n 1 <your_bag_file.bag> <topic_name>
+      ```
 
-   ```bash
-   rosmsg show <message_type>
-   ```
+   3. 查看消息的定义
 
-**将 bag 文件转换为 txt 文件，用文本编辑器查看，见“十、格式转换”**
+      ```bash
+      rosmsg show <message_type>
+      ```
+
+2. 将 bag 文件转换为 txt 文件，用文本编辑器查看，见“十、格式转换
+3. 使用 Foxglove Studio
+
+
 
 ##### 2. 话题和消息的关系
 

@@ -52,7 +52,7 @@
   ```
 
 
-# 代码修改
+# 方法1：使用 radar_slam 中
 
 `radar_graph_slam_nodelet.cpp`节点中的`command_callback`
 
@@ -62,13 +62,28 @@
   fout.open("/home/dearmoon/datasets/NWU/日晴不颠簸低速3/estimated/stamped_pose_graph_estimate.txt", ios::out);
   ```
 
-  
 
-# 方法2 ： 
 
-运行 SLAM 时，使用 ROS record记录轨迹话题：`/radar_graph_slam/aftmapped_odom`
+
+##### 出现的问题
+
+程序可能会出现 out of memory 问题
+
+# 方法2 ： ros record
+
+##### 1. 记录 bag 数据
+
+运行 SLAM 时，使用 ROS record 记录轨迹话题：`/radar_graph_slam/aftmapped_odom`
 
 ```bash
 rosbag record -O stamped_traj_estimate.bag /radar_graph_slam/aftmapped_odom
+```
+
+##### 2. 转换格式
+
+然后将其转换为 evo 可用格式
+
+```bash
+evo_traj bag XRGB.bag /radar_graph_slam/aftmapped_odom --save_as_tum
 ```
 

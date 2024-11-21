@@ -107,7 +107,7 @@ fast_adpgicp_mp_impl.hpp 226行 307行
 
 ##### 错误原因1：
 
-查看代码可发现，自我速度评估器`radar_ego_volocity_estimator.cpp`文件输出了上述错误。
+查看代码可发现，自我速度评估器 `radar_ego_volocity_estimator.cpp` 文件输出了上述错误。
 
 因此报错原因为自我速度评估器中筛选出的点过少。
 
@@ -189,7 +189,7 @@ Too large transform!!  1.50411[m] 0.114139[degree] Ignore this frame (1705378405
 
 
 
-## 问题4： ROS节点崩溃
+## 问题4： ROS 节点崩溃
 
 在最后进行优化时，ROS 节点崩溃，报错信息如下：
 

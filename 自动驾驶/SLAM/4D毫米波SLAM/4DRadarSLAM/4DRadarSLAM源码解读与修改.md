@@ -2,49 +2,41 @@
 
 ## A 、问题
 
-##### 1、包的名称为什么是radar_graph，而不是4DRadarSLAM
+##### 1、包的名称为什么是 radar_graph，而不是 4DRadarSLAM
 
-radar_graph_slam文件中
+包名在 `package.xml` 文件定义，为 `radar_graph_slam`
 
-```xml
-<include file="$(find radar_graph_slam)/launch/rosbag_play_radar_carpark1.launch" />
-```
+##### 2、在预处理节点的 cloud_callback 函数中为什么需要两种类型的点云：radarpoint_raw 和 radarpoint_xyzi
 
-包名应该是4DRadarSLAM，但这里显示radar_graph_slam
+- `radarpoint_raw` 包含了 xyz 和强度信息以及多普勒速度
+  1. 所有点最终被添加到 `radarcloud_raw` 中
 
-答：查看`package.xml`文件，该文件定义了包名为`radar_graph_slam`
+  2. `radarcloud_raw` 被转换为 ROS 中的 PointCloud2 格式的数据：`pc2_raw_msg`
 
-##### 2、在预处理节点的cloud_callback函数中为什么需要两种类型的点云：radarpoint_raw和radarpoint_xyzi
+  3. `pc2_raw_msg` 消息被发布
 
-- `radarpoint_raw`包含了xyz和强度信息以及多普勒速度
-  1. 所有点最终被添加到`radarcloud_raw`中
+  4. `pc2_raw_msg` 作为自我速度评估器 `estimator.estimate()` 的输入，返回得到**内点**和**外点**的点云数据：`inlier_radar_msg`，`outlier_radar_msg`
 
-  2. `radarcloud_raw`被转换为ROS中的PointCloud2格式的数据：`pc2_raw_msg`
+  5. `inlier_radar_msg` 被转换 `radarcloud_inlier`，即从 ROS 消息转换为 pcl 点云类型。
 
-  3. `pc2_raw_msg`消息被发布
+  6. 若启用**动态物体去除**，`src_cloud` (即后续处理的点云)指向`radarcloud_inlier`
 
-  4. `pc2_raw_msg`作为自我速度评估器`estimator.estimate()`的输入，返回得到**内点**和**外点**的点云数据：`inlier_radar_msg`，`outlier_radar_msg`
+  7. 后续对 `src_cloud` 进行一系列处理，得到过滤后的点云 `filtered`
 
-  5. `inlier_radar_msg`被转换`radarcloud_inlier`，即从ROS消息转换为pcl点云类型。
+- `radarpoint_xyzi` 包含了xyz 和强度信息
+  1. 所有点最终被添加到 `radarcloud_xyzi` 中
 
-  6. 若启用**动态物体去除**，`src_cloud`(即后续处理的点云)指向`radarcloud_inlier`
+  2. 若未启用**动态物体去除**，`src_cloud` 指向 `radarcloud_xyzi`
 
-  7. 后续对`src_cloud`进行一系列处理，得到过滤后的点云`filtered`
+  3. 后续对 `src_cloud` 进行一系列处理，得到过滤后的点云 `filtered`
 
-- `radarpoint_xyzi`包含了xyz和强度信息
-  1. 所有点最终被添加到`radarcloud_xyzi`中
-
-  2. 若未启用**动态物体去除**，`src_cloud`指向`radarcloud_xyzi`
-
-  3. 后续对`src_cloud`进行一系列处理，得到过滤后的点云`filtered`
-
-##### 3、eagle->msg的消息格式是什么
+##### 3、eagle->msg 的消息格式是什么
 
 见“二、运行自己的数据，问题1”
 
-##### 4、odom_msgs的数据格式是什么，为什么要使用队列
+##### 4、odom_msgs 的数据格式是什么，为什么要使用队列
 
-odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息。
+odom_msgs 包含了机器人的位置、姿态、线速度、角速度等信息。
 
 ##### 5、初始位姿矩阵的作用是什么
 
@@ -70,15 +62,15 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 这两个操作通常在点云预处理阶段应用，以提高点云的质量和适应性，使得后续的点云处理、配准、建图等任务更加稳定和可靠。
 
-##### 7、header.frame_id 和 child_frame_id的区别
+##### 7、header.frame_id 和 child_frame_id 的区别
 
 [ros常用组件_什么是child frame id-CSDN博客](https://blog.csdn.net/weixin_62349967/article/details/126667793)
 
 两者均是ROS消息的头部(`Header`)中的两个重要的标识符
 
-1. `header.frame_id`：表示消息所在的坐标系的名称。例如，激光雷达数据的`frame_id`可能是`laser_frame`（以激光雷达为原点的坐标系），相机的`frame_id`可能是`camera_frame`(以相机为原点的坐标系)。
-2. `child_frame_id`：表示一个相对于`frame_id`的子坐标系。通常它用于表示机器人的移动部件或传感器相对运动坐标系。例如，激光雷达数据的`child_frame_id`可能是`base_laser`，表示机器人底盘坐标系。
-3. `translation`表示`child_frame_id`相对于`header.frame_id`的偏移量，而`rotation`表示`child_fram_id`相对于`header.frame_id`的偏航、俯仰、翻滚和w(四元数)
+1. `header.frame_id`：表示消息所在的坐标系的名称。例如，激光雷达数据的`frame_id` 可能是 `laser_frame`（以激光雷达为原点的坐标系），相机的 `frame_id` 可能是 `camera_frame` (以相机为原点的坐标系)。
+2. `child_frame_id`：表示一个相对于 `frame_id` 的子坐标系。通常它用于表示机器人的移动部件或传感器相对运动坐标系。例如，激光雷达数据的 `child_frame_id` 可能是 `base_laser` ，表示机器人底盘坐标系。
+3. `translation` 表示 `child_frame_id` 相对于 `header.frame_id` 的偏移量，而 `rotation` 表示 `child_fram_id` 相对于 `header.frame_id` 的偏航、俯仰、翻滚和w(四元数)
 
 ##### 8、内点数据和外点数据的意义和区别
 
@@ -88,7 +80,7 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 举例：
 
-`estimator.estimate(pc2_raw_msg, v_r, sigma_v_r, inlier_radar_msg, outlier_radar_msg)`使用RANSAC算法对点云数据进行==线性模型估计==，得到点云数据的自我速度以及内点和外点数据。内点和外点数据可以帮助我们更好地理解点云数据，以便于更好地估计模型的准确性和鲁棒性。
+`estimator.estimate(pc2_raw_msg, v_r, sigma_v_r, inlier_radar_msg, outlier_radar_msg)`使用 RANSAC 算法对点云数据进行==线性模型估计==，得到点云数据的自我速度以及内点和外点数据。内点和外点数据可以帮助我们更好地理解点云数据，以便于更好地估计模型的准确性和鲁棒性。
 
 ##### 9、什么是扫描到地图的配准，它与扫描到扫描的配准有什么区别
 
@@ -106,15 +98,15 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 - 目标点云
   - 传感器采集的上一帧（关键帧）点云
 
-##### 10、params.yaml和utility_radar.h都定义了节点的相关参数，比如说pointCloudTopic参数，两者不会冲突吗，能不能只保留其中一个？
+##### 10、params.yaml 和 utility_radar.h 都定义了节点的相关参数，比如说 pointCloudTopic 参数，两者不会冲突吗，能不能只保留其中一个？
 
-在ROS中，参数可以从多个来源进行设置，包括`launch`文件、命令行参数、参数文件（如`params.yaml`）、程序内部设置等。当参数从不同来源设置时，ROS会按照一定的优先级进行处理，确保参数值正确地被设置。
+在 ROS 中，参数可以从多个来源进行设置，包括 `launch` 文件、命令行参数、参数文件（如`params.yaml`）、程序内部设置等。当参数从不同来源设置时，ROS 会按照一定的优先级进行处理，确保参数值正确地被设置。
 
-通常情况下，参数文件（如`params.yaml`）中定义的参数会被ROS参数服务器加载，而在程序内部定义的参数（如`utility_radar.h`中的`ParamServer`类）是由节点内部直接设置的。
+通常情况下，参数文件（如 `params.yaml` ）中定义的参数会被ROS参数服务器加载，而在程序内部定义的参数（如 `utility_radar.h` 中的 `ParamServer` 类）是由节点内部直接设置的。
 
-如果在`params.yaml`文件和`utility_radar.h`中都定义了相同的参数，ROS会按照一定的优先级来确定最终使用的参数值。一般来说，命令行参数的优先级最高，其次是`launch`文件中设置的参数，然后是参数文件中定义的参数，最后是程序内部设置的参数。
+如果在 `params.yaml` 文件和 `utility_radar.h` 中都定义了相同的参数，ROS 会按照一定的优先级来确定最终使用的参数值。一般来说，命令行参数的优先级最高，其次是 `launch` 文件中设置的参数，然后是参数文件中定义的参数，最后是程序内部设置的参数。
 
-如果你希望只保留其中一个参数定义，可以根据你的需求选择保留哪个。如果你更喜欢使用参数文件（`params.yaml`）来管理参数，你可以删除utility_radar.h中的参数定义，并将所有参数都集中在`params.yaml`文件中进行管理。反之，如果你更喜欢在程序内部定义参数，你可以删除`params.yaml`文件，并在`utility_radar.h`中设置所有参数。
+如果你希望只保留其中一个参数定义，可以根据你的需求选择保留哪个。如果你更喜欢使用参数文件（ `params.yaml` ）来管理参数，你可以删除 utility_radar.h中的参数定义，并将所有参数都集中在 `params.yaml` 文件中进行管理。反之，如果你更喜欢在程序内部定义参数，你可以删除`params.yaml`文件，并在`utility_radar.h`中设置所有参数。
 
 总之，确保最终使用的参数值是正确的，且来源清晰明确即可。
 
@@ -126,9 +118,9 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 ## B、概念
 
-##### 1、tf变化
+##### 1、tf 变化
 
-在ROS中，通过使用`tf(transform)`，我们可以知道任何时刻、任何两个坐标系之间的相对位置和方向。具体用途：
+在 ROS 中，通过使用 `tf(transform)`，我们可以知道任何时刻、任何两个坐标系之间的相对位置和方向。具体用途：
 
 1. 提供坐标转换服务：
 
@@ -140,11 +132,11 @@ odom_msgs包含了机器人的位置、姿态、线速度、角速度等信息�
 
 3. 支持多坐标系
 
-   一个机器人可能拥有多个传感器，每个传感器都有自己的坐标系。使用`tf`，所有这些坐标系可以转换为一个共同的坐标系，如`base_link`或`odom`
+   一个机器人可能拥有多个传感器，每个传感器都有自己的坐标系。使用`tf`，所有这些坐标系可以转换为一个共同的坐标系，如 `base_link` 或 `odom`
 
 4. 方便的可视化
 
-   RViz利用`tf`数据来正确地显示来自不同传感器的数据。这样无论数据来自哪个传感器或在哪个坐标系中，都可以在同一个视图中共同显示。
+   RViz 利用 `tf` 数据来正确地显示来自不同传感器的数据。这样无论数据来自哪个传感器或在哪个坐标系中，都可以在同一个视图中共同显示。
 
 5. 自动管理坐标系关系
 
@@ -198,7 +190,7 @@ ROS提供的标准信息库
 - `Quaternion`：表示四元数，通常用于表示旋转姿态
 - `Pose`和`PoseStamped`：分别表示三位空间中的姿态(位置和旋转)和带时间戳的姿态
 - `Twist`和`TwistStamped`：表示线速度和角速度，以及带时间戳的线速度和角速度
-- `Transform`和`TransformStamped`：代表坐标变换和带时间戳的坐标变换
+- `Transform` 和 `TransformStamped`：代表坐标变换和带时间戳的坐标变换
 
 ##### 6、初始位姿矩阵
 
@@ -1464,7 +1456,7 @@ rosbag info cp_2022-02-26.bag
 
 - 深度学习方法
 
-##### github相关仓库
+##### github 相关仓库
 
 - Zadar Labs：
 
@@ -1484,7 +1476,7 @@ rosbag info cp_2022-02-26.bag
 
 
 
-##### 使用了ars548传感器的数据集：
+##### 使用了 ars548 传感器的数据集：
 
 - Dual-Radar
 
