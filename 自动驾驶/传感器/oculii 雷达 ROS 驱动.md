@@ -8,7 +8,7 @@ https://github.com/iphone7743/oculii_radar_driver
 
 ##### 动机：
 
-该项目存在点云增强算法，希望在ars548雷达ROS驱动中适配相关代码。
+该项目存在点云增强算法，希望在 ars548 雷达 ROS 驱动中适配相关代码。
 
 # 二、源码解读
 

@@ -28,15 +28,15 @@
 
 ## 问题：
 
-##### 1、ars548_process_node未接受到网口数据，从网口读数据的代码在哪？
+##### 1、ars548_process_node 未接受到网口数据，从网口读数据的代码在哪？
 
-源代码未给出,需要在`receiveThread()`函数中添加
+源代码未给出,需要在 `receiveThread()` 函数中添加
 
-##### 2、在ars548_process包中添加了一个文件，需要在哪些文件中配置，才能与ROS适配
+##### 2、在 ars548_process 包中添加了一个文件，需要在哪些文件中配置，才能与 ROS 适配
 
-当你在ROS包中添加新文件时，为了确保`catkin_make`可以正确地编译和链接这些文件，你可能需要更新以下文件：
+当你在 ROS 包中添加新文件时，为了确保`catkin_make`可以正确地编译和链接这些文件，你可能需要更新以下文件：
 
-1. **CMakeLists.txt**: 这是Catkin build系统使用的主要文件。你需要确保你的新源文件被包含在某个可执行文件或库的构建中。
+1. **CMakeLists.txt**: 这是 Catkin build 系统使用的主要文件。你需要确保你的新源文件被包含在某个可执行文件或库的构建中。
 
     - 如果你添加了一个新的节点（一个可执行文件），你可能需要更新或添加一个`add_executable()`和`target_link_libraries()`条目。
       
@@ -69,15 +69,17 @@
 
 ##### 3、ProcessRadarData函数，如何传递
 
-##### 4、为什么obj有header成员，而obj_list没有，添加时间戳的代码应该在obj中还是obj_list中
+##### 4、为什么 obj 有 header 成员，而 obj_list 没有，添加时间戳的代码应该在 obj 中还是obj_list 中
 
-##### 5、从bag转换为txt文件后,第一行显示了point的数量，但是从wireshark可知每一帧的点云数量不一样，那么第一行的点的数量由什么决定呢?
+##### 5、从 bag 转换为t xt 文件后,第一行显示了 point 的数量，但是从 wireshark 可知每一帧的点云数量不一样，那么第一行的点的数量由什么决定呢?
 
-在将bag文件转换为txt文件时，第一行显示的点的数量通常由转换程序在读取bag文件时遇到的第一个点云消息的点的数量决定。这意味着第一行的点的数量可能不代表所有点云消息的实际数量，因为每一帧的点云数量可能不一样。
+在将 bag 文件转换为 txt 文件时，第一行显示的点是读取的 bag 文件第一个点云消息的点数量。
 
-##### 6、在info_convert_node文件的回调函数中添加输出， 命令行不现实输出
+第一行的点数量不代表所有点云消息的实际数量，因为每一帧的点云数量可能不一样。
 
-`ars548_process.lanuch`文件中，启动`info_convert_node`时未添加参数：`output="screen"`
+##### 6、在 info_convert_node 文件的回调函数中添加输出， 命令行不显示输出
+
+`ars548_process.lanuch` 文件中，启动 `info_convert_node` 时未添加参数：`output="screen"`
 
 # 一、根据HesaiLidar_Swift_ROS实现（同4DRaSLAM,未实现，弃用）
 
@@ -142,26 +144,26 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 
 总的来说，这个构造函数设置了Convert类的一些初值，并为这个类与Pandar LiDAR数据的处理进行了初始化。它也似乎具有动态重新配置的功能，允许在运行时修改某些参数。
 
-# 二、根据ARS548-demo实现
+# 二、根据 ARS548-demo 实现
 
 ## 1、整体思路：
 
 ##### 两个项目：
 
 - RosDriverForARS548：
-  - 接受json格式的传感器数据，并用以ROS消息的格式发布
+  - 接受 json 格式的传感器数据，并用以 ROS 消息的格式发布
 - rosbag_recorder
-  - 订阅RosDriverForARS548的话题，并生成bag文件
+  - 订阅 RosDriverForARS548 的话题，并生成 bag 文件
 
 ##### 流程：
 
-1. 使用wireshark将pcap(pcapng)的解析结果保存为json文件
+1. 使用 wireshark 将 pcap/pcapng 解析结果保存为 json 文件
 
-   注意需要ars548插件
+   注意需要 ars548 插件
 
-1. 使用RosDriverForARS548，直接从json文件读取解析结果，和字符流，并发布相关话题
+1. 使用 RosDriverForARS548，直接从 json 文件读取解析结果，和字符流，并发布相关话题
 
-1. 同时使用rosbag_recorder订阅话题，转为bag文件
+1. 同时使用 rosbag_recorder 订阅话题，转为 bag 文件
 
 ##### 运行环境：
 
@@ -180,21 +182,21 @@ https://github.com/wulang584513/ARS548-demo/tree/master
 
 https://github.com/letMeEmoForAWhile/RosDriverForARS548
 
-### 2.1、如何数据读取流
+### 2.1、如何读取数据流
 
 ##### 动机：
 
-原始的ars548-demo项目没有提供获取数据流的代码，需要自己编写。
+原始的 ars548-demo 项目没有提供获取数据流的代码，需要自己编写。
 
-##### 思路一：从pcap文件读取数据
+##### 思路一：从 pcap 文件读取数据
 
-由于pcap保存的是原始字节流，无法读取重组后的字节流，因此放弃该思路。
+由于 pcap 保存的是原始字节流，无法读取重组后的字节流，因此放弃该思路。
 
-##### 思路二：以json文件的形式保存wireshark的解析结果，并读取
+##### 思路二：以 json 文件的形式保存 wireshark 的解析结果，并读取
 
-由于厂家提供了lua插件，wireshark可以直接解析出雷达点的信息（位置、多普勒速度等）。将解析结果保存为json，直接从json文件中读取信息。
+利用 `lua` 插件，`wireshark` 可以直接解析出雷达点信息（位置、多普勒速度等）。将解析结果保存为 json，直接从 json 文件中读取信息。
 
-##### 2.2.1 json文件的数据结构
+##### 2.2.1 json 文件的数据结构
 
 ##### 对象(object)
 
@@ -233,13 +235,13 @@ https://github.com/letMeEmoForAWhile/RosDriverForARS548
   [1, "apple", true, null, {"color": "red"}]
   ```
 
-##### 2.2.2 C++读取json文件
+##### 2.2.2 C++ 读取 json 文件
 
-1. 将wireshark解析结果保存在json文件
+1. 将 wireshark 解析结果保存在 json 文件
 
-2. 安装相关的库，apt安装或者源码安装选择一个
+2. 安装相关的库，apt 安装或者源码安装选择一个
 
-   - apt安装
+   - apt 安装
 
       ```bash
       sudo apt update
@@ -261,12 +263,12 @@ https://github.com/letMeEmoForAWhile/RosDriverForARS548
      ```
 
 
-3. 读取json文件，并将内容解析到json对象中`nlohmann::json j`
+3. 读取 json 文件，并将内容解析到 json 对象中 `nlohmann::json j`
 
-4. 遍历json，如果当前对象满足条件，返回当前数据包`j[i]`,其格式仍为`nlohmann::json`
+4. 遍历 json，如果当前对象满足条件，返回当前数据包 `j[i]`,其格式仍为 `nlohmann::json`
 
-   - 在`nlohmann::json`库中，JSON对象、数组、字符串、数字、布尔值和null都是使用`nlohmann::json`类型来表示的。
-   - 当你通过索引、键或其他方法访问`nlohmann::json`对象中的元素时，返回的仍然是`nlohmann::json`类型，不过其内部的实际数据可能是字符串、数字、布尔值、数组、对象或null。
+   - 在 `nlohmann::json` 库中，JSON对象、数组、字符串、数字、布尔值和null都是使用 `nlohmann::json` 类型来表示的。
+   - 当你通过索引、键或其他方法访问 `nlohmann::json` 对象中的元素时，返回的仍然是 `nlohmann::json` 类型，不过其内部的实际数据可能是字符串、数字、布尔值、数组、对象或null。
 
 ### 2.2、修改发布的点云消息，使其包含多普勒速度和强度信息
 
@@ -274,7 +276,7 @@ https://github.com/letMeEmoForAWhile/RosDriverForARS548
 
 原始代码发布的点云消息只包含位置信息（x、y、z），没有包含多普勒速度和强度信息。
 
-在wireshark中查看点的消息内容，存在多普勒速度(Detection Radial Velocity)和强度信息(RCS)。
+在  `wireshark`  中查看点的消息内容，存在多普勒速度  `Detection Radial Velocity`  和强度信息  `RCS` 。
 
 ![image-20240301130657374](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240301130657374.png)
 
@@ -282,7 +284,7 @@ https://github.com/letMeEmoForAWhile/RosDriverForARS548
 
 ##### 1、自定义消息类型，包含位置和多普勒速度信息
 
-这里在`ars548_msg`这个包中自定义一个消息类型。
+这里在 `ars548_msg` 这个包中自定义一个消息类型。
 
 ```yaml
 # 在你的 ROS 包中创建一个名为 `DopplerPoint.msg` 的消息文件
@@ -295,7 +297,7 @@ float32 doppler_velocity
 
 ##### 2、修改配置文件
 
-- `CMakeList.txt`文件中的`add_message_files`选项添加`DopplerPoint.msg`
+- `CMakeList.txt` 文件中的 `add_message_files` 选项添加 `DopplerPoint.msg`
 
   ```cmake
   add_message_files(
@@ -305,7 +307,7 @@ float32 doppler_velocity
   )
   ```
 
-- 在`generate_messages`函数的`DEPENDENCIES`参数添加依赖。
+- 在 `generate_messages` 函数的 `DEPENDENCIES` 参数添加依赖。
 
   ```cmake
   generate_messages(
@@ -315,9 +317,9 @@ float32 doppler_velocity
   )
   ```
 
-- 使得`ars548_msg`可以找到`geometry`包
+- 使得 `ars548_msg` 可以找到 `geometry` 包
 
-  - 在 `package.xml` 文件中添加以下行
+  - 在  `package.xml` 文件中添加以下行
 
     ```xml
     <build_depend>geometry_msgs</build_depend>
@@ -333,7 +335,7 @@ float32 doppler_velocity
     )
     ```
 
-##### 3、修改`detectionReceie()`函数
+##### 3、修改 `detectionReceie()` 函数
 
 ```c++
 #include "ars548_msg/DopplerPoint.h"  // 包含自定义消息类型
@@ -367,16 +369,16 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
 ##### 报错：
 
-无法将`ars548_msg::DopplerPoint` 类型的对象添加到 `std::vector<geometry_msgs::Point32>`类型的容器中
+无法将 `ars548_msg::DopplerPoint` 类型的对象添加到 `std::vector<geometry_msgs::Point32>` 类型的容器中
 
 ![image-20240229192543291](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240229192543291.png)
 
-不能直接修改点的消息类型。查阅官方文档可知，`sensor_msgs::PointCloud` 消息类型包含一个字段叫做 `channels`，它是一个 `sensor_msgs::ChannelFloat32` 类型的数组，用于存储每个点的附加信息。
+不能直接修改点的消息类型。查阅官方文档可知，`sensor_msgs::PointCloud`  消息类型包含一个字段  `channels`，它是一个  `sensor_msgs::ChannelFloat32`  类型的数组，用于存储每个点的附加信息。
 
 #### 思路2：将点的多普勒速度存放在 channels 字段中
 
 1. 首先，在 `sensor_msgs::PointCloud`  中添加一个通道，用于存储多普勒速度。假设你命名这个通道为 "doppler_velocity"，你需要添加一个  `sensor_msgs::ChannelFloat32` 类型的通道。
-2. 然后，在接收雷达数据的回调函数中，将每个点的多普勒速度存储在 `channels[0].values[i]` 中，其中 `i` 表示第 `i` 个点。
+2. 然后，在接收雷达数据的回调函数中，将每个点的多普勒速度存储在 `channels[0].values[i]`  中，其中 `i` 表示第 `i` 个点。
 
 ```c++
 #include <sensor_msgs/PointCloud.h>
@@ -469,20 +471,35 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 }
 ```
 
-### 2.4、RCS 值错误（忽略）
+### 2.4、RCS 值处理
 
-##### 修正：
+##### 两个单位
 
-- 实际上是 wireshark （插件）解析结果错误
-  - wireshark 中 RCS 值大部分为 200 以上
-  - 插件作者认为 RCS 使用的单位为 $m^2$
-- 从字节流中解析，并且使用原数据类型时，RCS 值为很小的负值，单位为 $dbm^2$
+- $m^2$
 
-##### 动机：
+- $dbm^2$
 
-原项目RCS数据类型定义错误，导致发布时该值与`wireshark`解析结果不符
+  - 毫米波雷达应为此单位
 
-##### 修改文件1：detections.msg
+- 转换
+  $$
+  RCS_{dBm2}=10⋅log_{10}(RCS_{m^2})
+  $$
+  
+
+#####  解析结果错误
+
+- Wireshark 解析结果错误
+
+  - `lua` 插件解析字节流中 RCS 字段时，使用无符号整型 `uint8` 作为数据类型，8 bit 的数据解析范围为 0 ~ 255 
+
+  - 查阅相关手册可知，毫米波 RCS 取值范围为 -128 ~ 127， 单位是 $dbm^2$
+    - 应该使用 `int8_t`，转换 8 bit 数据，可得到 -128 ~ 127 范围内的取值。 
+- 原驱动 ARS548-demo 解析 RCS 字段错误
+  - 原项目使用有符号字符型 `int8` / `signed char` 作为数据类型。
+    - 虽然取值也为 [-127, 128]，但有符号整型通常用于表示字符，默认以字符方式**存储**和**打印**。
+
+##### 修改文件1：detections.msg （不需要修改）
 
 ```
 int8 s_RCS 
@@ -491,7 +508,7 @@ int8 s_RCS
 修改为
 
 ```
-uint32 s_RCS
+int8_t s_RCS
 ```
 
 ![](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/8DBA9BAA54CCA7520C9C768E702328A0.png)
@@ -502,9 +519,9 @@ uint32 s_RCS
 - `uint32`
   - 无符号整型
 
-##### 修改文件2: data_struct.h
+##### 修改文件2: data_struct.h （不需要修改）
 
-`RadarDetection`结构体中
+`RadarDetection` 结构体中
 
 ```c++
 signed char s_RCS
@@ -516,7 +533,7 @@ signed char s_RCS
 unsigned int s_RCS
 ```
 
-##### 修改文件3：info_convert_node.cpp
+##### 修改文件3：info_convert_node.cpp （不需要修改）
 
 ```c++
 d_list->detection_array[num].s_RCS = (signed char)(in[base_index+33]);
@@ -532,7 +549,7 @@ d_list->detection_array[num].s_RCS = (static_cast<unsigned int>(*(in + base_inde
 
 ##### 动机：为什么不直接使用`rosbag record -a`
 
-如果直接使用 `rosbag record -a`记录数据，会使用当前时间作为时间戳。后续再重放数据时，使用的时间戳也为record时的时间，而不是消息头部中的stamp。
+如果直接使用 `rosbag record -a`记录数据，会使用当前时间作为时间戳。后续再重放数据时，使用的时间戳也为 record 时的时间，而不是消息头部中的stamp。
 
 ##### 代码地址：
 
@@ -577,7 +594,7 @@ int main(int argc, char **argv) {
 
 ```
 
-## 4、具体步骤
+# 三、运行步骤
 
 ### 零、配置环境
 
@@ -599,9 +616,9 @@ Autolabor（推荐）：http://www.autolabor.com.cn/book/ROSTutorials/chapter1/1
    sudo apt install wireshark
    ```
 
-   出现弹窗，选择“是”，允许Wireshark捕获网络数据包。
+   出现弹窗，选择“是”，允许 Wireshark 捕获网络数据包。
 
-2. 配置wireshark插件，使其能够解析ars548传感器数据。
+2. 配置 wireshark 插件，使其能够解析 ars548 传感器数据。
 
    找到插件需要放置的位置：`/usr/lib/x86_64-linux-gnu/wireshark/plugins`
 
@@ -613,21 +630,21 @@ Autolabor（推荐）：http://www.autolabor.com.cn/book/ROSTutorials/chapter1/1
    sudo cp packet-ars548（大陆原版）.lua /usr/lib/x86_64-linux-gnu/wireshark/plugins
    ```
 
-   重启wireshark
+   重启 `wireshark`
 
-##### 3、安装nlohmann
+##### 3、安装 nlohmann
 
 见2.2.2
 
-##### 4、安装libpcap
+##### 4、安装 libpcap
 
-`RosDriverForARS548`需要该库。
+`RosDriverForARS548` 需要该库。
 
 ```bash
 sudo apt-get install libpcap-dev
 ```
 
-### 一、使用wireshark将传感器数据转换为json文件
+### 一、使用 wireshark 将传感器数据转换为 json 文件
 
 ##### 1、使用 wireshark 打开抓取的 pcapng 文件
 
@@ -635,7 +652,7 @@ sudo apt-get install libpcap-dev
 
 ![image-20240119161238901](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240119161238901.png)
 
-##### 2、导出解析结果为JSON格式
+##### 2、导出解析结果为 JSON 格式
 
 ![](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-2024-01-19-16:16:54.png)
 
