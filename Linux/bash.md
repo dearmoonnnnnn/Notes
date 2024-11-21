@@ -91,9 +91,25 @@ grep [options] pattern [files]
 
 # chmod
 
+更改文件权限
 
 
 
+# echo
 
+在终端中输出文本或变量的值
 
+##### 重定向输出到文件
+
+```bash
+echo "This is a test." > output.txt
+```
+
+- 如果原文件已存在，会被覆盖
+
+如果是追加文件
+
+```bash
+echo "Another line." >> output.txt
+```
 

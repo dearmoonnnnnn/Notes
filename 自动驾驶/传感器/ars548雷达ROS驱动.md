@@ -373,9 +373,9 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
 不能直接修改点的消息类型。查阅官方文档可知，`sensor_msgs::PointCloud` 消息类型包含一个字段叫做 `channels`，它是一个 `sensor_msgs::ChannelFloat32` 类型的数组，用于存储每个点的附加信息。
 
-#### 思路2：将点的多普勒速度存放在channels字段中
+#### 思路2：将点的多普勒速度存放在 channels 字段中
 
-1. 首先，在 `sensor_msgs::PointCloud` 中添加一个通道，用于存储多普勒速度。假设你命名这个通道为 "doppler_velocity"，你需要添加一个 `sensor_msgs::ChannelFloat32` 类型的通道。
+1. 首先，在 `sensor_msgs::PointCloud`  中添加一个通道，用于存储多普勒速度。假设你命名这个通道为 "doppler_velocity"，你需要添加一个  `sensor_msgs::ChannelFloat32` 类型的通道。
 2. 然后，在接收雷达数据的回调函数中，将每个点的多普勒速度存储在 `channels[0].values[i]` 中，其中 `i` 表示第 `i` 个点。
 
 ```c++
@@ -469,12 +469,12 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 }
 ```
 
-### 2.4、RCS值错误（忽略）
+### 2.4、RCS 值错误（忽略）
 
 ##### 修正：
 
 - 实际上是 wireshark （插件）解析结果错误
-  - wireshark 中RCS值大部分为 200 以上
+  - wireshark 中 RCS 值大部分为 200 以上
   - 插件作者认为 RCS 使用的单位为 $m^2$
 - 从字节流中解析，并且使用原数据类型时，RCS 值为很小的负值，单位为 $dbm^2$
 
@@ -629,9 +629,9 @@ sudo apt-get install libpcap-dev
 
 ### 一、使用wireshark将传感器数据转换为json文件
 
-##### 1、使用wireshark打开抓取的pcapng文件
+##### 1、使用 wireshark 打开抓取的 pcapng 文件
 
-雷达厂商提供了传感器的lua插件，可以直接过滤，只保留`detectionlist`数据
+雷达厂商提供了传感器的 lua 插件，可以直接过滤，只保留 `detectionlist` 数据
 
 ![image-20240119161238901](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240119161238901.png)
 
@@ -643,7 +643,7 @@ sudo apt-get install libpcap-dev
 
 ##### 0、修改路径
 
-在`ars548_process_node.cpp`中修改`json_file_path`为步骤一中的json文件路径
+在 `ars548_process_node.cpp` 中修改 `json_file_path` 为步骤一中的 `json` 文件路径
 
 ##### 1、编译
 
@@ -653,11 +653,11 @@ sudo apt-get install libpcap-dev
 git clone https://github.com/letMeEmoForAWhile/RosDriverForARS548.git
 ```
 
-2）在ars548_msg和ars548_process下创建include文件夹
+2）在 ars548_msg 和 ars548_process 下创建 include 文件夹
 
 - 不创建会报错：https://github.com/wulang584513/ARS548-demo/issues/3
 
-3）终端切换到RosDriverForARS548根路径并编译
+3）终端切换到 RosDriverForARS548 根路径并编译
 
 ```bash
 catkin_make
@@ -669,7 +669,7 @@ catkin_make
 vim ~/.bashrc
 ```
 
-在最后一行如下内容。需要将`PATH_TO_RosDriverForARS548_FOLDER`改成RosDriverForARS548的路径
+在最后一行如下内容。需要将 `PATH_TO_RosDriverForARS548_FOLDER` 改成 RosDriverForARS548 的路径
 
 ```bash
 source PATH_TO_RosDriverForARS548_FOLDER/devel/setup.bash
@@ -691,7 +691,7 @@ roslaunch ars548_process ars548_process.launch
 
 ##### 0、修改路径
 
-在`rosbag_recorder.cpp`中修改`bag.open()`参数为输出的bag文件路径。
+在 `rosbag_recorder.cpp` 中修改`bag.open()`参数为输出的bag文件路径。
 
 ##### 1、编译
 
@@ -725,9 +725,11 @@ source ~/.bashrc
 
 ##### 2、运行
 
-先启动RosDriverForARS548，再启动该项目。
+先启动 `RosDriverForARS548`，再启动该项目
 
 ```bash
 rosrun rosbag_tools rosbag_recorder 
 ```
 
+- 启动 RosDriverForARS548时，由于 json 读取较慢，可能需要等待较长时间。
+- 及时关闭两个项目，避免自动进入第二轮转换。

@@ -2,20 +2,22 @@
   - [资料](#资料)
         - [1. Autolabor教程](#1-autolabor教程)
   - [问题](#问题)
-        - [1. 如何知道一个bag文件中的数据结构](#1-如何知道一个bag文件中的数据结构)
+        - [1. 如何知道一个 bag 文件中的数据结构](#1-如何知道一个-bag-文件中的数据结构)
         - [2. 话题和消息的关系](#2-话题和消息的关系)
-        - [3. node和nodelet的关系](#3-node和nodelet的关系)
+        - [3. node 和 nodelet 的关系](#3-node-和-nodelet-的关系)
         - [4. 一个节点可以发布或者接收多个主题吗](#4-一个节点可以发布或者接收多个主题吗)
-        - [5. nodelet节点在launch中配置的时候，节点所在的包(pkg)为什么是nodelet](#5-nodelet节点在launch中配置的时候节点所在的包pkg为什么是nodelet)
-        - [6. 将melodic版本下能够跑通的项目迁移到noetic版本中](#6-将melodic版本下能够跑通的项目迁移到noetic版本中)
+        - [5. nodelet 节点在 launch 中配置的时候，节点所在的包 (pkg) 为什么是 nodelet](#5-nodelet-节点在-launch-中配置的时候节点所在的包-pkg-为什么是-nodelet)
+        - [6. 将 melodic 版本下能够跑通的项目迁移到 noetic 版本中](#6-将-melodic-版本下能够跑通的项目迁移到-noetic-版本中)
         - [7. 将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is\_dense，该怎么填充后者的这些数据字段?](#7-将sensor_msgpointcloud的数据转为pclpointcloudpclpointxyz的数据但是前者没有widthheight和is_dense该怎么填充后者的这些数据字段)
         - [8. 如何修改ROS包的名称](#8-如何修改ros包的名称)
         - [9. 在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样](#9-在roslaunch文件中node标签中的name参数和type参数的区别是什么为什么它们的值一样)
+        - [10. 在 node 节点内设置参数，为什么读取不到?](#10-在-node-节点内设置参数为什么读取不到)
+        - [11.  bag 文件中的 %time 和 filed.header.stamp 有什么区别](#11--bag-文件中的-time-和-filedheaderstamp-有什么区别)
   - [概念](#概念)
         - [1、节点](#1节点)
         - [2、ROS Master](#2ros-master)
         - [3、bags](#3bags)
-- [一、安装ROS](#一安装ros)
+- [一、安装 ROS](#一安装-ros)
   - [1.1 安装](#11-安装)
         - [官方安装方法：](#官方安装方法)
         - [香鱼ros一键安装](#香鱼ros一键安装)
@@ -37,60 +39,72 @@
   - [2.3 参数服务器](#23-参数服务器)
         - [举例：](#举例)
 - [四、launch文件](#四launch文件)
-        - [使用launch的动机](#使用launch的动机)
+  - [4.1 概述](#41-概述)
+        - [动机](#动机)
         - [概念](#概念-1)
         - [作用](#作用)
-        - [调用launch文件](#调用launch文件)
-        - [常见参数](#常见参数)
+  - [4.2 调用 launch 文件](#42-调用-launch-文件)
+        - [对于 roscore 的处理](#对于-roscore-的处理)
+  - [4.3 常见标签](#43-常见标签)
+        - [4.3.1 节点（node）](#431-节点node)
+        - [4.3.2 包含其他 launch文件（include）](#432-包含其他-launch文件include)
+        - [4.3.3 环境变量（env）](#433-环境变量env)
+        - [4.3.4 重新映射（remap）](#434-重新映射remap)
+        - [4.3.5 组（group）](#435-组group)
+        - [4.3.6 参数（param）](#436-参数param)
+        - [4.3.7 参数文件加载（rosparam）](#437-参数文件加载rosparam)
+        - [4.3.8 命令行参数（arg）](#438-命令行参数arg)
+  - [4.4 可执行文件读取 launch 中的参数](#44-可执行文件读取-launch-中的参数)
 - [五、rosbag](#五rosbag)
-        - [动机：](#动机)
+        - [动机：](#动机-1)
         - [概念](#概念-2)
         - [本质](#本质)
-  - [5.1 写bag文件(C++)](#51-写bag文件c)
-  - [5.2 读bag文件(C++)](#52-读bag文件c)
+  - [5.1 写 bag 文件(C++)](#51-写-bag-文件c)
+  - [5.2 读 bag 文件(C++)](#52-读-bag-文件c)
   - [5.3 rosbag play](#53-rosbag-play)
   - [5.4 bag文件相关操作](#54-bag文件相关操作)
     - [5.4.1融合两个bag文件中的特定话题](#541融合两个bag文件中的特定话题)
     - [5.4.2 两个bag文件合并为一个，并保留需要的所有话题](#542-两个bag文件合并为一个并保留需要的所有话题)
     - [5.4.3 删除/保留bag文件中的特定话题](#543-删除保留bag文件中的特定话题)
+  - [5.5 rosbag record](#55-rosbag-record)
 - [六、PCL库](#六pcl库)
   - [相关资料](#相关资料)
   - [问题：](#问题-1)
         - [1、PCL的fromROSMsg()和toROSMsg()不能正确处理xyz之外其他field的数据长度](#1pcl的fromrosmsg和torosmsg不能正确处理xyz之外其他field的数据长度)
-        - [2、将`pcl::PointCloud<pcl::PointXYZI>`的数据转换为sensor\_msgs::PointCloud2后，怎么获取点的强度信息？](#2将pclpointcloudpclpointxyzi的数据转换为sensor_msgspointcloud2后怎么获取点的强度信息)
+        - [2、将 `pcl::PointCloud<pcl::PointXYZI>` 的数据转换为sensor\_msgs::PointCloud2后，怎么获取点的强度信息？](#2将-pclpointcloudpclpointxyzi-的数据转换为sensor_msgspointcloud2后怎么获取点的强度信息)
   - [6.1 表示点云数据的四种方式](#61-表示点云数据的四种方式)
         - [6.1.1、sensor\_msgs::PointCloud —— ROS message，已弃用](#611sensor_msgspointcloud--ros-message已弃用)
         - [6.1.2、sensor\_msgs::PointCloud2 —— ROS message](#612sensor_msgspointcloud2--ros-message)
         - [6.1.3、pcl::PointCloud2 —— PCL数据结构，主要是为了与ROS兼容](#613pclpointcloud2--pcl数据结构主要是为了与ros兼容)
         - [6.1.4、pcl::PointCloud\<T\> —— 标准的PCL数据结构](#614pclpointcloudt--标准的pcl数据结构)
-  - [6.2 当我们同时使用ROS和PCL时，典型的工作流如下：](#62-当我们同时使用ros和pcl时典型的工作流如下)
+  - [6.2 同时使用 ROS 和 PCL 时典型的工作流](#62-同时使用-ros-和-pcl-时典型的工作流)
         - [示例代码：](#示例代码)
         - [pcl::fromROSMsg()](#pclfromrosmsg)
         - [pcl::toROSMsg()](#pcltorosmsg)
 - [七、从零创建ROS工程](#七从零创建ros工程)
-        - [1、在ROS的工作目录下使用catkin\_create\_pkg命令创建一个新的ROS包。](#1在ros的工作目录下使用catkin_create_pkg命令创建一个新的ros包)
+        - [1、在 ROS 的工作目录下使用 catkin\_create\_pkg 命令创建一个新的ROS包。](#1在-ros-的工作目录下使用-catkin_create_pkg-命令创建一个新的ros包)
         - [2、编写C++程序（节点）](#2编写c程序节点)
-        - [3、编辑CMakeLists.txt文件](#3编辑cmakeliststxt文件)
+        - [3、编辑 CMakeLists.txt 文件](#3编辑-cmakeliststxt-文件)
         - [4、构建工程](#4构建工程)
-        - [5、运行ROS核心](#5运行ros核心)
+        - [5、运行 ROS 核心](#5运行-ros-核心)
         - [6、运行节点](#6运行节点)
   - [遇到的问题：](#遇到的问题)
-        - [1、执行rosrun时显示包找不到](#1执行rosrun时显示包找不到)
+        - [1、执行 rosrun 时显示包找不到](#1执行-rosrun-时显示包找不到)
         - [2、找到了包，但是找不到包中的可执行文件](#2找到了包但是找不到包中的可执行文件)
   - [自定义消息格式](#自定义消息格式)
   - [一个自定义包依赖另一个包](#一个自定义包依赖另一个包)
 - [八、nodelet](#八nodelet)
   - [问题](#问题-2)
-        - [1、nodelet定义的三种句柄有什么区别](#1nodelet定义的三种句柄有什么区别)
+        - [1、nodelet 定义的三种句柄有什么区别](#1nodelet-定义的三种句柄有什么区别)
 - [九、catkin\_make](#九catkin_make)
   - [在一个系统上并行管理和运行同一个项目的不同版本](#在一个系统上并行管理和运行同一个项目的不同版本)
     - [步骤](#步骤)
     - [注意事项](#注意事项)
     - [示例目录结构](#示例目录结构)
 - [十、格式转换](#十格式转换)
-  - [1、bag包转png](#1bag包转png)
-  - [2、bag转pcd](#2bag转pcd)
-  - [3、bag转txt](#3bag转txt)
+  - [1、bag 包转 png](#1bag-包转-png)
+  - [2、bag 转 pcd](#2bag-转-pcd)
+  - [3、bag 转 txt](#3bag-转-txt)
 - [十一、使用参数服务器](#十一使用参数服务器)
   - [1、设置参数](#1设置参数)
         - [通过launch文件：](#通过launch文件)
@@ -111,11 +125,11 @@
 
 ## 问题
 
-##### 1. 如何知道一个bag文件中的数据结构
+##### 1. 如何知道一个 bag 文件中的数据结构
 
-**使用rosbag命令行工具**
+**使用 rosbag 命令行工具**
 
-1. **查看bag文件中的话题和消息数**
+1. **查看 bag 文件中的话题和消息数**
 
    ```bash
    rosbag info <your_bag_file.bag>
@@ -133,15 +147,13 @@
    rosmsg show <message_type>
    ```
 
-**将bag文件转换为txt文件，用文本编辑器查看，见“十、格式转换”**
+**将 bag 文件转换为 txt 文件，用文本编辑器查看，见“十、格式转换”**
 
 ##### 2. 话题和消息的关系
 
-在ROS（Robot Operating System）中，话题（Topic）和消息（Message）之间存在明确的关系，这种关系对于理解ROS的通信机制至关重要。以下是话题和消息之间的关系概述：
-
 1. **定义**:
-   - **话题（Topic）**：它是一个命名的通道，节点可以发布消息到这个通道，或从这个通道订阅消息。话题为不同的节点提供了一种进行数据通信的方式。
-   - **消息（Message）**：它是传输在话题上的数据单元。消息有一个特定的类型，定义了数据的结构，例如整数、浮点数、数组或更复杂的数据结构。
+   - **话题（Topic）**：是一个命名的通道，节点可以发布消息到这个通道，或从这个通道订阅消息。话题为不同的节点提供了一种进行数据通信的方式。
+   - **消息（Message）**：是传输在话题上的数据单元。消息有一个特定的类型，定义了数据的结构，例如整数、浮点数、数组或更复杂的数据结构。
 
 2. **关系**:
    - 每个话题都有一个与之关联的消息**类型**。例如，一个可能的话题是`/camera/image_raw`，其消息类型可能是`sensor_msgs/Image`，表示图像数据。
@@ -154,15 +166,13 @@
    - 同时，一个图像处理节点可以订阅`/camera/image_raw`话题，接收图像消息并进行处理。
    
 4. **工具与命令**:
-   - 使用`rostopic list`可以列出当前活跃的所有话题。
-   - 使用`rostopic type <topic_name>`可以获取一个话题的消息类型。
-   - 使用`rosmsg show <message_type>`可以查看一个特定消息类型的结构。
+   - 使用 `rostopic list` 可以列出当前活跃的所有话题。
+   - 使用 `rostopic type <topic_name>` 可以获取一个话题的消息类型。
+   - 使用 `rosmsg show <message_type>` 可以查看一个特定消息类型的结构。
 
-总之，**话题是数据传输的通道，而消息是在这些通道上实际传输的数据**。通过这种发布-订阅机制，ROS节点可以灵活、高效地进行通信。
+**总结**：话题是数据传输的通道，而消息是在这些通道上实际传输的数据
 
-##### 3. node和nodelet的关系
-
-`node` 和 `nodelet` 都是ROS (Robot Operating System) 中的核心概念，但它们之间存在一些关键差异。以下是它们的关系和区别：
+##### 3. node 和 nodelet 的关系
 
 1. **Node（节点）**:
    - 在ROS中，节点是一个可执行的过程，它与其他节点使用ROS通信机制（如话题、服务和行动）交互。
@@ -192,16 +202,19 @@
 
 ##### 4. 一个节点可以发布或者接收多个主题吗
 
-是的，一个节点可以发布多个主题。同样地，一个节点也可以订阅多个主题。在ROS中，节点的设计经常需要与多个其他节点通信，因此它们可能需要发布和/或订阅多个不同的主题。
+- 一个节点可以发布多个主题
+- 一个节点也可以订阅多个主题。
+
+在ROS 中，节点的设计经常需要与多个其他节点通信，因此它们可能需要发布和/或订阅多个不同的主题。
 
 例如，考虑一个机器人的移动控制节点。这个节点可能需要：
 - 发布到一个`/cmd_vel`主题，发送速度命令给机器人的驱动器。
 - 订阅一个`/laser_scan`主题，从激光雷达获取障碍物信息。
 - 发布到一个`/robot_status`主题，提供关于机器人当前状态的更新。
 
-因此，单个节点可以与ROS网络中的多个主题互动，既作为发布者又作为订阅者。这种灵活性使得ROS的节点可以在复杂的系统中灵活地工作，同时保持相对的解耦。
+因此，单个节点可以与 ROS 网络中的多个主题互动，既作为发布者又作为订阅者。这种灵活性使得 ROS 的节点可以在复杂的系统中灵活地工作，同时保持相对的解耦。
 
-##### 5. nodelet节点在launch中配置的时候，节点所在的包(pkg)为什么是nodelet
+##### 5. nodelet 节点在 launch 中配置的时候，节点所在的包 (pkg) 为什么是 nodelet
 
 ```xml
 <node pkg="nodelet" type="nodelet" name="radar_graph_slam_nodelet" args="load radar_graph_slam/RadarGraphSlamNodelet $(arg nodelet_manager)" output="screen">
@@ -217,9 +230,9 @@
   - 而**nodelet可执行文件**存在于**nodelet包**中，所以节点所在的包为nodelet包。
   - 上例`load radar_graph_slam/RadarGraphSlamNodelet $(arg nodelet_manager)`相当于加载nodelet插件
 
-##### 6. 将melodic版本下能够跑通的项目迁移到noetic版本中
+##### 6. 将 melodic 版本下能够跑通的项目迁移到 noetic 版本中
 
-修改workspace/src路径下的CMakeList.txt即可。直接将neotic中能跑通的CMakeList.txt文件内容拷贝。
+修改 workspace/src 路径下的 CMakeList.txt 即可。直接将 neotic 中能跑通的CMakeList.txt文件内容拷贝。
 
 ##### 7. 将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is_dense，该怎么填充后者的这些数据字段?
 
@@ -411,7 +424,7 @@ std::string output_bag_path = nh.param<std::string>("/12345/output_bag_path", "a
 
 
 
-# 一、安装ROS
+# 一、安装 ROS
 
 ## 1.1 安装
 
@@ -879,7 +892,9 @@ int main(int argc, char** argv) {
 
 # 四、launch文件
 
-##### 使用launch的动机
+## 4.1 概述
+
+##### 动机
 
 一个程序可能需要启动多个节点，比如ROS内置的小乌龟案例，控制小乌龟运动需要分别启动roscore,乌龟页面节点，键盘控制节点。如果每次都调用rosrun逐一启动，效率底下。
 
@@ -893,173 +908,201 @@ launch文件是一个XML格式的文件，可以启动本地和远程的多个�
 
 简化节点的配置和启动，提高ROS程序的启动效率。
 
-##### 调用launch文件
+## 4.2 调用 launch 文件
 
 ```bash
 roslaunch 包名 xxx.launch
 ```
 
-PS：roslaunch命令执行launch文件时，首先会判断是否启动了roscore，如果启动了则不再启动，否则自动调用roscore。
+##### 对于 roscore 的处理
 
-##### 常见参数
+roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore，如果启动了则不再启动，否则自动调用roscore。
 
-1. **节点（node）**:
+## 4.3 常见标签
 
-   - 使用`<node>`标签来启动一个ROS节点。<!-- roslaunch命令不能保证按照node的声明顺序来启动节点，因为节点的启动是多进程的 -->
+##### 4.3.1 节点（node）
 
-   - 可以为节点指定名称、所属的包、运行的二进制文件、命名空间等。
+- 使用`<node>`标签来启动一个ROS节点。<!-- roslaunch命令不能保证按照node的声明顺序来启动节点，因为节点的启动是多进程的 -->
 
-   - 示例：
+- 可以为节点指定名称、所属的包、运行的二进制文件、命名空间等。
 
-     ```xml
-     <!-- 必要属性 -->
-     <!-- name：节点名称; pkg：节点所属的包; type：节点类型，即可执行文件名称-->
-     <!-- type 值需要与 CMakeList.txt 中 add_executable 的第一个参数匹配，它们都表示可执行文件名称 -->
-     <!-- name 和 type 经常使用同一个值，它们的区别见问题 9 -->
-     
-     <!-- 可选属性 -->
-     <!-- args = "XXX XXX XXX"：将参数传递给节点; output = "log | screen": 日志发送目标(log日志文件或者屏幕) -->
-     <!-- machine = "机器名"： 启动另一台机器上的节点 -->
-     <!-- respan = "ture | false" : 如果节点退出，是否自动重启，传感器节点、GUI节点一般会设置 -->
-     <!-- respan_delay = "N": 当respan为true时，重启节点时会延时N秒 -->
-     
-     <node name="talker" pkg="rospy_tutorials" type="talker" />
-     ```
+- 示例：
 
-2. **包含其他的launch文件（include）**:
+  ```xml
+  <!-- 必要属性 -->
+  <!-- name：节点名称; pkg：节点所属的包; type：节点类型，即可执行文件名称-->
+  <!-- type 值需要与 CMakeList.txt 中 add_executable 的第一个参数匹配，它们都表示可执行文件名称 -->
+  <!-- name 和 type 经常使用同一个值，它们的区别见问题 9 -->
+  
+  <!-- 可选属性 -->
+  <!-- args = "XXX XXX XXX"：将参数传递给节点; output = "log | screen": 日志发送目标(log日志文件或者屏幕) -->
+  <!-- machine = "机器名"： 启动另一台机器上的节点 -->
+  <!-- respan = "ture | false" : 如果节点退出，是否自动重启，传感器节点、GUI节点一般会设置 -->
+  <!-- respan_delay = "N": 当respan为true时，重启节点时会延时N秒 -->
+  
+  <node name="talker" pkg="rospy_tutorials" type="talker" />
+  ```
 
-   - 使用`<include>`标签包含另一个`.launch`文件，使得`.launch`文件可以模块化。
+##### 4.3.2 包含其他 launch文件（include）
 
-   - 示例：
+- 使用`<include>`标签包含另一个`.launch`文件，使得`.launch`文件可以模块化。
 
-     ```xml
-     <!-- $(find 包名)：可以定位到～/catkin_ws/src/包名 -->
-     <include file="$(find another_package)/launch/another_file.launch"/>
-     ```
+- 示例：
 
-3. **环境变量（env）**:
+  ```xml
+  <!-- $(find 包名)：可以定位到～/catkin_ws/src/包名 -->
+  <include file="$(find another_package)/launch/another_file.launch"/>
+  ```
 
-   - 使用`<env>`标签设置环境变量，这些环境变量对于启动的节点是可见的。
+##### 4.3.3 环境变量（env）
 
-   - 示例：
+使用`<env>`标签设置环境变量，这些环境变量对于启动的节点是可见的。
 
-     ```xml
-     <env name="ROBOT_INITIAL_POSE" value="-x 0 -y 0 -Y 0"/>
-     ```
+- 示例：
 
-4. **重新映射（remap）**:
+  ```xml
+  <env name="ROBOT_INITIAL_POSE" value="-x 0 -y 0 -Y 0"/>
+  ```
 
-   - 使用`<remap>`标签将一个话题名或服务名从一个名称重映射到另一个名称。
+##### 4.3.4 重新映射（remap）
 
-   - 使得订阅者可以与发布者关注同一个话题，建立通信。
+- 使用`<remap>`标签将一个话题名或服务名从一个名称重映射到另一个名称。
 
-   - 示例：
+- 使得订阅者可以与发布者关注同一个话题，建立通信。
 
-     ```xml
-     <node name="talker" pkg="rospy_tutorials" type="talker" >
-       <remap from="chatter" to="new_chatter" />
-     </node>
-     ```
+- 示例：
 
-5. **组（group）**:
+  ```xml
+  <node name="talker" pkg="rospy_tutorials" type="talker" >
+    <remap from="chatter" to="new_chatter" />
+  </node>
+  ```
 
-   - 对节点分组，具有ns属性，让节点归属于某个命名空间
+##### 4.3.5 组（group）
 
-   - 示例：
+- 对节点分组，具有ns属性，让节点归属于某个命名空间
 
-     ```xml
-     <group ns="robot1">
-       <node ... />
-       <node ... />
-     </group>
-     ```
+- 示例：
 
-6. **参数（param）**:
+  ```xml
+  <group ns="robot1">
+    <node ... />
+    <node ... />
+  </group>
+  ```
 
-   - **作用：**向参数服务器设置参数。
+##### 4.3.6 参数（param）
 
-   - **参数源：**可以在标签中通过value指定，也可以通过外部文件加载。
+- **作用：**向参数服务器设置参数。
 
-   - **使用位置：**可以添加在launch内，node外；也可以添加在node内。`<node>`标签中作为子标签时，相当于私有命名空间。
+- **参数源：**可以在标签中通过value指定，也可以通过外部文件加载。
 
-   - 示例： 
+- **使用位置：**可以添加在launch内，node外；也可以添加在node内。`<node>`标签中作为子标签时，相当于私有命名空间。
 
-     ```xml
-     <!-- name = "命名空间/参数名" ：参数名称，可以包含命名空间-->
-     <!-- value = "XXX" : 可选，定义参数值，如果省略，必须指定外部文件作为参数源 -->
-     <!-- type = "str | int | double | yaml" ：可选，指定参数类型，如果未指定，roslaunch会根据一定规则尝试确定参数类型 -->
-     
-     <launch>
-         <!-- 两种情况-->
-         <!-- 1. 在launch内，node外 -->
-         <!-- 向参数服务器设置一个名称为param_A, 类型为int， 值为100的参数-->
-     	<param name="param_A" type = "int" value = "100" />
-     	
-         <!-- 2. 在node内-->
-         <!-- 也会在参数服务器中设置参数，但参数存在前缀-->
-         <node name="talker" pkg="rospy_tutorials" type="talker" />>
-         	<param name="param_B" type="double" value="3.14" /> 
-         </node>
-         
-     </launch>
-     ```
-     
-     启动launch文件后，在cmd中查看参数服务器中的参数
-     
-     ```bash
-     rosparm list 
-     ```
-     
-     显示：
-     
-     ```bash
-     /param_A
-     /talker/param_B
-     ```
+- 示例： 
 
-7. **参数文件加载（rosparam）**:
+  ```xml
+  <!-- name = "命名空间/参数名" ：参数名称，可以包含命名空间-->
+  <!-- value = "XXX" : 可选，定义参数值，如果省略，必须指定外部文件作为参数源 -->
+  <!-- type = "str | int | double | yaml" ：可选，指定参数类型，如果未指定，roslaunch会根据一定规则尝试确定参数类型 -->
+  
+  <launch>
+      <!-- 两种情况-->
+      <!-- 1. 在launch内，node外 -->
+      <!-- 向参数服务器设置一个名称为param_A, 类型为int， 值为100的参数-->
+  	<param name="param_A" type = "int" value = "100" />
+  	
+      <!-- 2. 在node内-->
+      <!-- 也会在参数服务器中设置参数，但参数存在前缀-->
+      <node name="talker" pkg="rospy_tutorials" type="talker" />>
+      	<param name="param_B" type="double" value="3.14" /> 
+      </node>
+      
+  </launch>
+  ```
+  
+  启动launch文件后，在cmd中查看参数服务器中的参数
+  
+  ```bash
+  rosparm list 
+  ```
+  
+  显示：
+  
+  ```bash
+  /param_A
+  /talker/param_B
+  ```
 
-   - 从`YAML`文件导入参数，或者将参数导出到`YAML`文件，也可以用来删除参数
+##### 4.3.7 参数文件加载（rosparam）
 
-   - **使用位置**：同param
+- 从`YAML`文件导入参数，或者将参数导出到`YAML`文件，也可以用来删除参数
 
-   - 示例：
+- **使用位置**：同param
 
-     ```xml
-     <!-- command="load | dump |delete "： 加载、导出或删除参数 -->
-     <!-- param="参数名称" -->
-     <!-- ns="命名空间"： 可选-->
-     <rosparam file="$(find my_package)/param/config.yaml" command="load" />
-     ```
+- 示例：
 
-8. **命令行参数（arg）**:
+  ```xml
+  <!-- command="load | dump |delete "： 加载、导出或删除参数 -->
+  <!-- param="参数名称" -->
+  <!-- ns="命名空间"： 可选-->
+  <rosparam file="$(find my_package)/param/config.yaml" command="load" />
+  ```
 
-   - 用于动态传参，类似于函数的参数。
+##### 4.3.8 命令行参数（arg）
 
-   - 示例：
+- 用于动态传参，类似于函数的参数。
 
-     ```xml
-     <!-- name="参数名称" -->
-     <!-- defalut="默认值"，可选 -->
-     <!-- value="数值"，可选，不可以与default并存 -->
-     <!-- doc="描述"：参数说明 -->
-     <arg name="car_length" default="0.5"/>
-     
-     <!-- 设置参数时可以调用使用 $(arg car_length)调用 -->
-     <!-- 修改arg的值，参数A、B、C的值都会被修改，更加灵活 -->
-     <param name="A" value="$(arg car_length)" />
-     <param name="B" value="$(arg car_length)" />
-     <param name="C" value="$(arg car_length)" />
-     
-     ```
+- 示例：
 
-     也可以在命令行中传递参数的值，
+  ```xml
+  <!-- name="参数名称" -->
+  <!-- defalut="默认值"，可选 -->
+  <!-- value="数值"，可选，不可以与default并存 -->
+  <!-- doc="描述"：参数说明 -->
+  <arg name="car_length" default="0.5"/>
+  
+  <!-- 设置参数时可以调用使用 $(arg car_length)调用 -->
+  <!-- 修改arg的值，参数A、B、C的值都会被修改，更加灵活 -->
+  <param name="A" value="$(arg car_length)" />
+  <param name="B" value="$(arg car_length)" />
+  <param name="C" value="$(arg car_length)" />
+  
+  ```
 
-     ```bash
-     roslaunch 程序名 XXX.launch car_length:=0.6
-     ```
+  也可以在命令行中传递参数的值，
 
-     这时候参数car_length不再是默认的0.5, 而是0.6
+  ```bash
+  roslaunch 程序名 XXX.launch car_length:=0.6
+  ```
+
+  这时候参数car_length不再是默认的0.5, 而是0.6
+
+## 4.4 可执行文件读取 launch 中的参数
+
+- 通过 `ros::NodeHandle` 来访问参数
+- 可用 `nh.getParam` 或 `nh.param<typename T>`
+
+```cpp
+	ros::init(argc, argv, "imu_txt_to_bag");
+    ros::NodeHandle nh("~");  // "~" 表示私有命名空间，限定为当前节点的参数
+
+    // 定义变量用于存储参数
+    std::string input_file, output_bag;
+
+    // 从参数服务器中读取参数
+    if (!nh.getParam("input_file", input_file)) {
+        ROS_ERROR("Failed to get 'input_file' parameter");
+        return -1;
+    }
+    if (!nh.getParam("output_bag", output_bag)) {
+        ROS_ERROR("Failed to get 'output_bag' parameter");
+        return -1;
+    }
+
+    ROS_INFO("Input file: %s", input_file.c_str());
+    ROS_INFO("Output bag: %s", output_bag.c_str());
+```
 
 # 五、rosbag
 
@@ -1083,7 +1126,7 @@ ROS为数据的存留和读取，提供了专门的工具：rosbag
 
 - 当重放时，rosbag是一个发布节点，可以读取磁盘文件，发布文件中的话题消息。
 
-## 5.1 写bag文件(C++)
+## 5.1 写 bag 文件(C++)
 
 ```C++
 #include "ros/ros.h"
@@ -1119,7 +1162,7 @@ int main(int argc, char *argv[])
 
 ```
 
-## 5.2 读bag文件(C++)
+## 5.2 读 bag 文件(C++)
 
 ```c++
 #include "ros/ros.h"
@@ -1466,7 +1509,7 @@ class PointCloud
 
 ```
 
-## 6.2 当我们同时使用 ROS 和 PCL 时，典型的工作流如下：
+## 6.2 同时使用 ROS 和 PCL 时典型的工作流
 
 1. 在一个ROS节点中接收一个 `sensor_msgs::PointCloud2` 消息的点云。
 2. 如果需要使用pcl处理它，我们会将其转换为`pcl::PointCloud<T>`，进行处理。
@@ -1590,9 +1633,7 @@ catkin_create_pkg my_bag_recorder std_msgs sensor_msgs rosbag roscpp
 
 在 `my_rosbag_recorder` 包的`src`目录下，创建c++源文件，如`my_rosbag_recorder.cpp`，并编写代码
 
-##### 3、编辑CMakeLists.txt文件
-
-`catkin_create_pkg` 会自动完成该步
+##### 3、编辑 CMakeLists.txt 文件
 
 在 `my_rosbag_recorder` 包的根目录下，打开 `CMakeLists.txt` 文件，添加适当的 `rosbag` 依赖项。
 
@@ -1602,6 +1643,14 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   roscpp
   rosbag
+)
+
+## 默认四行都为注释，需要取消注释
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES imu_convert
+  CATKIN_DEPENDS rosbag roscpp sensor_msgs
+  DEPENDS system_lib
 )
 
 add_executable(rosbag_recorder src/rosbag_recorder.cpp)
@@ -1619,9 +1668,9 @@ target_link_libraries(rosbag_recorder
 catkin_make
 ```
 
-##### 5、运行ROS核心
+##### 5、运行 ROS 核心
 
-在终端中，运行ROS核心
+在终端中，运行 ROS 核心
 
 ```bash
 roscore
@@ -1633,7 +1682,7 @@ roscore
 rosrun my_rosbag_recorder my_rosbag_recorder
 ```
 
-- rosrun 参数：第一个参数为ROS包的名称，第二个参数为ROS包中编写的节点的执行文件的名称。	
+- rosrun 参数：第一个参数为 ROS 包的名称，第二个参数为 ROS 包中编写的节点的执行文件的名称。	
 
 ## 遇到的问题：
 
@@ -1671,17 +1720,17 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 
 **解决方法**：
 
-1. 打开包中的CMakeLists.txt文件。
+1. 打开包中的 `CMakeLists.txt` 文件。
 
-2. 使用`add_executable()`命令指定可执行文件
+2. 使用 `add_executable()`命令指定可执行文件
 
    ```cmake
    add_executable(my_bag_recorder src/bag_write.cpp)
    ```
 
-   - 第一个参数是生成的可执行文件名称，第二个参数为cpp源码文件
+   - 第一个参数是生成的可执行文件名称，第二个参数为 `cpp` 源码文件
 
-3. 使用`target_link_libraries()`命令将包链接到可执行文件，确保它能够找到所有的依赖项。
+3. 使用 `target_link_libraries()` 命令将包链接到可执行文件，确保它能够找到所有的依赖项。
 
    ```cmake
     target_link_libraries(my_bag_recorder
@@ -1689,7 +1738,7 @@ rosrun my_rosbag_recorder my_rosbag_recorder
     )
    ```
 
-4. 重新执行catkin_make
+4. 重新执行 catkin_make
 
 ## 自定义消息格式
 
@@ -1755,9 +1804,9 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 
 ## 一个自定义包依赖另一个包
 
-假设包`example1`依赖包`example2`
+假设包 `example1` 依赖包 `example2`
 
-1、`example1`包的`package.xml`文件添加如下内容
+1、`example1` 包的 `package.xml` 文件添加如下内容
 
 ```xml
 <build_depend>example2</build_depend>
@@ -1765,7 +1814,7 @@ rosrun my_rosbag_recorder my_rosbag_recorder
 <exec_depend>example2</exec_depend>
 ```
 
-2、`example1`包的`CMakeLists.txt`添加如下内容
+2、`example1` 包的 `CMakeLists.txt` 添加如下内容
 
 ```cmake
 find_package(catkin REQUIRED COMPONENTS
@@ -1781,7 +1830,7 @@ catkin_package(
 )
 
 include_directories(
-  src	# 添加这一行，才能找到example2包
+  src	# 添加这一行，才能找到 example2 包
 # include
   ${catkin_INCLUDE_DIRS}
 )
@@ -1794,13 +1843,13 @@ include_directories(
 
 ## 问题
 
-##### 1、nodelet定义的三种句柄有什么区别
+##### 1、nodelet 定义的三种句柄有什么区别
 
 - 全局节点句柄
-  - **作用范围：**提供对ROS全局命名空间中的所有主题、服务和参数的。
+  - **作用范围：**提供对 ROS 全局命名空间中的所有主题、服务和参数的。
   - **线程安全性：**通常是单线程的，在多线程环境中可能需要额外的同步机制。
 - 多线程节点句柄
-  - **作用范围：**多线程句柄提供对ROS全局命名空间中的所有主题、服务和参数的访问，类似于全局节点句柄
+  - **作用范围：**多线程句柄提供对 ROS 全局命名空间中的所有主题、服务和参数的访问，类似于全局节点句柄
 - 私有节点句柄
 
 # 九、catkin_make
@@ -1891,9 +1940,9 @@ new_catkin_ws/
 
 # 十、格式转换
 
-## 1、bag包转png
+## 1、bag 包转 png
 
-1. 播放bag包
+1. 播放 bag 包
 
 2. 执行命令
 
@@ -1914,7 +1963,7 @@ new_catkin_ws/
 
 
 
-## 2、bag转pcd
+## 2、bag 转 pcd
 
 ```cpp
 #include <ros/ros.h>
@@ -1980,7 +2029,7 @@ pcl_viewer example.pcd
 
 
 
-## 3、bag转txt
+## 3、bag 转 txt
 
 ```bash
 rostopic echo -b <bag_name>.bag -p /<topic_name> > <new_name>.txt
@@ -2055,10 +2104,10 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "timer_example");
     ros::NodeHandle nh;
 
-    // 创建一个WallTimer，每1秒触发一次timerCallback
+    // 创建一个 WallTimer，每 1 秒触发一次 timerCallback
     ros::WallTimer timer = nh.createWallTimer(ros::WallDuration(1.0), timerCallback);
 
-    // 进入ROS事件循环
+    // 进入 ROS 事件循环
     ros::spin();
 
     return 0;

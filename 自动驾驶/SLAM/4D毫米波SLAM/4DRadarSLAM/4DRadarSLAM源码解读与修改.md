@@ -302,10 +302,10 @@ T_init = [R_init | t_init]
 
 `/imu`话题被`imu_sub`订阅，传入`imu_callback`
 
-- 参数`enable_imu_fusion`为false，源代码未启用imu融合
-- imu的四元数被提取出来，存储在`imu_quat_from`中
-- 使用预定义的`extQRPY`对IMU的方向进行去扰动，得到`imu_quat_deskew`。这是为了补偿IMU安装时的方向偏差，使IMU方向和激光雷达方向对齐。
-- 根据去扰动后的imu数据，创建新的IMU数据，添加到`imu_queue`队列中
+- 参数`enable_imu_fusion`为 false，源代码未启用imu融合
+- imu的四元数被提取出来，存储在 `imu_quat_from` 中
+- 使用预定义的`extQRPY`对 IMU 的方向进行去扰动，得到 `imu_quat_deskew`。这是为了补偿 IMU 安装时的方向偏差，使 IMU 方向和激光雷达方向对齐。
+- 根据去扰动后的 imu 数据，创建新的 IMU 数据，添加到 `imu_queue` 队列中
 
 若 `enable_imu_fusion` 为 `true`，发生的事情：
 
@@ -322,46 +322,46 @@ T_init = [R_init | t_init]
    }
   ```
 
-  - 调用transformUpdate函数	
-    - 若启用点云到地图的配准，传入参数`odom_s2m_now`
-    - 若未启用点云到地图的配准，传入参数`odom_s2s_now`
+  - 调用 `transformUpdate` 函数	
+    - 若启用点云到地图的配准，传入参数 `odom_s2m_now`
+    - 若未启用点云到地图的配准，传入参数 `odom_s2s_now`
 
 - `transformUpdate` 函数
 
 ##### 2.3 radar_graph_slam_nodelet
 
-`imu_sub`订阅`preprocessing_nodelet`传入的`/imu`话题。
+`imu_sub` 订阅 `preprocessing_nodelet` 传入的 `/imu` 话题。
 
-- 将imu消息转换到雷达坐标系，得到`imu_quat_deskew`
+- 将 `imu` 消息转换到雷达坐标系，得到 `imu_quat_deskew`
 - 得到初始位姿矩阵
 
 #### 3、GPS数据流动方向
 
 ##### radar_graph_slam_nodelet
 
-如果启用了gps(在launch文件中设置是否启用)
+如果启用了 gps(在launch文件中设置是否启用)
 
-- 订阅`/gps/geopoint`、`/gpsimu_driver/nmea_sentence`、`gpsTopic`(即`/ublox/fix`)。
-- 若接收到`/gps/geopoint`话题，调用`gps_callback()`
-  - 将gps数据进行时间校正，然后添加到队列`gps_geopoint_queue`中。
-  - 后续未对`gps_geopoint_queue`进行处理
-- 若接收到`/gpsimu_driver/nmea_sentence`话题，调用`nmea_callback()`
-  - 从nmea_msg中解析头部、经纬度信息，将解析后的结果传递到`gps_callback()`函数中
-- 若接收到gpsTopic话题，即`/gps/geopoint`话题，调用`navsat_callback()`
-  - 将gps数据存储到`gps_navsat_queue`队列中
-  - `flush_gps_queue()`对该队列进行处理
+- 订阅 `/gps/geopoint`、`/gpsimu_driver/nmea_sentence`、`gpsTopic`(即`/ublox/fix`)。
+- 若接收到 `/gps/geopoint` 话题，调用 `gps_callback()`
+  - 将 gps 数据进行时间校正，然后添加到队列 `gps_geopoint_queue` 中。
+  - 后续未对 `gps_geopoint_queue` 进行处理
+- 若接收到 `/gpsimu_driver/nmea_sentence` 话题，调用`nmea_callback()`
+  - 从 nmea_msg 中解析头部、经纬度信息，将解析后的结果传递到`gps_callback()` 函数中
+- 若接收到 `gpsTopic` 话题，即 `/gps/geopoint` 话题，调用`navsat_callback()`
+  - 将 `GPS` 数据存储到 `gps_navsat_queue` 队列中
+  - `flush_gps_queue()` 对该队列进行处理
 
-#### 4、自我速度twist数据流向
+#### 4、自我速度 twist 数据流向
 
 ##### processing_nodelet.cpp
 
-- 通过雷达点云的多普勒速度评估自我速度，得到`v_r`，并将`v_r`传给`twist`后发布。
+- 通过雷达点云的多普勒速度评估自我速度，得到 `v_r`，并将 `v_r` 传给 `twist` 后发布。
 
 ##### scan_matching_odometry_nodelet.cpp
 
-- 接收到时间同步的自我速度twist消息和点云消息后，调用`pointcloud()`函数。
-- `pointcloud()`函数中，计算当前帧和上一帧之间的位移`egovel_cum`，并调用`matching()`函数。
-- `matching()`函数中，
+- 接收到时间同步的自我速度twist消息和点云消息后，调用 `pointcloud()` 函数。
+- `pointcloud()` 函数中，计算当前帧和上一帧之间的位移 `egovel_cum`，并调用 `matching()` 函数。
+- `matching()` 函数中，
   - 若启用自我速度：初始猜测变换矩阵 = 上一次扫描到扫描的变换 * `egovel_cum` * 扫描匹配的相对位姿变换
 
 #### 5、conmand 数据流向
@@ -374,23 +374,23 @@ T_init = [R_init | t_init]
 
 ##### 1、imu_sub
 
-- 话题：`imuTopic`，即`/vectornav/imu`
+- 话题：`imuTopic`，即 `/vectornav/imu`
 - 消息类型：
 - 回调函数：`&PreprocessingNodelet::imu_callback`
-  - 从输入的`imu_msg`获取信息并调整，得到`imu_data`并发布
-  - 同时，判断`odom`消息是否需要更新，若需要，更新后重新发布
+  - 从输入的 `imu_msg` 获取信息并调整，得到 `imu_data` 并发布
+  - 同时，判断 `odom` 消息是否需要更新，若需要，更新后重新发布
 
 ##### 2、points_sub：
 
-- 话题：`pointCloudTopic`，从`config/params.yaml`中可知，`pointCloudTopic`即`/radar_enhanced_pcl`
+- 话题：`pointCloudTopic`，从 `config/params.yaml` 中可知，`pointCloudTopic` 即 `/radar_enhanced_pcl`
 - 回调函数：`&PreprocessingNodelet::cloud_callback`
   - 输入： `sensor::PointCloud::ConstPtr& eagle_msg`
   - `radarpoint_raw`
   - `radarpoint_xyzi`
   - `radarcloud_raw`
   - `radarcloud_xyzi`
-  - 两个opencv对象，用于存储原始点和转换后的点：`ptMat`，`dstMat`
-  - `dstMat`：原始点云与转换矩阵`Radar_to_livox`相乘。
+  - 两个 opencv 对象，用于存储原始点和转换后的点：`ptMat`，`dstMat`
+  - `dstMat`：原始点云与转换矩阵 `Radar_to_livox` 相乘。
 
 ##### 3、command_sub
 
@@ -1607,12 +1607,12 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 
 #### 问题位置定位：
 
-1. 可能是imu时间戳混乱
+1. 可能是 imu 时间戳混乱
    - 该问题已排除
    - 毫米波雷达时间戳未排除
-2. 不管错误，反复运行，`scan_matching_odometry_nodelet.cpp` 359行，输出的值为NAN
-3. `preprocessing_nodelet` 执行完第八个`cloud_callback`后报错。
-4. 跑原作者数据集，启动imu融合就会报错
+2. 不管错误，反复运行，`scan_matching_odometry_nodelet.cpp` 359行，输出的值为 NAN
+3. `preprocessing_nodelet` 执行完第八个 `cloud_callback` 后报错。
+4. 跑原作者数据集，启动 imu 融合就会报错
    - 排除是数据集的问题。
 
 
