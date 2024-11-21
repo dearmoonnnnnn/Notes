@@ -498,8 +498,9 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 - 原驱动 ARS548-demo 解析 RCS 字段错误
   - 原项目使用有符号字符型 `int8` / `signed char` 作为数据类型。
     - 虽然取值也为 [-127, 128]，但有符号整型通常用于表示字符，默认以字符方式**存储**和**打印**。
+    - 可用有符号字符型提取字节流数据，再转换为 `int`
 
-##### 修改文件1：detections.msg （不需要修改）
+##### 修改文件1：detections.msg
 
 ```
 int8 s_RCS 
@@ -508,7 +509,7 @@ int8 s_RCS
 修改为
 
 ```
-int8_t s_RCS
+int s_RCS
 ```
 
 ![](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/8DBA9BAA54CCA7520C9C768E702328A0.png)
@@ -516,10 +517,8 @@ int8_t s_RCS
 - 查看编译器文件可知
 - `int8`
   - 有符号字符型
-- `uint32`
-  - 无符号整型
 
-##### 修改文件2: data_struct.h （不需要修改）
+##### 修改文件2: data_struct.h 
 
 `RadarDetection` 结构体中
 
@@ -530,7 +529,7 @@ signed char s_RCS
 修改为
 
 ```c++
-unsigned int s_RCS
+int s_RCS
 ```
 
 ##### 修改文件3：info_convert_node.cpp （不需要修改）
@@ -542,7 +541,7 @@ d_list->detection_array[num].s_RCS = (signed char)(in[base_index+33]);
 修改为
 
 ```c++
-d_list->detection_array[num].s_RCS = (static_cast<unsigned int>(*(in + base_index + 33)) & 0xFF);
+d_list->detection_array[num].s_RCS = ()(signed char)(in[base_index+33]);
 ```
 
 ## 3、rosbag_tools
