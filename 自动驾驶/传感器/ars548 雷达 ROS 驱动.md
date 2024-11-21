@@ -492,9 +492,11 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 - Wireshark 解析结果错误
 
   - `lua` 插件解析字节流中 RCS 字段时，使用无符号整型 `uint8` 作为数据类型，8 bit 的数据解析范围为 0 ~ 255 
+    - 使用 wireshark 查看，发现大部分点的 RCS 值为 200 以上
 
   - 查阅相关手册可知，毫米波 RCS 取值范围为 -128 ~ 127， 单位是 $dbm^2$
-    - 应该使用 `int8_t`，转换 8 bit 数据，可得到 -128 ~ 127 范围内的取值。 
+    - 查证可知，其他 4D 毫米波数据集中， RCS 存在很多负值。
+    - 应该使用 `int8_t`转换 8 bit 数据，转换后取值范围为 [-128, 127] 
 - 原驱动 ARS548-demo 解析 RCS 字段错误
   - 原项目使用有符号字符型 `int8` / `signed char` 作为数据类型。
     - 虽然取值也为 [-127, 128]，但有符号整型通常用于表示字符，默认以字符方式**存储**和**打印**。
@@ -532,7 +534,7 @@ signed char s_RCS
 int s_RCS
 ```
 
-##### 修改文件3：info_convert_node.cpp （不需要修改）
+##### 修改文件3：info_convert_node.cpp
 
 ```c++
 d_list->detection_array[num].s_RCS = (signed char)(in[base_index+33]);
@@ -541,7 +543,7 @@ d_list->detection_array[num].s_RCS = (signed char)(in[base_index+33]);
 修改为
 
 ```c++
-d_list->detection_array[num].s_RCS = ()(signed char)(in[base_index+33]);
+d_list->detection_array[num].s_RCS = (int)(signed char)(in[base_index+33]);
 ```
 
 ## 3、rosbag_tools
