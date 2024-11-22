@@ -1474,20 +1474,20 @@ uint8[] data
 bool is_dense
 ```
 
-##### 6.1.3、pcl::PointCloud2 —— PCL数据结构，主要是为了与ROS兼容
+##### 6.1.3、pcl::PointCloud2 —— PCL 数据结构，主要是为了与 ROS 兼容
 
-- PCL的数据结构，与`sensor_msgs::PointCloud2`非常匹配。
-- 存在的目的是允许PCL与ROS之间轻松转换，而不丢失任何信息。
-- 虽然它与ROS消息非常匹配，但通常不会在PCL中直接使用这种格式来操作点云。相反，会将其转换为`pcl::PointCloud<T>`以进行大多数处理任务。
+- PCL 的数据结构，与 `sensor_msgs::PointCloud2` 非常匹配。
+- 存在的目的是允许 PCL 与 ROS 之间轻松转换，而不丢失任何信息。
+- 虽然它与 ROS 消息非常匹配，但通常不会在 PCL 中直接使用这种格式来操作点云。相反，会将其转换为 `pcl::PointCloud<T>` 以进行大多数处理任务。
 
 数据结构：
 
 ![image-20240520102156384](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240520102156384.png)
 
-##### 6.1.4、pcl::PointCloud\<T> —— 标准的PCL数据结构
+##### 6.1.4、pcl::PointCloud\<T> —— 标准的 PCL 数据结构
 
-- PCL中用于点云的标准且最常用的数据结构。
-- 是模板化的，其中`T`是点的类型，例如`pcl::PointXYZ`、`pcl::PointXYZRGB`、`pcl::PointNormal`等。
+- PCL 中用于点云的标准且最常用的数据结构。
+- 是模板化的，其中 `T` 是点的类型，例如 `pcl::PointXYZ`、`pcl::PointXYZRGB`、`pcl::PointNormal` 等。
 - 提供了许多方便的方法，允许轻松访问点。
 - 旨在为点云处理任务提供高效和用户友好的方式。
 
@@ -1515,9 +1515,9 @@ class PointCloud
 
 ## 6.2 同时使用 ROS 和 PCL 时典型的工作流
 
-1. 在一个ROS节点中接收一个 `sensor_msgs::PointCloud2` 消息的点云。
-2. 如果需要使用pcl处理它，我们会将其转换为`pcl::PointCloud<T>`，进行处理。
-3. 最后将其转换回`sensor_msgs::PointCloud2`，用以发布或者在ROS中进一步使用。<!-- 在ROS的pcl_conversions包中有函数，可以方便地在这些类型之间转换 -->
+1. 在一个 ROS 节点中接收一个 `sensor_msgs::PointCloud2` 消息的点云。
+2. 如果需要使用 pcl 处理它，我们会将其转换为 `pcl::PointCloud<T>`，进行处理。
+3. 最后将其转换回 `sensor_msgs::PointCloud2`，用以发布或者在 ROS 中进一步使用。<!-- 在ROS的pcl_conversions包中有函数，可以方便地在这些类型之间转换 -->
 
 ##### 示例代码：
 
@@ -1566,9 +1566,9 @@ int main(int argc, char** argv)
 
 ```
 
-- 创建一个ROS节点，订阅了话题名为`/input_point_cloud`的`sensor_msgs::PointCloud2`消息。
-- 在`cloudback`函数中将其转换为`pcl::PointCloud<pcl::PointXYZ>`进行处理（如滤波，配准）
-- 最后，将处理后的点云转换回 `sensor_msgs::PointCloud2` 并发布到名为 `/output_point_cloud` 的话题中。
+- 创建一个 ROS 节点，订阅了话题名为 `/input_point_cloud` 的 `sensor_msgs::PointCloud2` 消息。
+- 在 `cloudback` 函数中将其转换为 `pcl::PointCloud<pcl::PointXYZ>` 进行处理（如滤波，配准）
+- 最后，将处理后的点云转换回 `sensor_msgs::PointCloud2` 并发布到名为  `/output_point_cloud`  的话题中。
 
 ##### pcl::fromROSMsg()
 

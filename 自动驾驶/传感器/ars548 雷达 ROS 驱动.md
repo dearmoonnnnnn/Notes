@@ -326,7 +326,7 @@ float32 doppler_velocity
     <exec_depend>geometry_msgs</exec_depend>
     ```
 
-  - 在`CMakeLists.txt`中添加`find_package`声明
+  - 在 `CMakeLists.txt` 中添加 `find_package` 声明
 
     ```cmake
     find_package(catkin REQUIRED COMPONENTS
@@ -471,80 +471,20 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 }
 ```
 
-### 2.4、RCS 值处理
+### 2.3、test_radar_input_node 报错
 
-##### 两个单位
+- 暂时用不到该节点
 
-- $m^2$
-
-- $dbm^2$
-
-  - 毫米波雷达应为此单位
-
-- 转换
-  $$
-  RCS_{dBm2}=10⋅log_{10}(RCS_{m^2})
-  $$
-  
-
-#####  解析结果错误
-
-- Wireshark 解析结果错误
-
-  - `lua` 插件解析字节流中 RCS 字段时，使用无符号整型 `uint8` 作为数据类型，8 bit 的数据解析范围为 0 ~ 255 
-    - 使用 wireshark 查看，发现大部分点的 RCS 值为 200 以上
-
-  - 查阅相关手册可知，毫米波 RCS 取值范围为 -128 ~ 127， 单位是 $dbm^2$
-    - 查证可知，其他 4D 毫米波数据集中， RCS 存在很多负值。
-    - 应该使用 `int8_t`转换 8 bit 数据，转换后取值范围为 [-128, 127] 
-- 原驱动 ARS548-demo 解析 RCS 字段错误
-  - 原项目使用有符号字符型 `int8` / `signed char` 作为数据类型。
-    - 虽然取值也为 [-127, 128]，但有符号整型通常用于表示字符，默认以字符方式**存储**和**打印**。
-    - 可用有符号字符型提取字节流数据，再转换为 `int`
-
-##### 修改文件1：detections.msg
+- 在 `CMakeLists.txt` 中注销相关可执行文件
 
 ```
-int8 s_RCS 
+# add_executable(test_radar_input_node src/test_radar_input_node.cpp)
+# target_link_libraries(test_radar_input_node
+#   ${catkin_LIBRARIES}
+# )
 ```
 
-修改为
-
-```
-int s_RCS
-```
-
-![](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/8DBA9BAA54CCA7520C9C768E702328A0.png)
-
-- 查看编译器文件可知
-- `int8`
-  - 有符号字符型
-
-##### 修改文件2: data_struct.h 
-
-`RadarDetection` 结构体中
-
-```c++
-signed char s_RCS
-```
-
-修改为
-
-```c++
-int s_RCS
-```
-
-##### 修改文件3：info_convert_node.cpp
-
-```c++
-d_list->detection_array[num].s_RCS = (signed char)(in[base_index+33]);
-```
-
-修改为
-
-```c++
-d_list->detection_array[num].s_RCS = (int)(signed char)(in[base_index+33]);
-```
+- 也可直接在第一次编译时忽略该问题，第二次编译不会再报错
 
 ## 3、rosbag_tools
 
@@ -652,6 +592,15 @@ sudo apt-get install libpcap-dev
 雷达厂商提供了传感器的 lua 插件，可以直接过滤，只保留 `detectionlist` 数据
 
 ![image-20240119161238901](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240119161238901.png)
+
+**lua 插件修改：RCS 值处理**
+
+- 使用 VSCode 查看`lua` 插件，发现解析 RCS 字段时使用无符号整型 `uint8` 作为数据类型，解析后的数据范围为 [0 ~ 255]
+  - 使用 wireshark 查看，发现大部分点的 RCS 值为 200 以上
+
+- 查阅相关手册可知，毫米波 RCS 取值范围为 -128 ~ 127， 单位是 $dbm^2$
+  - 查证可知，其他 4D 毫米波数据集中， RCS 存在很多负值。
+- 应该使用 `int8_t`转换对应的 RCS 字节流数据，转换后取值范围为 [-128, 127] 
 
 ##### 2、导出解析结果为 JSON 格式
 
