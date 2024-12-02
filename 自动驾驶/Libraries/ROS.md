@@ -20,7 +20,7 @@
 - [一、安装 ROS](#一安装-ros)
   - [1.1 安装](#11-安装)
         - [官方安装方法：](#官方安装方法)
-        - [香鱼ros一键安装](#香鱼ros一键安装)
+            - [香鱼ros一键安装](#香鱼ros一键安装)
   - [1.2 VScode集成开发环境搭建](#12-vscode集成开发环境搭建)
         - [c\_cpp\_properties.json](#c_cpp_propertiesjson)
         - [settings.json](#settingsjson)
@@ -1582,13 +1582,13 @@ void fromROSMsg(const sensor_msgs::PointCloud2 &cloud, pcl::PointCloud<T> &pcl_c
  }
 ```
 
-- cloud
+- `cloud`
 
-  ros格式的消息
+  `ros` 格式的消息
 
-- pcl_cloud
+- `pcl_cloud`
 
-  pcl格式的消息
+  `pcl` 格式的消息
 
 ##### pcl::toROSMsg()
 
@@ -1602,26 +1602,26 @@ void toROSMsg(const pcl::PointCloud<T> &pcl_cloud,sensor_msgs::PointCloud2 &clou
 }
 ```
 
-- pcl_cloud
+- `pcl_cloud`
 
-  pcl格式的消息
+  `pcl` 格式的消息
 
-- cloud
+- `cloud`
 
-  ros格式的消息
+  `ros` 格式的消息
 
 # 七、从零创建ROS工程
 
-##### 1、在 ROS 的工作目录下使用 catkin_create_pkg 命令创建一个新的ROS包。
+##### 1、在 ROS 的工作目录下使用 catkin_create_pkg 命令创建一个新的 ROS 包。
 
 假设工作目录是 `catkin_ws`
 
 ```bash
 cd ~/catkin_ws/src
-catkin_create_pkg my_bag_recorder std_msgs sensor_msgs rosbag roscpp
+catkin_create_pkg my_package std_msgs sensor_msgs rosbag roscpp
 ```
 
-上述命令在 `catkin_ws/src` 目录下创建一个名为 `my_rosbag_recorder` 的新ROS包
+上述命令在 `catkin_ws/src` 目录下创建一个名为 `my_package` 的新 ROS 包
 
 - `catkin_create_pkg` 参数：
 
@@ -1631,11 +1631,11 @@ catkin_create_pkg my_bag_recorder std_msgs sensor_msgs rosbag roscpp
 
   - `<package_name>`：包名
 
-  - `[depend1]`, `[depend2]`, `[depend3]`：该包依赖的其他ROS包的名称。这些包将被添加到`package.xml`文件中的`<depend>`部分
+  - `[depend1]`, `[depend2]`, `[depend3]`：该包依赖的其他ROS包的名称。这些包将被添加到 `package.xml` 文件中的 `<depend>` 部分
 
 ##### 2、编写C++程序（节点）
 
-在 `my_rosbag_recorder` 包的`src`目录下，创建c++源文件，如`my_rosbag_recorder.cpp`，并编写代码
+在 `my_rosbag_recorder` 包的 `src` 目录下，创建 C++ 源文件，如 `my_rosbag_recorder.cpp`，并编写代码
 
 ##### 3、编辑 CMakeLists.txt 文件
 
