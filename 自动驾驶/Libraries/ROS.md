@@ -1228,9 +1228,9 @@ http://wiki.ros.org/rosbag/Commandline
   - 播放特定话题
   - `--topics`参数需要放在最后
 
-## 5.4 bag文件相关操作
+## 5.4 bag 文件相关操作
 
-### 5.4.1融合两个bag文件中的特定话题
+### 5.4.1 融合两个 bag 文件中的特定话题
 
 要将两个bag文件中特定话题的消息融合为一个bag文件，可以使用`rosbag filter`命令。下面是一个示例：
 
@@ -1244,9 +1244,9 @@ rosbag merge output1.bag output2.bag merged_output.bag
 
 请确保将`input1.bag`、`input2.bag`和`merged_output.bag`替换为实际的文件名和路径。
 
-### 5.4.2 两个bag文件合并为一个，并保留需要的所有话题
+### 5.4.2 两个 bag 文件合并为一个，并保留需要的所有话题
 
-设a.bag包有三个话题 `/a1`、`/a2`、`/a3`，`b.bag`包有2个话题，分别为`/b1`、`/b2`
+设 `a.bag` 包有三个话题 `/a1` 、`/a2`、`/a3`，`b.bag` 包有 2 个话题，分别为 `/b1`、`/b2`
 
 ```cpp
 #include "ros/ros.h"
@@ -1295,7 +1295,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-### 5.4.3 删除/保留bag文件中的特定话题
+### 5.4.3 删除/保留 bag 文件中的特定话题
 
 ```bash
 rosbag filter input.bag output.bag "topic != '/topic1'"
@@ -1331,30 +1331,30 @@ rosbag record -O my_bagfile.bag /example_topic
 
 ## 相关资料
 
-- pcl库官方文档
+- pcl 库官方文档
 
   http://wiki.ros.org/pcl/Overview
 
-- pcl相关函数文档
+- pcl 相关函数文档
 
   http://docs.ros.org/en/hydro/api/pcl_conversions/html/namespacepcl.html#af662c7d46db4cf6f7cfdc2aaf4439760
 
 ## 问题：
 
-##### 1、PCL的fromROSMsg()和toROSMsg()不能正确处理xyz之外其他field的数据长度
+##### 1、PCL 的 fromROSMsg() 和 toROSMsg() 不能正确处理 xyz 之外其他 field 的数据长度
 
 https://blog.csdn.net/XCCCCZ/article/details/136142235
 
-##### 2、将 `pcl::PointCloud<pcl::PointXYZI>` 的数据转换为sensor_msgs::PointCloud2后，怎么获取点的强度信息？
+##### 2、将 `pcl::PointCloud<pcl::PointXYZI>` 的数据转换为sensor_msgs::PointCloud2 后，怎么获取点的强度信息？
 
-在`sensor_msgs::PointCloud2`消息中
+在 `sensor_msgs::PointCloud2` 消息中
 
-- `fields`数组描述点云数据中每个字段的信息，包括
+- `fields` 数组描述点云数据中每个字段的信息，包括
   - 名称
   - 偏移量
   - 数据类型
   - 计数
-- `data`数组包含了实际的点云数据，每个点的数据按字节存储，并按fields数组的描述解析
+- `data` 数组包含了实际的点云数据，每个点的数据按字节存储，并按 fields 数组的描述解析
 
 代码示例：
 
@@ -1417,8 +1417,8 @@ int main(int argc, char** argv)
 
 ##### 6.1.1、sensor_msgs::PointCloud —— ROS message，已弃用
 
-- 由于`sensor_msgs::PointCloud2`更加灵活和高效，所以已弃用。
-- 数据字段包括`points`（一个3D点列表）和`channels`（关于点的额外数据，如强度）。
+- 由于 `sensor_msgs::PointCloud2` 更加灵活和高效，所以已弃用。
+- 数据字段包括`points`（一个3D点列表）和 `channels`（关于点的额外数据，如强度）。
 
   ![image-20240430110136856](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20240430110136856.png)
   
