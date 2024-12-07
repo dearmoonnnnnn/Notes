@@ -920,13 +920,13 @@ roslaunch 包名 xxx.launch
 
 ##### 对于 roscore 的处理
 
-roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore，如果启动了则不再启动，否则自动调用roscore。
+`roslaunch` 命令执行 `launch` 文件时，首先会判断是否启动了 `roscore`，如果启动了则不再启动，否则自动启动  `roscore`。
 
 ## 4.3 常见标签
 
 ##### 4.3.1 节点（node）
 
-- 使用`<node>`标签来启动一个ROS节点。<!-- roslaunch命令不能保证按照node的声明顺序来启动节点，因为节点的启动是多进程的 -->
+- 使用 `<node>` 标签来启动一个 ROS 节点。<!-- roslaunch命令不能保证按照node的声明顺序来启动节点，因为节点的启动是多进程的 -->
 
 - 可以为节点指定名称、所属的包、运行的二进制文件、命名空间等。
 
@@ -949,7 +949,7 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
 
 ##### 4.3.2 包含其他 launch文件（include）
 
-- 使用`<include>`标签包含另一个`.launch`文件，使得`.launch`文件可以模块化。
+- 使用 `<include>` 标签包含另一个 `.launch` 文件，使得 `.launch` 文件可以模块化。
 
 - 示例：
 
@@ -960,7 +960,7 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
 
 ##### 4.3.3 环境变量（env）
 
-使用`<env>`标签设置环境变量，这些环境变量对于启动的节点是可见的。
+使用 `<env>` 标签设置环境变量，这些环境变量对于启动的节点是可见的。
 
 - 示例：
 
@@ -970,7 +970,7 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
 
 ##### 4.3.4 重新映射（remap）
 
-- 使用`<remap>`标签将一个话题名或服务名从一个名称重映射到另一个名称。
+- 使用 `<remap>` 标签将一个话题名或服务名从一个名称重映射到另一个名称。
 
 - 使得订阅者可以与发布者关注同一个话题，建立通信。
 
@@ -984,7 +984,7 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
 
 ##### 4.3.5 组（group）
 
-- 对节点分组，具有ns属性，让节点归属于某个命名空间
+- 对节点分组，具有 ns 属性，让节点归属于某个命名空间
 
 - 示例：
 
@@ -999,9 +999,9 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
 
 - **作用：**向参数服务器设置参数。
 
-- **参数源：**可以在标签中通过value指定，也可以通过外部文件加载。
+- **参数源：**可以在标签中通过 value 指定，也可以通过外部文件加载。
 
-- **使用位置：**可以添加在launch内，node外；也可以添加在node内。`<node>`标签中作为子标签时，相当于私有命名空间。
+- **使用位置：**可以添加在 launch 内，node 外；也可以添加在 node 内。`<node>` 标签中作为子标签时，相当于私有命名空间。
 
 - 示例： 
 
@@ -1025,7 +1025,7 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
   </launch>
   ```
   
-  启动launch文件后，在cmd中查看参数服务器中的参数
+  启动 launch 文件后，在cmd中查看参数服务器中的参数
   
   ```bash
   rosparm list 
@@ -1214,19 +1214,23 @@ http://wiki.ros.org/rosbag/Commandline
 
 - `rosbag play --clock example.bag`
 
-  使用`--clock`参数时，rosbag play 会读取bag文件中的时间戳信息，并使用这些时间戳来模拟消息的发布时间。
+  使用`--clock`参数时，`rosbag play` 会读取 `bag` 文件中的时间戳信息，并使用这些时间戳来模拟消息的发布时间。
 
-  这对于 replay 数据时保持与记录时相同的时间关系是很有用的，特别是在涉及到需要同步的多个话题时。
+  这对于 `replay` 数据时保持与记录时相同的时间关系是很有用的，特别是在涉及到需要同步的多个话题时。
 
 - `rosbag play -s 0.5 example.bag`
-  - 从`example.bag`的0.5s处开始播放
+  
+  - 从 `example.bag` 的 0.5s 处开始播放
 - `rosbag play --rate=3 example.bag`
-  - 以3倍速度播放bag文件
+  
+  - 以 3 倍速度播放 `bag` 文件
 - `rosbag play --duration=10000 example.bag`
+  
   - 播放的总时长，单位为秒
 - `rosbag play example.bag --topics /example_topic`
+  
   - 播放特定话题
-  - `--topics`参数需要放在最后
+  - `--topics` 参数需要放在最后
 
 ## 5.4 bag 文件相关操作
 
@@ -2049,7 +2053,7 @@ rostopic echo -b data1.bag -p /tag_detections > data1.txt
 
 ## 1、设置参数
 
-##### 通过launch文件：
+##### 通过 launch 文件：
 
 ```xml
 <launch>
@@ -2078,6 +2082,8 @@ int main(int argc, char** argv) {
     ros::NodeHandle private_nh("~");
 
     std::string outlier_removal_method = private_nh.param<std::string>("outlier_removal_method", "STATISTICAL");
+    
+    std::string outlier_removal_method = nh.param<std::string>("/param_test/outlier_removal_method","STATISTICAL")
 
     ROS_INFO("Outlier removal method: %s", outlier_removal_method.c_str());
 
@@ -2088,6 +2094,12 @@ int main(int argc, char** argv) {
 
 - 如果参数服务器中存在 `outlier_removal_method` 参数且值为 `RADIUS` ，那么运行时该参数的值将是 `RADIUS` 。
 - 如果参数服务器中没有设置该参数，那么运行时该参数的值将是 `STATISTICAL` ，这是默认值。
+
+- 是否需要加前缀
+  - 若使用公有句柄，需要加上前缀 `/param_test/` 
+  - 若使用私有句柄，不需要加。在访问节点私有参数时，会自动在前面加上 `~`。
+
+
 
 # 十二、定时器
 
