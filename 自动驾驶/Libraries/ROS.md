@@ -995,7 +995,7 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
   </group>
   ```
 
-##### 4.3.6 参数（param）
+##### 4.3.6 参数服务器参数（param）
 
 - **作用：**向参数服务器设置参数。
 
@@ -1053,11 +1053,11 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
   <rosparam file="$(find my_package)/param/config.yaml" command="load" />
   ```
 
-##### 4.3.8 命令行参数（arg）
+##### 4.3.8 启动文件参数（arg）
 
-- 用于动态传参，类似于函数的参数。
+- 用于动态传参，两种用途。
 
-- 示例：
+- **示例1**：传递给 `launch` 文件中的其他部分
 
   ```xml
   <!-- name="参数名称" -->
@@ -1074,13 +1074,13 @@ roslaunch 命令执行 launch 文件时，首先会判断是否启动了roscore�
   
   ```
 
-  也可以在命令行中传递参数的值，
+- **示例2**：可以在命令行中传递参数的值
 
   ```bash
   roslaunch 程序名 XXX.launch car_length:=0.6
   ```
 
-  这时候参数car_length不再是默认的0.5, 而是0.6
+  这时候参数 car_length 不再是默认的 0.5, 而是 0.6
 
 ## 4.4 可执行文件读取 launch 中的参数
 
@@ -1610,7 +1610,7 @@ void toROSMsg(const pcl::PointCloud<T> &pcl_cloud,sensor_msgs::PointCloud2 &clou
 
   `ros` 格式的消息
 
-# 七、从零创建ROS工程
+# 七、从零创建 ROS 工程
 
 ##### 1、在 ROS 的工作目录下使用 catkin_create_pkg 命令创建一个新的 ROS 包。
 
@@ -1633,7 +1633,7 @@ catkin_create_pkg my_package std_msgs sensor_msgs rosbag roscpp
 
   - `[depend1]`, `[depend2]`, `[depend3]`：该包依赖的其他ROS包的名称。这些包将被添加到 `package.xml` 文件中的 `<depend>` 部分
 
-##### 2、编写C++程序（节点）
+##### 2、编写 C++ 程序（节点）
 
 在 `my_rosbag_recorder` 包的 `src` 目录下，创建 C++ 源文件，如 `my_rosbag_recorder.cpp`，并编写代码
 
