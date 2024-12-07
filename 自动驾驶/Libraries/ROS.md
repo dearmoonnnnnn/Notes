@@ -1973,6 +1973,8 @@ new_catkin_ws/
 
 ## 2、bag 转 pcd
 
+### 2.1 自定义节点
+
 ```cpp
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud.h>
@@ -2029,13 +2031,29 @@ int main(int argc, char** argv)
 }
 ```
 
-转换为pcd后，可以使用pcl_viewer可视化点云数据。
+转换为 `pcd` 后，可以使用 `pcl_viewer` 可视化点云数据。
 
 ```bash
 pcl_viewer example.pcd
 ```
 
+### 2.2 使用 pcl_ros 提供的节点
 
+- 启动 `pcl_ros` 提供的 `pointcloud_to_pcd` 节点
+
+  ```bash
+  rosrun pcl_ros pointcloud_to_pcd input:=/my_topic
+  ```
+
+  - 输入的消息类型必须为 `sensor_msgs::PointCloud2`
+
+- 播放 `bag` 文件
+
+  ```bash
+  rosbag play file.bag
+  ```
+
+- 一条消息会生成一个 `pcd` 文件，保存在当前工作目录下
 
 ## 3、bag 转 txt
 
