@@ -494,7 +494,45 @@ git add .gitignore
 git commit -m "Add .gitignore file"
 ```
 
+# 四、将 clone 的项目发布到新仓库
 
+## 1. 创建一个新仓库
 
+在 Github 中创建新的仓库
 
+## 2. 断开原仓库的链接
+
+##### 2.1 检查当前远程仓库
+
+```bash
+git remote -v
+```
+
+可能输出
+
+```plaintext
+origin  https://github.com/other-user/original-repo.git (fetch)
+origin  https://github.com/other-user/original-repo.git (push)
+```
+
+##### 2.2 删除原远程仓库链接
+
+```bash
+git remote remove origin 
+```
+
+##### 2.3 绑定到新的 Github 仓库
+
+```bash
+git remote add origin main https://github.com/your-username/my-project.git
+```
+
+##### 2.4 推送
+
+```bash
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git push -u origin main
+```
 
