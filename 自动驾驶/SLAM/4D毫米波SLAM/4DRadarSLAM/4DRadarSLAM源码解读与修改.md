@@ -254,33 +254,33 @@ T_init = [R_init | t_init]
 
 - `radarcloud_raw`
   - 包含位置信息、强度和多普勒速度
-  - 转为`sensor_msgs::PointCloud2`格式的`pc2_raw_msg`
-  - `pc2_raw_msg`传入自我速度评估器`estimator`，得到线速度`twist`（即`v_r`）、内点信息`inlier_radar_msg`、外点信息`outlier_radar_msg`。然后发布这三类信息。
+  - 转为 `sensor_msgs::PointCloud2` 格式的 `pc2_raw_msg`
+  - `pc2_raw_msg` 传入自我速度评估器 `estimator`，得到线速度 `twist`（即`v_r`）、内点信息`inlier_radar_msg` 、外点信息 `outlier_radar_msg` 。然后发布这三类信息。
 - `radarcloud_xyzi`
   - 包含位置信息和强度
 - `src_cloud`
-  - 若启用动态物体去除，指向`radarcloud_inlier`；否则指向`radar_xyzi`
-  - 经过一系列的处理后(转为`filtered`)，由`poins_pub`发布
+  - 若启用动态物体去除，指向 `radarcloud_inlier` ；否则指向 `radar_xyzi`
+  - 经过一系列的处理后(转为 `filtered`)，由 `poins_pub` 发布
 
 
 ##### 1.2 scan_matching_odometry_nodelet
 
-`twist`消息被`ego_vel_sub`订阅；`filtered`点云消息被`points_sub`订阅。当两者消息都到达时，被传入`pointcloud_callback`。
+`twist` 消息被 `ego_vel_sub` 订阅；`filtered` 点云消息被 `points_sub` 订阅。当两者消息都到达时，被传入`pointcloud_callback`。
 
 - `twist`
   - 被用来计算当前帧到上一帧之间的累积线速度：`egovel_cum_x`、`egovel_cum_y`、`egovel_cum_z`。
-- `filtered`点云消息
-  - 转为pcl点云格式
-  - 被传入`matching`函数，执行点云配准，得到传感器位姿`pose`
-- `pose`和`twist`一起被`publish_odometry`发表。同时利用`read_until`机制来发布处理完的数据。
+- `filtered` 点云消息
+  - 转为 pcl 点云格式
+  - 被传入 `matching` 函数，执行点云配准，得到传感器位姿 `pose`
+- `pose` 和 `twist` 一起被 `publish_odometry` 发表。同时利用 `read_until` 机制来发布处理完的数据。
 
 ##### 1.3 radar_graph_slam_nodelet
 
-`odom`消息被`odom_sub`订阅，`filtered_points`话题被`cloud_sub`订阅。当两者都到达时，调用`cloud_callback`
+`odom` 消息被 `odom_sub` 订阅，`filtered_points` 话题被 `cloud_sub` 订阅。当两者都到达时，调用`cloud_callback`
 
-###### 提问：这里的`filtered_points`话题是preprocessing_nodelet发布的还是scan_matching_nodelet发布的?
+###### 提问：这里的 `filtered_points` 话题是 `preprocessing_nodelet` 发布还是 `scan_matching_nodelet` 发布?
 
-.......
+TO DO
 
 #### 2、imu 数据流动方向
 
