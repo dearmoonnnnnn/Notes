@@ -51,9 +51,9 @@
         - [4.3.3 环境变量（env）](#433-环境变量env)
         - [4.3.4 重新映射（remap）](#434-重新映射remap)
         - [4.3.5 组（group）](#435-组group)
-        - [4.3.6 参数（param）](#436-参数param)
+        - [4.3.6 参数服务器参数（param）](#436-参数服务器参数param)
         - [4.3.7 参数文件加载（rosparam）](#437-参数文件加载rosparam)
-        - [4.3.8 命令行参数（arg）](#438-命令行参数arg)
+        - [4.3.8 启动文件参数（arg）](#438-启动文件参数arg)
   - [4.4 可执行文件读取 launch 中的参数](#44-可执行文件读取-launch-中的参数)
 - [五、rosbag](#五rosbag)
         - [动机：](#动机-1)
@@ -62,16 +62,22 @@
   - [5.1 写 bag 文件(C++)](#51-写-bag-文件c)
   - [5.2 读 bag 文件(C++)](#52-读-bag-文件c)
   - [5.3 rosbag play](#53-rosbag-play)
-  - [5.4 bag文件相关操作](#54-bag文件相关操作)
-    - [5.4.1融合两个bag文件中的特定话题](#541融合两个bag文件中的特定话题)
-    - [5.4.2 两个bag文件合并为一个，并保留需要的所有话题](#542-两个bag文件合并为一个并保留需要的所有话题)
-    - [5.4.3 删除/保留bag文件中的特定话题](#543-删除保留bag文件中的特定话题)
+    - [5.3.1 `--clock`](#531---clock)
+    - [5.3.2 `-s`](#532--s)
+    - [5.3.3 `--rate`](#533---rate)
+    - [5.3.4 `--duration`](#534---duration)
+    - [5.3.5 `--topic`](#535---topic)
+  - [5.4 bag 文件相关操作](#54-bag-文件相关操作)
+    - [5.4.1 融合两个 bag 文件中的特定话题](#541-融合两个-bag-文件中的特定话题)
+    - [5.4.2 两个 bag 文件合并为一个，并保留需要的所有话题](#542-两个-bag-文件合并为一个并保留需要的所有话题)
+    - [5.4.3 删除/保留 bag 文件中的特定话题](#543-删除保留-bag-文件中的特定话题)
   - [5.5 rosbag record](#55-rosbag-record)
+  - [5.6 rosbag filter 提取特定帧](#56-rosbag-filter-提取特定帧)
 - [六、PCL库](#六pcl库)
   - [相关资料](#相关资料)
   - [问题：](#问题-1)
-        - [1、PCL的fromROSMsg()和toROSMsg()不能正确处理xyz之外其他field的数据长度](#1pcl的fromrosmsg和torosmsg不能正确处理xyz之外其他field的数据长度)
-        - [2、将 `pcl::PointCloud<pcl::PointXYZI>` 的数据转换为sensor\_msgs::PointCloud2后，怎么获取点的强度信息？](#2将-pclpointcloudpclpointxyzi-的数据转换为sensor_msgspointcloud2后怎么获取点的强度信息)
+        - [1、PCL 的 fromROSMsg() 和 toROSMsg() 不能正确处理 xyz 之外其他 field 的数据长度](#1pcl-的-fromrosmsg-和-torosmsg-不能正确处理-xyz-之外其他-field-的数据长度)
+        - [2、将 `pcl::PointCloud<pcl::PointXYZI>` 的数据转换为sensor\_msgs::PointCloud2 后，怎么获取点的强度信息？](#2将-pclpointcloudpclpointxyzi-的数据转换为sensor_msgspointcloud2-后怎么获取点的强度信息)
   - [6.1 表示点云数据的四种方式](#61-表示点云数据的四种方式)
         - [6.1.1、sensor\_msgs::PointCloud —— ROS message，已弃用](#611sensor_msgspointcloud--ros-message已弃用)
         - [6.1.2、sensor\_msgs::PointCloud2 —— ROS message](#612sensor_msgspointcloud2--ros-message)
@@ -81,9 +87,9 @@
         - [示例代码：](#示例代码)
         - [pcl::fromROSMsg()](#pclfromrosmsg)
         - [pcl::toROSMsg()](#pcltorosmsg)
-- [七、从零创建ROS工程](#七从零创建ros工程)
+- [七、从零创建 ROS 工程](#七从零创建-ros-工程)
         - [1、在 ROS 的工作目录下使用 catkin\_create\_pkg 命令创建一个新的 ROS 包。](#1在-ros-的工作目录下使用-catkin_create_pkg-命令创建一个新的-ros-包)
-        - [2、编写C++程序（节点）](#2编写c程序节点)
+        - [2、编写 C++ 程序（节点）](#2编写-c-程序节点)
         - [3、编辑 CMakeLists.txt 文件](#3编辑-cmakeliststxt-文件)
         - [4、构建工程](#4构建工程)
         - [5、运行 ROS 核心](#5运行-ros-核心)
@@ -104,10 +110,12 @@
 - [十、格式转换](#十格式转换)
   - [1、bag 包转 png](#1bag-包转-png)
   - [2、bag 转 pcd](#2bag-转-pcd)
+    - [2.1 自定义节点](#21-自定义节点)
+    - [2.2 使用 pcl\_ros 提供的节点](#22-使用-pcl_ros-提供的节点)
   - [3、bag 转 txt](#3bag-转-txt)
 - [十一、使用参数服务器](#十一使用参数服务器)
   - [1、设置参数](#1设置参数)
-        - [通过launch文件：](#通过launch文件)
+        - [通过 launch 文件：](#通过-launch-文件)
         - [通过命令行：](#通过命令行)
   - [2、获取参数](#2获取参数)
 - [十二、定时器](#十二定时器)
@@ -1214,25 +1222,48 @@ int main(int argc, char *argv[])
 
 http://wiki.ros.org/rosbag/Commandline
 
-- `rosbag play --clock example.bag`
+### 5.3.1 `--clock`
 
-  使用`--clock`参数时，`rosbag play` 会读取 `bag` 文件中的时间戳信息，并使用这些时间戳来模拟消息的发布时间。
+```bash
+rosbag play --clock example.bag
+```
 
-  这对于 `replay` 数据时保持与记录时相同的时间关系是很有用的，特别是在涉及到需要同步的多个话题时。
+- 使用 `--clock` 参数时，`rosbag play` 会使用 `header.stamp` 的时间戳信息，并使用这些时间戳来模拟消息的发布时间。
+  - 在 SLAM、多传感器融合中，**模拟时间是标准做法**。
+- 不使用该参数，ROS 使用当前系统时间，适合只关注数据本身，不依赖时间的场景。
 
-- `rosbag play -s 0.5 example.bag`
-  
-  - 从 `example.bag` 的 0.5s 处开始播放
-- `rosbag play --rate=3 example.bag`
-  
-  - 以 3 倍速度播放 `bag` 文件
-- `rosbag play --duration=10000 example.bag`
-  
-  - 播放的总时长，单位为秒
-- `rosbag play example.bag --topics /example_topic`
-  
-  - 播放特定话题
-  - `--topics` 参数需要放在最后
+### 5.3.2 `-s`
+
+```bash
+rosbag play -s 0.5 example.bag
+```
+
+- 从 `example.bag` 的 0.5s 处开始播放
+
+### 5.3.3 `--rate`
+
+```
+rosbag play --rate=3 example.bag
+```
+
+- 以 3 倍速度播放 `bag` 文件
+
+### 5.3.4 `--duration`
+
+```bash
+rosbag play --duration=10000 example.bag
+```
+
+- 播放的总时长，单位为秒
+
+### 5.3.5 `--topic`
+
+```bash
+rosbag play example.bag --topics /example_topic
+```
+
+- 播放特定话题
+- `--topics` 参数需要放在最后
 
 ## 5.4 bag 文件相关操作
 
