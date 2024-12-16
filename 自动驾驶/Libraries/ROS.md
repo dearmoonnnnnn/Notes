@@ -414,14 +414,14 @@ std::string output_bag_path = nh.param<std::string>("/12345/output_bag_path", "a
 在ROS (Robot Operating System) 中，`ROS Master` 是一个关键组件，它提供命名和注册服务，以便其余的节点能够找到彼此并进行通信。下面是有关`ROS Master`的一些详细信息：
 
 1. **命名和注册服务**：
-   - 当一个节点启动时，它会向`ROS Master`注册自己，说明它提供了哪些话题、服务等。
-   - 同样地，当一个节点想要找到某个特定的话题或服务时，它会询问`ROS Master`来获得相关的信息。
+   - 当一个节点启动时，它会向 `ROS Master` 注册自己，说明它提供了哪些话题、服务等。
+   - 同样地，当一个节点想要找到某个特定的话题或服务时，它会询问 `ROS Master` 来获得相关的信息。
 
 2. **参数服务器**：
    - `ROS Master` 还包含一个参数服务器，它允许数据在节点之间被存储和共享。这些数据通常是配置参数，例如机器人的某些固定参数或启动时的配置设置。
 
 3. **不进行实际的数据通信**：
-   - 虽然节点通过`ROS Master`找到彼此，但当它们开始通信（例如，通过发布和订阅话题）时，数据流不会经过`ROS Master`。换句话说，`ROS Master` 只是提供了一个查找服务，不负责节点之间的实际数据传输。
+   - 虽然节点通过 `ROS Master` 找到彼此，但当它们开始通信（例如，通过发布和订阅话题）时，数据流不会经过`ROS Master`。换句话说，`ROS Master` 只是提供了一个查找服务，不负责节点之间的实际数据传输。
 
 4. **单点故障**：
    - 在ROS系统中，`ROS Master`是一个关键的组件，如果它停止工作，节点之间将无法找到彼此，导致整个系统的通信断裂。
@@ -618,7 +618,7 @@ ROS是进程(也称Nodes)的分布式框架。ROS中的每一个功能点都是�
 
 ### 2.1.1 理论模型
 
-![image-20230901161228493](/home/dearmoon/snap/typora/82/.config/Typora/typora-user-images/image-20230901161228493.png)
+![image-20241216100837058](https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20241216100837058.png)
 
 ##### 三个角色
 
@@ -670,15 +670,15 @@ ROS是进程(也称Nodes)的分布式框架。ROS中的每一个功能点都是�
 
 ##### 发布话题的三个步骤(python)
 
-1、建立publisher
+1、建立 `publisher`
 
 ```python
 pcl_pub = rospy.Publisher('kitti_point_cloud', PointCloud2, queue_size = 10)
 ```
 
-2、读取数据 (如果要发布Marker类型，可能不需要这一步)
+2、读取数据 (如果要发布 `Marker` 类型，可能不需要这一步)
 
-点云数据被存在pont_cloud数组中
+点云数据被存在 `pont_cloud` 数组中
 
 ```python
 import numpy as np
@@ -777,13 +777,13 @@ int main(int argc, char  *argv[])
 
 在ROS中，一个节点订阅话题的步骤通常如下：
 
-1. **初始化ROS节点**：使用`ros::init()`函数初始化节点。
-2. **创建节点句柄**：使用`ros::NodeHandle`创建句柄。
+1. **初始化ROS节点**：使用 `ros::init()` 函数初始化节点。
+2. **创建节点句柄**：使用 `ros::NodeHandle` 创建句柄。
 3. **定义消息回调函数**：创建一个函数，该函数会在消息到达时被调用。
-4. **订阅话题**：使用`node_handle.subscribe()`函数订阅一个话题，并关联回调函数。
-5. **进入事件循环**：使用`ros::spin()`或`ros::spinOnce()`进入事件循环，等待并处理消息。
+4. **订阅话题**：使用 `node_handle.subscribe()` 函数订阅一个话题，并关联回调函数。
+5. **进入事件循环**：使用 `ros::spin()` 或 `ros::spinOnce()` 进入事件循环，等待并处理消息。
 
-以下是一个简单的示例，该节点订阅名为`/chatter`的话题，该话题的消息类型为`std_msgs::String`：
+以下是一个简单的示例，该节点订阅名为 `/chatter` 的话题，该话题的消息类型为 `std_msgs::String`：
 
 ```cpp
 #include <ros/ros.h>
@@ -815,10 +815,10 @@ int main(int argc, char **argv)
 
 在这个例子中：
 
-- 当收到`/chatter`话题的新消息时，`chatterCallback`函数会被调用。
-- `ros::spin()`会保持你的节点在事件循环中，直到节点被关闭或ROS被关闭。
+- 当收到 `/chatter` 话题的新消息时，`chatterCallback` 函数会被调用。
+- `ros::spin()` 会保持你的节点在事件循环中，直到节点被关闭或 ROS 被关闭。
 
-确保你已经为`std_msgs`和其他必要的包设置了依赖，并且在你的`CMakeLists.txt`中正确地设置了编译选项。
+确保你已经为 `std_msgs` 和其他必要的包设置了依赖，并且在你的 `CMakeLists.txt` 中正确地设置了编译选项。
 
 ## 2.2 服务通信
 
