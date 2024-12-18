@@ -2118,7 +2118,9 @@ rostopic echo -b data1.bag -p /tag_detections > data1.txt
 
 ## 4. pcd 转 bag
 
-使用 `pcl_ros` 包提供的 `pcd_to_pointcloud` 节点
+- 使用 `pcl_ros` 包提供的 `pcd_to_pointcloud` 节点
+
+- `pcd` 只有一帧，需要加上 `interval` 和 `latch` 参数确保发布的点云被接收到。
 
 ### 4.1 bash 命令
 
@@ -2129,12 +2131,13 @@ rosrun pcl_ros pcd_to_pointcloud _file_name:=/home/dearmoon/datasets/one_msg/lid
 ### 4.2 launch 文件
 
 ```xml
-<node pkg="pcl_ros" type="pcd_to_pointcloud" name="cloud1_publisher" output="screen">
+<node name="cloud2_publisher_manual" pkg="pcl_ros" type="pcd_to_pointcloud">
+    <param name="file_name" value="/home/dearmoon/datasets/one_msg/lidar_step2.pcd"/>
     <param name="frame_id" value="map"/>
-    <param name="file_name" value="/home/dearmoon/datasets/one_msg/radar_step2.pcd"/>
-    <param name="rate" value="10"/>
-    <remap from="/cloud_pcd" to="/cloud1"/>
-</node> 
+    <param name="interval" value="1.0"/>
+    <param name="latch" value="true"/>
+    <remap from="/cloud_pcd" to="/cloud2"/>
+</node>
 ```
 
 - `file_name`
