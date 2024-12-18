@@ -47,13 +47,13 @@
         - [对于 roscore 的处理](#对于-roscore-的处理)
   - [4.3 常见标签](#43-常见标签)
         - [4.3.1 节点（node）](#431-节点node)
-        - [4.3.2 包含其他 launch文件（include）](#432-包含其他-launch文件include)
-        - [4.3.3 环境变量（env）](#433-环境变量env)
-        - [4.3.4 重新映射（remap）](#434-重新映射remap)
-        - [4.3.5 组（group）](#435-组group)
-        - [4.3.6 参数服务器参数（param）](#436-参数服务器参数param)
-        - [4.3.7 参数文件加载（rosparam）](#437-参数文件加载rosparam)
-        - [4.3.8 启动文件参数（arg）](#438-启动文件参数arg)
+            - [4.3.2 包含其他 launch文件（include）](#432-包含其他-launch文件include)
+            - [4.3.3 环境变量（env）](#433-环境变量env)
+            - [4.3.4 重新映射（remap）](#434-重新映射remap)
+            - [4.3.5 组（group）](#435-组group)
+            - [4.3.6 参数服务器参数（param）](#436-参数服务器参数param)
+            - [4.3.7 参数文件加载（rosparam）](#437-参数文件加载rosparam)
+            - [4.3.8 启动文件参数（arg）](#438-启动文件参数arg)
   - [4.4 可执行文件读取 launch 中的参数](#44-可执行文件读取-launch-中的参数)
 - [五、rosbag](#五rosbag)
         - [动机：](#动机-1)
@@ -244,9 +244,21 @@
   - 而**nodelet可执行文件**存在于**nodelet包**中，所以节点所在的包为nodelet包。
   - 上例`load radar_graph_slam/RadarGraphSlamNodelet $(arg nodelet_manager)`相当于加载nodelet插件
 
-##### 6. 将 melodic 版本下能够跑通的项目迁移到 noetic 版本中
+##### 6. 检查话题是否发布成功
 
-修改 workspace/src 路径下的 CMakeList.txt 即可。直接将 neotic 中能跑通的CMakeList.txt文件内容拷贝。
+假设检查的话题为 `/cloud_topic`、
+
+```bash
+rostopic list | grep /cloud_topic
+```
+
+- 检查是否发布
+
+```
+rostopic echo /cloud_topic
+```
+
+- 检查数据是否为空
 
 ##### 7. 将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is_dense，该怎么填充后者的这些数据字段?
 
@@ -1985,7 +1997,7 @@ new_catkin_ws/
 
 # 十、格式转换
 
-## 1、bag 包转 png
+## 1. bag 包转 png
 
 1. 播放 bag 包
 
@@ -2008,7 +2020,7 @@ new_catkin_ws/
 
 
 
-## 2、bag 转 pcd
+## 2. bag 转 pcd
 
 ### 2.1 自定义节点
 
@@ -2092,7 +2104,7 @@ pcl_viewer example.pcd
 
 - 一条消息会生成一个 `pcd` 文件，保存在当前工作目录下
 
-## 3、bag 转 txt
+## 3. bag 转 txt
 
 ```bash
 rostopic echo -b <bag_name>.bag -p /<topic_name> > <new_name>.txt
@@ -2103,6 +2115,38 @@ rostopic echo -b <bag_name>.bag -p /<topic_name> > <new_name>.txt
 ```bash
 rostopic echo -b data1.bag -p /tag_detections > data1.txt
 ```
+
+## 4. pcd 转 bag
+
+使用 `pcl_ros` 包提供的 `pcd_to_pointcloud` 节点
+
+### 4.1 bash 命令
+
+```bash
+rosrun pcl_ros pcd_to_pointcloud _file_name:=/home/dearmoon/datasets/one_msg/lidar_step2.pcd _frame_id:=map __name:=cloud2_publisher_manual
+```
+
+### 4.2 launch 文件
+
+```xml
+<node pkg="pcl_ros" type="pcd_to_pointcloud" name="cloud1_publisher" output="screen">
+    <param name="frame_id" value="map"/>
+    <param name="file_name" value="/home/dearmoon/datasets/one_msg/radar_step2.pcd"/>
+    <param name="rate" value="10"/>
+    <remap from="/cloud_pcd" to="/cloud1"/>
+</node> 
+```
+
+- `file_name`
+  - 必需的参数
+  - `pcd` 文件路径
+- `rate`
+  - 发布频率
+-  `interval`
+  - 点云数据发布的时间间隔
+  - 0：表示只发布一次
+  - 大于0：以特定的时间间隔反复发布数据
+    - 时间单位：秒
 
 # 十一、使用参数服务器
 
@@ -2185,3 +2229,10 @@ int main(int argc, char** argv) {
 }
 ```
 
+# 十三、日志
+
+```bash
+rosrun rqt_logger_level rqt_logger_level
+```
+
+- 打开日志查看工具
