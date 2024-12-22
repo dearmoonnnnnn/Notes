@@ -1398,7 +1398,7 @@ rosbag filter input.bag output.bag "t.secs == 1639182735 and t.nsecs == 12345678
 
 https://blog.csdn.net/XCCCCZ/article/details/136142235
 
-##### 2、将 `pcl::PointCloud<pcl::PointXYZI>` 的数据转换为sensor_msgs::PointCloud2 后，怎么获取点的强度信息？
+##### 2、将 `pcl::PointCloud<pcl::PointXYZI>` 的数据转换为 `sensor_msgs::PointCloud2` 后，怎么获取点的强度信息？
 
 在 `sensor_msgs::PointCloud2` 消息中
 

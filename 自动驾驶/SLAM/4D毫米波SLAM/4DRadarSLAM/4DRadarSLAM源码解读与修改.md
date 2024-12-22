@@ -1372,21 +1372,21 @@ rosbag info cp_2022-02-26.bag
 
 ##### 2、参数相关的文件
 
-- params.yaml
+- `config/params.yaml`
 
-  该文件代表ROS参数服务器
+  该文件代表 ROS 参数服务器
 
-  - Topics部分
+  - Topics 部分
 
     ```yaml
     pointCloudTopic : "/ars548_process/detection_point_cloud"
     ```
 
-- utility_radar.h
+- `include/utility_radar.h`
 
-  ROS节点的参数服务器
+  ROS 节点的参数服务器
 
-  - Topics部分
+  - Topics 部分
 
     ```c++
     nh.param<std::string>("radar_slam/pointCloudTopic", pointCloudTopic, "/ars548_process/detection_point_cloud");
@@ -1396,13 +1396,13 @@ rosbag info cp_2022-02-26.bag
 
 - `preprocessing_nodelet.cpp`
 
-  根据自己写的毫米波RosDriver，信号强度存储在点云消息的通道1。
+  根据自己写的毫米波 RosDriver，信号强度存储在点云消息的通道1。
 
   `eagle_msg->channels[2].values[i]`更改为`eagle->msg->channels[1].values[i]`
 
 - `radar_graph_slam_nodelet.cpp`
 
-  修改点云话题`points_topic`
+  修改点云话题 `points_topic`
 
   ```cpp
   points_topic = private_nh.param<std::string>("points_topic", "/ars548_process/detection_point_cloud");
@@ -1410,7 +1410,7 @@ rosbag info cp_2022-02-26.bag
 
 - `scan_matching_odometry_nodelet.cpp`
 
-  修改点云话题`points_topic`
+  修改点云话题 `points_topic`
 
   ```cpp
   points_topic = private_nh.param<std::string>("points_topic", "/ars548_process/detection_point_cloud");
@@ -1438,7 +1438,7 @@ rosbag info cp_2022-02-26.bag
 
 ##### 动机：
 
-采集到的 ars548 点云数据过于稀疏，一帧30-60个点，且包含很多噪声。而运行4DRadarSlam 所使用的点云数据一帧包含了 6000 多个点。
+采集到的 ars548 点云数据过于稀疏，一帧30-60个点，且包含很多噪声。而运行 4DRadarSlam 所使用的点云数据一帧包含了 6000 多个点。
 
 ##### 方法：
 
