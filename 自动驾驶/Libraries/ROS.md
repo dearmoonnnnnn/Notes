@@ -1911,7 +1911,7 @@ include_directories(
 
 # 九、catkin_make
 
-## 在一个系统上并行管理和运行同一个项目的不同版本
+## 1. 在一个系统上并行管理和运行同一个项目的不同版本
 
 假设有两个版本的 4DRadarSLAM 项目
 
@@ -1994,6 +1994,49 @@ new_catkin_ws/
 │   ├── fast_apdgicp/
 │   └── ndt_omp/
 ```
+
+## 2. 自定义编译顺序
+
+- 假设包 A 依赖于包 B
+- 需要同时在包 A 的 `package.xml` 和 `CMakeLists.txt` 中声明对包 B 的依赖
+- 经测试，第一次 `catkin_make` 仍会报错，必须二次编译。
+
+### 2.1  `package.xml`
+
+```xml
+<package format="2">
+  <name>package_A</name>
+  <version>0.0.1</version>
+  <description>Package A depends on Package B</description>
+  <maintainer email="you@example.com">Your Name</maintainer>
+  <license>MIT</license>
+
+  <!-- 编译和运行时依赖 -->
+  <build_depend>package_B</build_depend>
+  <build_export_depend>package_B</build_export_depend>
+  <exec_depend>package_B</exec_depend>
+
+  <export></export>
+</package>
+```
+
+### 2.2 CMakeLists.txt
+
+```bash
+find_package(catkin REQUIRED COMPONENTS
+  package_B
+)
+
+catkin_package(
+  CATKIN_DEPENDS package_B
+)
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+)
+```
+
+
 
 # 十、格式转换
 
