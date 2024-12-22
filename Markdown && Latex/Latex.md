@@ -1,4 +1,4 @@
-# 一、安装与卸载
+# 一、Linux 安装与卸载
 
 在Ubuntu 20.04上安装LaTeX发行版非常简单。你可以使用TeX Live，这是一个流行且功能强大的LaTeX发行版。以下是详细的安装步骤：
 
@@ -160,7 +160,11 @@ sudo apt install texlive-full
 
 
 
-# 二、语法
+# 二、Windows 安装
+
+使用 `overleaf` 在线版
+
+# 三、语法
 
 ```latex
 \textnormal{}
@@ -168,5 +172,5 @@ sudo apt install texlive-full
 
 当你在一个部分使用了特定的字体样式（如粗体、斜体等），可以用 `\textnormal` 恢复部分文本的默认样式。
 
-# 三、Latex 自定义样式
+# 四、Latex 自定义样式
 
