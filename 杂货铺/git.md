@@ -341,13 +341,13 @@ git clone -b development https://github.com/username/repository.git
 - `path`：子模块相对于主仓库的路径。
 - `url`：子模块的远程仓库地址。
 
-# 二、将本地项目添加到github仓库中
+# 二、将本地项目添加到 github 仓库中
 
-##  A、linux操作系统
+##  A、linux 操作系统
 
 ##### 1、初始化本地仓库
 
-在项目文件夹中初始化一个新的git仓库，用于管理项目文件夹
+在项目文件夹中初始化一个新的 git 仓库，用于管理项目文件夹
 
 ```bash
 cd /path/to/your/project
@@ -356,7 +356,7 @@ git init
 
 ##### 2、将文件添加到暂存区
 
-使用`git add`命令将项目中的文件添加到git的暂存区。使用`.`来添加所有文件，或者指定具体的文件名。
+使用 `git add` 命令将项目中的文件添加到 git 的暂存区。使用`.`来添加所有文件，或者指定具体的文件名。
 
 ```bash
 git add .
@@ -364,7 +364,7 @@ git add .
 
 ##### 3、提交更改
 
-使用`git commit`命令将暂存区的文件提交到本地仓库，并添加一条提交消息。
+使用 `git commit` 命令将暂存区的文件提交到本地仓库，并添加一条提交消息。
 
 ```bash
 git commit -m "Initial commit"
@@ -381,11 +381,11 @@ git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 ```
 
-重新执行`git commit`
+重新执行 `git commit`
 
 ##### 4、关联远程仓库
 
-在Github上创建一个新的仓库，并获得仓库的URL。然后使用`git remote add`命令将本地仓库与Github仓库关联起来。
+在 Github 上创建一个新的仓库，并获得仓库的 URL 。然后使用 `git remote add` 命令将本地仓库与 Github 仓库关联起来。
 
 ```bash
 git remote add origin https://github.com/username/repository.git
@@ -470,11 +470,11 @@ git push -u origin main
 
 https://blog.csdn.net/yuyefuxiao521/article/details/132292012
 
-##### 方法2：使用`.gitignore`文件
+##### 方法2：使用 `.gitignore` 文件
 
-1、在根目录下创建`.gitignore`文件
+1、在根目录下创建 `.gitignore` 文件
 
-2、例如，要忽略所有.log文件和名为temp的文件夹，文件应该包含以下内容：
+2、例如，要忽略所有 .log 文件和名为 temp 的文件夹，文件应该包含以下内容：
 
 ```txt
 *.log
@@ -487,7 +487,7 @@ temp/
 
 3、保存并关闭
 
-4、使用以下命令将.gitignore文件添加到版本控制中
+4、使用以下命令将 `.gitignore` 文件添加到版本控制中
 
 ```bash
 git add .gitignore

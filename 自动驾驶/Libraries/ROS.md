@@ -2284,3 +2284,58 @@ rosrun rqt_logger_level rqt_logger_level
 ```
 
 - 打开日志查看工具
+
+
+
+# 十四、时间同步
+
+## 1. message_filters
+
+```cpp
+#include <ros/ros.h>
+#include <message_filters/subscriber.h>
+#include <message_filters/sync_policies/approximate_time.h>
+#include <sensor_msgs/Image.h>
+#include <sensor_msgs/PointCloud2.h>
+
+// 回调函数
+void callback(const sensor_msgs::ImageConstPtr &image, const sensor_msgs::PointCloud2ConstPtr &pointcloud) {
+    ROS_INFO("Synchronized data received!");
+    // 在这里处理同步后的数据
+}
+
+int main(int argc, char **argv) {
+    ros::init(argc, argv, "time_synchronizer");
+    ros::NodeHandle nh;
+
+    // 创建订阅器
+    message_filters::Subscriber<sensor_msgs::Image> image_sub(nh, "/camera/image", 1);
+    message_filters::Subscriber<sensor_msgs::PointCloud2> pointcloud_sub(nh, "/lidar/points", 1);
+
+    // 定义同步策略（ApproximateTime）
+    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::PointCloud2> SyncPolicy;
+    message_filters::Synchronizer<SyncPolicy> sync(SyncPolicy(10), image_sub, pointcloud_sub);
+
+    // 注册回调函数
+    sync.registerCallback(boost::bind(&callback, _1, _2));
+
+    ros::spin();
+    return 0;
+}
+```
+
+##### 订阅器队列大小
+
+- **定义**: `SyncPolicy(queue_size)`
+- **类型**: `int`
+- 定义了消息同步队列的大小。
+- 作用：
+  - `Synchronizer` 会根据时间戳将消息存储到队列中，并尝试对齐它们。
+  - 如果队列过小，会导致未及时对齐的旧消息被丢弃；如果队列过大，可能会占用过多内存。
+
+##### 设置最大时间间隔
+
+```cpp
+  sync.setMaxIntervalDuration(ros::Duration(0.05));       // 设置最大时间间隔，单位秒
+```
+

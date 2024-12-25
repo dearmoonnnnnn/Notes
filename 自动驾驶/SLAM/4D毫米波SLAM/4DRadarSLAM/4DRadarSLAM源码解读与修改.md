@@ -255,7 +255,7 @@ T_init = [R_init | t_init]
 - `radarcloud_raw`
   - 包含位置信息、强度和多普勒速度
   - 转为 `sensor_msgs::PointCloud2` 格式的 `pc2_raw_msg`
-  - `pc2_raw_msg` 传入自我速度评估器 `estimator`，得到线速度 `twist`（即`v_r`）、内点信息`inlier_radar_msg` 、外点信息 `outlier_radar_msg` 。然后发布这三类信息。
+  - `pc2_raw_msg` 传入自我速度评估器 `estimator`，得到线速度 `twist`（即`v_r`）、内点信息 `inlier_radar_msg` 、外点信息 `outlier_radar_msg` 。然后发布这三类信息。
 - `radarcloud_xyzi`
   - 包含位置信息和强度
 - `src_cloud`
@@ -276,7 +276,7 @@ T_init = [R_init | t_init]
 
 ##### 1.3 radar_graph_slam_nodelet
 
-`odom` 消息被 `odom_sub` 订阅，`filtered_points` 话题被 `cloud_sub` 订阅。当两者都到达时，调用`cloud_callback`
+`odom` 消息被 `odom_sub` 订阅，`filtered_points` 话题被 `cloud_sub` 订阅。当两者都到达时，调用 `cloud_callback`
 
 ###### 提问：这里的 `filtered_points` 话题是 `preprocessing_nodelet` 发布还是 `scan_matching_nodelet` 发布?
 
