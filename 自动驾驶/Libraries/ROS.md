@@ -1126,6 +1126,8 @@ roslaunch 包名 xxx.launch
         return -1;
     }
 
+	std::string topic = private_nh.param<std::string>("topic", "/default_topic");
+
     ROS_INFO("Input file: %s", input_file.c_str());
     ROS_INFO("Output bag: %s", output_bag.c_str());
 ```

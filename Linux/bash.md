@@ -113,3 +113,13 @@ echo "This is a test." > output.txt
 echo "Another line." >> output.txt
 ```
 
+
+
+# free
+
+##### 实时监控内存使用情况
+
+```bash
+watch -n 1 free -h
+```
+
