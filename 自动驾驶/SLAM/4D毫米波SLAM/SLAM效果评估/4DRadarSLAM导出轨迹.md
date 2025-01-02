@@ -79,11 +79,25 @@
 rosbag record -O stamped_traj_estimate.bag /radar_graph_slam/aftmapped_odom
 ```
 
+或者
+
+```bash
+rosbag record /radar_graph_slam/aftmapped_odom
+```
+
+
+
 ##### 2. 转换格式
 
 然后将其转换为 evo 可用格式
 
 ```bash
 evo_traj bag XRGB.bag /radar_graph_slam/aftmapped_odom --save_as_tum
+```
+
+##### 3. 绘制轨迹
+
+```bash
+evo_traj tum aft_mapped_to_init.tum -p
 ```
 
