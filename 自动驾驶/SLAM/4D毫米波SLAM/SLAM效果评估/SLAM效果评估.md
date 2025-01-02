@@ -435,7 +435,7 @@ python2 analyze_trajectory_single.py <result_folder>
 
 # 三、评估 4DRadarSLAM
 
-[导出数据](./4DRadarSLAM导出轨迹.md)：
+[导出轨迹](./4DRadarSLAM导出轨迹.md)：
 
 - 数据格式：tum 格式 
   - timestamp tx ty tz qx qy qz qw
@@ -451,7 +451,7 @@ python2 analyze_trajectory_single.py <result_folder>
 
 
 
-运行rpg
+运行 `rpg`
 
 ```bash
 source devel/setup.bash
@@ -462,3 +462,8 @@ python2 analyze_trajectory_single.py <result_folder>
 
 - `stamped_groundtruth.txt`
 - `stamped_traj_estimate.txt`
+
+
+
+
+
