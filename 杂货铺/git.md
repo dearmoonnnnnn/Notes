@@ -287,7 +287,7 @@ git branch -M [仓库名]
 
    
 
-# 一、git clone用法
+# 一、git clone 用法
 
 ##  1、下载特定分支
 
@@ -329,7 +329,7 @@ git clone -b development https://github.com/username/repository.git
    git submodule update --init --recursive
    ```
 
-##### `.gitmodules`文件
+##### `.gitmodules` 文件
 
 ```ini
 [submodule "submodule_name"]
@@ -395,15 +395,15 @@ git remote add origin https://github.com/username/repository.git
 
 ##### 5、推送到远程仓库
 
-使用`git push`命令将本地仓库的内容推送到Gtihub仓库。
+使用 `git push` 命令将本地仓库的内容推送到 `Gtihub` 仓库。
 
 ```bash
 git push -u origin master
 ```
 
-- `-u`参数
+- `-u` 参数
 
-  - `-u`选项用于将本地分支与远程仓库的分支进行关联。
+  - `-u` 选项用于将本地分支与远程仓库的分支进行关联。
 
   - 已经执行过一次推送，并且已经建立了本地分支与远程分支的关联，那么在下次推送时，你可以直接使用 `git push` 命令：
 
@@ -411,19 +411,19 @@ git push -u origin master
     git push origin master
     ```
 
-- **推送到master以外的分支：**
+- **推送到 master 以外的分支：**
 
-  如果使用了不同的分支名或者标签名，需要将`master`替换为实际的分支名或者标签名，并且需要重命名当前所在分支。
+  如果使用了不同的分支名或者标签名，需要将 `master` 替换为实际的分支名或者标签名，并且需要重命名当前所在分支。
 
-  例如：如果是推送到`main`分支。
+  例如：如果是推送到 `main` 分支。
 
-  先重命名本地仓库的当前分支为`main`
+  先重命名本地仓库的当前分支为 `main`
 
   ```bash
   git branch -M main
   ```
 
-  再推送到远程仓库的`main`分支
+  再推送到远程仓库的 `main` 分支
 
   ```bash
   git push -u origin main
@@ -431,10 +431,10 @@ git push -u origin master
 
 - **身份验证：**
 
-  根据提示，输入github的用户名和密码进行身份验证。PS：这里的密码不能使用github登录时的密码。如果使用个人访问令牌验证，密码字段应使用生成的token.
+  根据提示，输入 `github` 的用户名和密码进行身份验证。PS：这里的密码不能使用 `github` 登录时的密码。如果使用个人访问令牌验证，密码字段应使用生成的 `token`.
 
 
-##### github创建空仓库后的提示：
+##### github 创建空仓库后的提示：
 
 ##### create a new repository on the command line：
 
@@ -460,13 +460,13 @@ git push -u origin main
 
 只需要执行2、3、5步骤
 
-##  B、windows操作系统
+##  B、windows 操作系统
 
 使用 GithubDesktop 客户端
 
 # 三、git push/pull 特定文件夹或者文件
 
-##### 方法1：使用`sparse-checkout：`（未实践）
+##### 方法1：使用 `sparse-checkout：`（未实践）
 
 https://blog.csdn.net/yuyefuxiao521/article/details/132292012
 
@@ -474,7 +474,7 @@ https://blog.csdn.net/yuyefuxiao521/article/details/132292012
 
 1、在根目录下创建 `.gitignore` 文件
 
-2、例如，要忽略所有 .log 文件和名为 temp 的文件夹，文件应该包含以下内容：
+2、例如，忽略所有 `.log` 文件和名为 `temp` 的文件夹，文件应该包含以下内容：
 
 ```txt
 *.log

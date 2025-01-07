@@ -137,18 +137,20 @@
 
 1. 使用 rosbag 命令行工具
 
-   1. **查看 bag 文件中的话题和消息数**
+   1. 查看 bag 文件中的话题和消息数
 
       ```bash
       rosbag info <your_bag_file.bag>
       ```
+   
+   
+      2. 查看特定话题的消息的内容
+   
+         ```bash
+         rosbag echo -n 1 <your_bag_file.bag> <topic_name>
+         ```
+   
 
-
-   2. 查看特定话题的消息的内容
-
-      ```bash
-      rosbag echo -n 1 <your_bag_file.bag> <topic_name>
-      ```
 
    3. 查看消息的定义
 
@@ -157,9 +159,7 @@
       ```
 
 2. 将 bag 文件转换为 txt 文件，用文本编辑器查看，见“十、格式转换
-3. 使用 Foxglove Studio
-
-
+3. 使用 `Foxglove Studio` 工具直接打开
 
 ##### 2. 话题和消息的关系
 
@@ -187,7 +187,7 @@
 ##### 3. node 和 nodelet 的关系
 
 1. **Node（节点）**:
-   - 在ROS中，节点是一个可执行的过程，它与其他节点使用ROS通信机制（如话题、服务和行动）交互。
+   - 在ROS中，节点是一个可执行的过程，它与其他节点使用 ROS 通信机制（如话题、服务和行动）交互。
    - 节点运行在其自己的进程中，有其自己的内存空间。
    - 节点之间的通信涉及进程间通信（IPC），这可能会引入一些延迟。
 
@@ -219,14 +219,10 @@
 - 一个节点可以发布多个主题
 - 一个节点也可以订阅多个主题。
 
-在ROS 中，节点的设计经常需要与多个其他节点通信，因此它们可能需要发布和/或订阅多个不同的主题。
-
-例如，考虑一个机器人的移动控制节点。这个节点可能需要：
+例如，一个机器人的移动控制节点：
 - 发布到一个 `/cmd_vel` 主题，发送速度命令给机器人的驱动器。
 - 订阅一个 `/laser_scan` 主题，从激光雷达获取障碍物信息。
 - 发布到一个 `/robot_status` 主题，提供关于机器人当前状态的更新。
-
-因此，单个节点可以与 ROS 网络中的多个主题互动，既作为发布者又作为订阅者。这种灵活性使得 ROS 的节点可以在复杂的系统中灵活地工作，同时保持相对的解耦。
 
 ##### 5. nodelet 节点在 launch 中配置的时候，节点所在的包 (pkg) 为什么是 nodelet
 
@@ -234,15 +230,16 @@
 <node pkg="nodelet" type="nodelet" name="radar_graph_slam_nodelet" args="load radar_graph_slam/RadarGraphSlamNodelet $(arg nodelet_manager)" output="screen">
 ```
 
-中，节点`RadarGraphSlamNodelet`虽然是在包`radar_graph_slam`中定义，但是所属的包为`nodelet`
+- 节点 `RadarGraphSlamNodelet` 虽然是在包 `radar_graph_slam` 中定义，但是所属的包为 `nodelet`
+
 
 原因如下：
 
-- 在ros中，`nodelet`是一个专门设计的框架，允许多个节点在同一个进程中运行，从而避免了跨进程通信的开销。
-  - 为了让一个节点成为`nodelet`，它必须作为共享库编译，并链接到`nodelet`库中。
-- 当我们运行一个`nodelet`时，不是直接运行该`nodelet`。运行的是**`nodelet`可执行文件**，并且告诉它要加载哪个特定的**`nodelet`插件**。
-  - 而**nodelet可执行文件**存在于**nodelet包**中，所以节点所在的包为nodelet包。
-  - 上例`load radar_graph_slam/RadarGraphSlamNodelet $(arg nodelet_manager)`相当于加载nodelet插件
+- `nodelet` 是一个专门设计的框架，允许多个节点在**同一个进程**中运行，**避免跨进程通信**的开销。
+  - 为了让一个节点成为 `nodelet` ，它必须作为共享库编译，并链接到`nodelet`库中。
+- 运行一个 `nodelet` 时，不是直接运行该 `nodelet`。运行的是 **`nodelet`可执行文件**，并且告诉它要加载哪个特定的 **`nodelet`插件**。
+  - 而 **`nodelet` 可执行文件**存在于 **`nodelet` 包 **中，所以节点所在的包为 `nodelet` 包。
+  - 上例`load radar_graph_slam/RadarGraphSlamNodelet $(arg nodelet_manager)` 相当于加载nodelet插件
 
 ##### 6. 检查话题是否发布成功
 
@@ -260,21 +257,24 @@ rostopic echo /cloud_topic
 
 - 检查数据是否为空
 
-##### 7. 将`sensor_msg::PointCloud`的数据转为`pcl::PointCloud<pcl::PointXYZ>`的数据，但是前者没有width、height和is_dense，该怎么填充后者的这些数据字段?
+##### 7. 将 `sensor_msg::PointCloud` 的数据转为 `pcl::PointCloud<pcl::PointXYZ>` 的数据，但是前者没有 width、height 和 is_dense，该怎么填充后者的这些数据字段?
 
-由于 `sensor_msgs::PointCloud` 消息类型没有 `width`、`height` 和 `is_dense` 这些字段,因此在将其转换为 `pcl::PointCloud<pcl::PointXYZ>` 时,我们无法直接获取这些信息。
-
-不过,我们可以根据点云数据的特点来设置这些字段。以下是一些建议:
+可以根据点云数据的特点来设置这些字段。
 
 1. **width 和 height**:
-   - 如果您知道点云数据的组织形式(例如,来自深度相机或激光雷达的有序点云),您可以根据点云的尺寸设置 `width` 和 `height`。
-   - 如果点云数据是无序的,您可以将 `width` 设置为点云中点的数量,而将 `height` 设置为 1。
-
+   - 如果知道点云数据的组织形式(例如,来自深度相机或激光雷达的**有序**点云), 
+     - 根据点云的尺寸设置 `width` 和 `height`。
+   - 如果点云数据是**无序**的
+     -  `width` 设置为点云中点的数量
+     -  `height` 设置为 1。
+   
 2. **is_dense**:
-   - 如果您知道点云数据中没有无效点(NaN 或 Inf),则可以将 `is_dense` 设置为 `true`。
-   - 如果您不确定点云数据是否包含无效点,可以在转换过程中检查每个点的坐标值,如果发现无效点,则将 `is_dense` 设置为 `false`。
+   - **确定**点云数据中**没有无效点**(NaN 或 Inf)
+     -  `is_dense` 设置为 `true`。
+   - **不确定**点云数据是否包含无效点
+     - 可以在转换过程中检查每个点的坐标值,如果发现无效点,则将 `is_dense` 设置为 `false`。
 
-下面是一个示例代码,展示了如何在转换过程中设置 `width`、`height` 和 `is_dense` 字段:
+示例代码：
 
 ```cpp
 #include <ros/ros.h>
@@ -313,13 +313,12 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 }
 ```
 
-在这个示例中,我们假设点云数据是无序的,因此将 `width` 设置为点的数量,将 `height` 设置为 1。我们还初始化 `is_dense` 为 `true`,并在转换过程中检查每个点的坐标值是否有效。如果发现无效点,我们将 `is_dense` 设置为 `false`。
+- 点云数据是无序的,因此将 `width` 设置为点的数量,将 `height` 设置为 1。
+- 初始化 `is_dense` 为 `true`,并在转换过程中检查每个点的坐标值是否有效。如果发现无效点,将 `is_dense` 设置为 `false`。
 
-根据您的具体情况,您可能需要调整这些设置。例如,如果您知道点云数据是有序的,并且知道其尺寸,则可以相应地设置 `width` 和 `height`。如果您确定点云数据中没有无效点,则可以直接将 `is_dense` 设置为 `true`。
+##### 8. 如何修改 ROS 包的名称
 
-##### 8. 如何修改ROS包的名称
-
-要修改自己创建的ROS包的名称，需要修改以下几个地方：
+修改以下几个地方：
 
 1. **包文件夹名称(经过实践，这一步可忽略)：**
    修改你的ROS包的文件夹名称。假设你的ROS包名称为`my_package`，那么你可以使用以下命令修改文件夹名称：
@@ -357,23 +356,27 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 4. **修改其他文件引用：**
    如果在代码或者启动文件中有引用到包名的地方，也需要将引用的包名修改为新的包名。
 
-修改完以上内容后，保存文件并重新编译你的ROS包，即可使用新的包名。
+修改完成后，保存文件并重新编译
 
-##### 9. 在roslaunch文件中，`<node>`标签中的`name`参数和`type`参数的区别是什么，为什么它们的值一样
+##### 9. 在 `roslaunch` 文件中，`<node>` 标签中的 `name` 参数和 `type` 参数的区别是什么，为什么它们的值一样
 
-在ROS的`roslaunch`文件中，`name`参数和`type`参数的作用有所不同。
+在 `ROS` 的 `roslaunch` 文件中，`name` 参数和 `type` 参数的作用有所不同。
 
-1. `name`参数：
-   - `name`参数用于指定将要启动的节点（Node）的名称。这个名称必须是唯一的，并且与ROS图中的其他节点名称不冲突。
-   - 如果`name`参数未指定，则默认使用`type`参数指定的节点名称。
-   - 如果在同一个`roslaunch`文件中启动了多个相同类型的节点，可以通过`name`参数为每个节点指定不同的名称，以便它们能够区分开来。
+1. `name` 参数：
+   - `name` 参数用于指定将要启动的节点（Node）的名称。这个名称必须是唯一的，并且与 ROS 图中的其他节点名称不冲突。
+   - 如果 `name` 参数未指定，则默认使用 `type` 参数指定的节点名称。
+   - 如果在同一个 `roslaunch` 文件中启动了多个相同类型的节点，可以通过 `name` 参数为每个节点指定不同的名称，以便它们能够区分开来。
 
-2. `type`参数：
-   - `type`参数用于指定要启动的节点（Node）的类型或者**可执行文件的名称**。它通常是在`CMakeLists.txt`文件中定义的可执行文件的名称。
-   - 如果`type`参数未指定，则默认使用`name`参数指定的节点名称。
-   - `type`参数还用于告诉`roslaunch`工具要启动哪个包中的节点。
+2. `type` 参数：
+   - `type` 参数用于指定要启动的节点（Node）的类型或者**可执行文件的名称**。它通常是在 `CMakeLists.txt` 文件中定义的可执行文件的名称。
+   - 如果 `type` 参数未指定，则默认使用 `name` 参数指定的节点名称。
+   - `type` 参数还用于告诉 `roslaunch` 工具要启动哪个包中的节点。
 
-在很多情况下，`name`参数和`type`参数可以使用相同的值，特别是当你只启动一个节点时。但是，如果你需要启动多个相同类型的节点，你需要使用`name`参数为它们分配不同的名称，以免冲突。因此，为了避免混淆，建议在`roslaunch`文件中明确指定`name`参数和`type`参数的值。
+在很多情况下，`name` 参数和 `type` 参数可以使用相同的值，特别是当你只启动一个节点时。
+
+但是如果启动多个相同类型的节点，需要使用 `name` 参数为它们分配不同的名称，以免冲突。
+
+为了避免混淆，建议在 `roslaunch` 文件中明确指定 `name` 参数和 `type` 参数的值。
 
 ##### 10. 在 node 节点内设置参数，为什么读取不到?
 
@@ -393,6 +396,8 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 std::string output_bag_path = nh.param<std::string>("/output_bag_path", "aaaaaaa");  
 ```
 
+**解决方案1**: 加上参数前缀
+
 因为在节点内设置参数，参数存在前缀，使用 `rosparam list` 命令查看，可得
 
 ```
@@ -409,6 +414,14 @@ std::string output_bag_path = nh.param<std::string>("/output_bag_path", "aaaaaaa
 std::string output_bag_path = nh.param<std::string>("/12345/output_bag_path", "aaaaaaa"); 
 ```
 
+**解决方案2**：
+
+将节点中的句柄设置为私有
+
+```cpp
+ros::NodeHandle nh("~");
+```
+
 ##### 11.  bag 文件中的 %time 和 filed.header.stamp 有什么区别
 
 - %time 表示 bag 文件的时间戳，指消息被记录到 `bag` 文件中的时间
@@ -419,11 +432,11 @@ std::string output_bag_path = nh.param<std::string>("/12345/output_bag_path", "a
 
 ##### 1、节点
 
-节点主要执行计算处理 。ROS被设计为细粒度的模块化的系统;一个机器人控制系统通常有很多节点组成 。例如，一个节点控制激光测距仪，一个节点控制轮电机，一个节点执行定位，一个节点执行路径规划，一个节点提供系统图形界面，等等。一个ROS节点通过ROS客户端库 [client library](http://wiki.ros.org/Client Libraries)编写，例如 [roscpp](http://wiki.ros.org/roscpp) o或[rospy](http://wiki.ros.org/rospy)
+节点主要执行计算处理 。ROS 被设计为细粒度的模块化的系统;一个机器人控制系统通常有很多节点组成 。例如，一个节点控制激光测距仪，一个节点控制轮电机，一个节点执行定位，一个节点执行路径规划，一个节点提供系统图形界面，等等。一个ROS节点通过ROS客户端库 [client library](http://wiki.ros.org/Client Libraries)编写，例如 [roscpp](http://wiki.ros.org/roscpp) o或[rospy](http://wiki.ros.org/rospy)
 
 ##### 2、ROS Master
 
-在ROS (Robot Operating System) 中，`ROS Master` 是一个关键组件，它提供命名和注册服务，以便其余的节点能够找到彼此并进行通信。下面是有关`ROS Master`的一些详细信息：
+ROS Master 提供命名和注册服务，以便其余的节点能够找到彼此并进行通信。下面是有关 `ROS Master` 的一些详细信息：
 
 1. **命名和注册服务**：
    - 当一个节点启动时，它会向 `ROS Master` 注册自己，说明它提供了哪些话题、服务等。
@@ -433,11 +446,11 @@ std::string output_bag_path = nh.param<std::string>("/12345/output_bag_path", "a
    - `ROS Master` 还包含一个参数服务器，它允许数据在节点之间被存储和共享。这些数据通常是配置参数，例如机器人的某些固定参数或启动时的配置设置。
 
 3. **不进行实际的数据通信**：
-   - 虽然节点通过 `ROS Master` 找到彼此，但当它们开始通信（例如，通过发布和订阅话题）时，数据流不会经过`ROS Master`。换句话说，`ROS Master` 只是提供了一个查找服务，不负责节点之间的实际数据传输。
+   - 虽然节点通过 `ROS Master` 找到彼此，但当它们开始通信（例如，通过发布和订阅话题）时，数据流不会经过 `ROS Master`。换句话说，`ROS Master` 只是提供了一个查找服务，不负责节点之间的实际数据传输。
 
 4. **单点故障**：
    - 在ROS系统中，`ROS Master`是一个关键的组件，如果它停止工作，节点之间将无法找到彼此，导致整个系统的通信断裂。
-   - 在实际的机器人系统中，需要确保`ROS Master`是可靠和稳定的，以确保整体系统的稳定性。
+   - 在实际的机器人系统中，需要确保 `ROS Master` 是可靠和稳定的，以确保整体系统的稳定性。
 
 5. **启动和终止**：
    - `roscore` 命令用于启动`ROS Master`，以及其他几个核心的ROS背景进程。
@@ -906,15 +919,15 @@ int main(int argc, char** argv) {
 }
 ```
 
-**ROS参数服务器和ROS节点的参数服务器的区别：**
+**ROS 参数服务器和 ROS 节点的参数服务器的区别：**
 
-在ROS中，通常所说的“ROS参数服务器”是指ROS提供的一个分布式参数存储系统，它允许ROS节点在运行时动态地存储和检索参数。这些参数可以在不同的ROS节点之间共享，允许节点之间进行配置和通信。
+在 ROS 中，通常所说的“ ROS 参数服务器”是指 ROS 提供的一个分布式参数存储系统，它允许 ROS 节点在运行时动态地存储和检索参数。这些参数可以在不同的 ROS 节点之间共享，允许节点之间进行配置和通信。
 
-而“ROS节点的参数服务器”则指的是每个ROS节点内部的参数服务器实例。每个运行的ROS节点都有自己的参数服务器，它用于存储节点本身的参数，以及该节点可能需要使用的其他节点的参数。
+而“ ROS 节点的参数服务器”则指的是每个 ROS 节点内部的参数服务器实例。每个运行的 ROS 节点都有自己的参数服务器，它用于存储节点本身的参数，以及该节点可能需要使用的其他节点的参数。
 
 因此，两者的区别在于：
-1. ROS参数服务器是一个全局的、分布式的参数存储系统，用于整个ROS系统中的节点之间共享参数。
-2. ROS节点的参数服务器是每个节点内部的参数存储实例，用于存储该节点本身的参数以及可能需要的其他节点的参数。
+1. ROS 参数服务器是一个全局的、分布式的参数存储系统，用于整个ROS系统中的节点之间共享参数。
+2. ROS 节点的参数服务器是每个节点内部的参数存储实例，用于存储该节点本身的参数以及可能需要的其他节点的参数。
 
 # 四、launch 文件
 
@@ -922,17 +935,17 @@ int main(int argc, char** argv) {
 
 ##### 动机
 
-一个程序可能需要启动多个节点，比如ROS内置的小乌龟案例，控制小乌龟运动需要分别启动roscore,乌龟页面节点，键盘控制节点。如果每次都调用rosrun逐一启动，效率底下。
+一个程序可能需要启动多个节点，比如 ROS 内置的小乌龟案例，控制小乌龟运动需要分别启动 roscore ,乌龟页面节点，键盘控制节点。如果每次都调用 rosrun 逐一启动，效率底下。
 
-解决方案：使用roslaunch命令，集合launch文件启动管理节点。
+解决方案：使用 roslaunch 命令，集合 launch 文件启动管理节点。
 
 ##### 概念
 
-launch文件是一个XML格式的文件，可以启动本地和远程的多个节点，还可以在服务器参数中设置参数。
+launch 文件是一个 XML 格式的文件，可以启动本地和远程的多个节点，还可以在服务器参数中设置参数。
 
 ##### 作用
 
-简化节点的配置和启动，提高ROS程序的启动效率。
+简化节点的配置和启动，提高 ROS 程序的启动效率。
 
 ## 4.2 调用 launch 文件
 
