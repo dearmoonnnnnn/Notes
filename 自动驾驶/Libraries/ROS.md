@@ -1145,6 +1145,55 @@ roslaunch 包名 xxx.launch
     ROS_INFO("Output bag: %s", output_bag.c_str());
 ```
 
+## 4.5 控制节点启动顺序
+
+##### 动机
+
+- `launch` 启动多个节点，节点的顺序是非确定性的。
+- 有时需要指定节点启动顺序，确保播放 `bag` 的节点在启动节点启动完成后再启动。
+
+### 4.5.1 `<group>` 标签 + 延迟启动
+
+```xml
+<launch>
+    <group>
+        <!-- 优先启动第一个节点 -->
+        <node name="node_1" pkg="pkg_1" type="node_1" output="screen" />
+    </group>
+    <group>
+        <!-- 延迟启动第二个节点，等待前一个节点完成初始化 -->
+        <node name="node_2" pkg="pkg_2" type="node_2" output="screen" />
+        <param name="required_param" value="value" />
+    </group>
+</launch>
+```
+
+### 4.5.2 设置 `required` 属性
+
+```bash
+<launch>
+    <!-- 第一个节点 -->
+    <node name="node_1" pkg="pkg_1" type="node_1" output="screen" required="true" />
+
+    <!-- 第二个节点（此节点会等待 node_1） -->
+    <node name="node_2" pkg="pkg_2" type="node_2" output="screen" />
+</launch>
+```
+
+### 4.5.3 添加延迟
+
+```bash
+<launch>
+    <!-- 优先启动第一个节点 -->
+    <node name="node_1" pkg="pkg_1" type="node_1" output="screen" />
+
+    <!-- 第二个节点延迟 5 秒启动 -->
+    <node name="node_2" pkg="pkg_2" type="node_2" output="screen">
+        <param name="launch_delay" value="5" />
+    </node>
+</launch>
+```
+
 # 五、rosbag
 
 http://wiki.ros.org/rosbag
