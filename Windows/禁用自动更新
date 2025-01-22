@@ -1,0 +1,5 @@
+- 按下“Win+R”键，输入“regedit”并回车。
+- 在注册表编辑器中，导航到以下路径：HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows。
+- 右键点击Windows文件夹，选择“新建”>“项”，命名为“WindowsUpdate”。
+- 在该文件夹下新建“AU”项，并在其右侧空白处新建“DWORD(32位)值”，命名为“NoAutoUpdate”，将数值数据设置为1。
+- 关闭注册表编辑器并重启电脑
