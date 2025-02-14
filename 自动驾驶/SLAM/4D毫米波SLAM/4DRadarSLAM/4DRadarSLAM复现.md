@@ -8,9 +8,9 @@
    sudo apt-get install ros-XXX-geodesy ros-XXX-pcl-ros ros-XXX-nmea-msgs ros-XXX-libg2o
    ```
 
-   根据ROS版本，将`XXX`替换为`melodic`或者`noetic`
+   根据ROS版本，将 `XXX` 替换为 `melodic` 或者 `noetic`
 
-3. 安装第三方库 GTSAM，源码方式，版本选择为`4.0.3`
+3. 安装第三方库 GTSAM，源码方式，版本选择为 `4.0.3`
 
    ```bash
     git clone -b 4.0.3 https://github.com/borglab/gtsam.git
@@ -75,11 +75,11 @@
 ## 1.1 Ubuntu和ROS
 
 - Ubuntu 64位 18.04 或 20.04
-  - 选择ubuntu20.04，代码成功率更高
+  - 选择 ubuntu20.04，代码成功率更高
 
 - ROS Melodic 或 Noetic
-  - ubuntu18.04安装ros melodic
-  - ubuntu20.04安装ros noetic                                                  
+  - ubuntu18.04 安装 ros melodic
+  - ubuntu20.04 安装 ros noetic                                                  
 
 ## 1.2 第三方库
 
@@ -97,7 +97,7 @@
 
 - ndt_omp :在src中，`git clone https://github.com/koide3/ndt_omp.git`
 
-- GTSAM:不能在src中使用`catkin_make`，联合编译，使用源码安装方法，版本选择为`4.0.3`
+- GTSAM:不能在src中使用 `catkin_make`，联合编译，使用源码安装方法，版本选择为 `4.0.3`
 
   ```bash
    git clone -b 4.0.3 https://github.com/borglab/gtsam.git
@@ -366,7 +366,7 @@ CMake Error at /opt/ros/melodic/share/catkin/cmake/catkin_workspace.cmake:100 (m
 
 ##### 原因分析：
 
-ros中包含catkin_make不支持的包
+ros 中包含 catkin_make 不支持的包
 
 ##### 解决方法：
 
