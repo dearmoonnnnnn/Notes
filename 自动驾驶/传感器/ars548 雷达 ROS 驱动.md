@@ -2,7 +2,7 @@
 
 ## 概念：
 
-##### 1、RCS
+##### 1. RCS
 
 - 定义：
 
@@ -28,11 +28,11 @@
 
 ## 问题：
 
-##### 1、ars548_process_node 未接受到网口数据，从网口读数据的代码在哪？
+##### 1. ars548_process_node 未接受到网口数据，从网口读数据的代码在哪？
 
 源代码未给出,需要在 `receiveThread()` 函数中添加
 
-##### 2、在 ars548_process 包中添加了一个文件，需要在哪些文件中配置，才能与 ROS 适配
+##### 2. 在 ars548_process 包中添加了一个文件，需要在哪些文件中配置，才能与 ROS 适配
 
 当你在 ROS 包中添加新文件时，为了确保`catkin_make`可以正确地编译和链接这些文件，你可能需要更新以下文件：
 
@@ -67,17 +67,17 @@
 
 记住，当添加新文件或进行大的更改时，为了避免构建问题，有时最好在`catkin_make`之前清理构建和devel目录。但要小心，因为这样会删除所有的编译输出和设置的环境。
 
-##### 3、ProcessRadarData函数，如何传递
+##### 3. ProcessRadarData函数，如何传递
 
-##### 4、为什么 obj 有 header 成员，而 obj_list 没有，添加时间戳的代码应该在 obj 中还是obj_list 中
+##### 4. 为什么 obj 有 header 成员，而 obj_list 没有，添加时间戳的代码应该在 obj 中还是obj_list 中
 
-##### 5、从 bag 转换为t xt 文件后,第一行显示了 point 的数量，但是从 wireshark 可知每一帧的点云数量不一样，那么第一行的点的数量由什么决定呢?
+##### 5. 从 bag 转换为t xt 文件后,第一行显示了 point 的数量，但是从 wireshark 可知每一帧的点云数量不一样，那么第一行的点的数量由什么决定呢?
 
 在将 bag 文件转换为 txt 文件时，第一行显示的点是读取的 bag 文件第一个点云消息的点数量。
 
 第一行的点数量不代表所有点云消息的实际数量，因为每一帧的点云数量可能不一样。
 
-##### 6、在 info_convert_node 文件的回调函数中添加输出， 命令行不显示输出
+##### 6. 在 info_convert_node 文件的回调函数中添加输出， 命令行不显示输出
 
 `ars548_process.lanuch` 文件中，启动 `info_convert_node` 时未添加参数：`output="screen"`
 
@@ -146,7 +146,7 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 
 # 二、根据 ARS548-demo 实现
 
-## 1、整体思路：
+## 1. 整体思路：
 
 ##### 两个项目：
 
@@ -172,7 +172,7 @@ Convert::Convert(ros::NodeHandle node, ros::NodeHandle private_nh, std::string n
 - nlohmann-json库
 - wireshark
 
-## 2、RosDriverForARS548
+## 2. RosDriverForARS548
 
 ##### 代码地址：
 
@@ -182,7 +182,7 @@ https://github.com/wulang584513/ARS548-demo/tree/master
 
 https://github.com/letMeEmoForAWhile/RosDriverForARS548
 
-### 2.1、如何读取数据流
+### 2.1 如何读取数据流
 
 ##### 动机：
 
@@ -235,7 +235,7 @@ https://github.com/letMeEmoForAWhile/RosDriverForARS548
   [1, "apple", true, null, {"color": "red"}]
   ```
 
-##### 2.2.2 C++ 读取 json 文件
+##### 2.1.2 C++ 读取 json 文件 | 安装 nlohmann 库
 
 1. 将 wireshark 解析结果保存在 json 文件
 
@@ -270,7 +270,7 @@ https://github.com/letMeEmoForAWhile/RosDriverForARS548
    - 在 `nlohmann::json` 库中，JSON对象、数组、字符串、数字、布尔值和null都是使用 `nlohmann::json` 类型来表示的。
    - 当你通过索引、键或其他方法访问 `nlohmann::json` 对象中的元素时，返回的仍然是 `nlohmann::json` 类型，不过其内部的实际数据可能是字符串、数字、布尔值、数组、对象或null。
 
-### 2.2、修改发布的点云消息，使其包含多普勒速度和强度信息
+### 2.2 修改发布的点云消息，使其包含多普勒速度和强度信息
 
 ##### 动机：
 
@@ -471,7 +471,7 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 }
 ```
 
-### 2.3、test_radar_input_node 报错
+### 2.3 test_radar_input_node 报错
 
 - 暂时用不到该节点
 
@@ -488,9 +488,9 @@ void detectionReceive(const ars548_msg::DetectionList& msg)
 
 ## 3、rosbag_tools
 
-##### 动机：为什么不直接使用`rosbag record -a`
+##### 动机：为什么不直接使用 `rosbag record -a`
 
-如果直接使用 `rosbag record -a`记录数据，会使用当前时间作为时间戳。后续再重放数据时，使用的时间戳也为 record 时的时间，而不是消息头部中的stamp。
+如果直接使用 `rosbag record -a` 记录数据，会使用当前时间作为时间戳。后续再重放数据时，使用的时间戳也为 record 时的时间，而不是消息头部中的stamp。
 
 ##### 代码地址：
 
@@ -539,7 +539,7 @@ int main(int argc, char **argv) {
 
 ### 零、配置环境
 
-##### 1、安装 ROS
+##### 1. 安装 ROS
 
 参考如下链接：
 
@@ -549,7 +549,7 @@ int main(int argc, char **argv) {
 
 Autolabor（推荐）：http://www.autolabor.com.cn/book/ROSTutorials/chapter1/12-roskai-fa-gong-ju-an-zhuang/124-an-zhuang-ros.html
 
-##### 2、安装 wireshark
+##### 2. 安装 wireshark
 
 1. 安装 wireshark 软件
 
@@ -573,11 +573,11 @@ Autolabor（推荐）：http://www.autolabor.com.cn/book/ROSTutorials/chapter1/1
 
    重启 `wireshark`
 
-##### 3、安装 nlohmann
+##### 3. 安装 nlohmann
 
-见2.2.2
+见 2.1.2
 
-##### 4、安装 libpcap
+##### 4. 安装 libpcap
 
 `RosDriverForARS548` 需要该库。
 
@@ -587,7 +587,7 @@ sudo apt-get install libpcap-dev
 
 ### 一、使用 wireshark 将传感器数据转换为 json 文件
 
-##### 1、使用 wireshark 打开抓取的 pcapng 文件
+##### 1. 使用 wireshark 打开抓取的 pcapng 文件
 
 雷达厂商提供了传感器的 lua 插件，可以直接过滤，只保留 `detectionlist` 数据
 
@@ -602,17 +602,17 @@ sudo apt-get install libpcap-dev
   - 查证可知，其他 4D 毫米波数据集中， RCS 存在很多负值。
 - 应该使用 `int8_t`转换对应的 RCS 字节流数据，转换后取值范围为 [-128, 127] 
 
-##### 2、导出解析结果为 JSON 格式
+##### 2. 导出解析结果为 JSON 格式
 
 ![](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-2024-01-19-16:16:54.png)
 
 ### 二、RosDriverForARS548
 
-##### 0、修改路径
+##### 0. 修改路径
 
 在 `ars548_process_node.cpp` 中修改 `json_file_path` 为步骤一中的 `json` 文件路径
 
-##### 1、编译
+##### 1. 编译
 
 1）下载项目：
 
@@ -646,7 +646,7 @@ source PATH_TO_RosDriverForARS548_FOLDER/devel/setup.bash
 source ~/.bashrc
 ```
 
-##### 2、运行
+##### 2. 运行
 
 启动节点
 
@@ -656,11 +656,11 @@ roslaunch ars548_process ars548_process.launch
 
 ### 三、rosbag_tools
 
-##### 0、修改路径
+##### 0. 修改路径
 
 在 `rosbag_recorder.cpp` 中修改`bag.open()`参数为输出的bag文件路径。
 
-##### 1、编译
+##### 1. 编译
 
 1）下载项目：
 
@@ -690,7 +690,7 @@ source PATH_TO_rosbag_recorder_FOLDER/devel/setup.bash
 source ~/.bashrc
 ```
 
-##### 2、运行
+##### 2. 运行
 
 先启动 `RosDriverForARS548`，再启动该项目
 
