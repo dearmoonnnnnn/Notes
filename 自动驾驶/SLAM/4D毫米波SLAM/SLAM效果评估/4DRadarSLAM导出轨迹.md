@@ -75,6 +75,8 @@
 
 运行 SLAM 时，使用 ROS record 记录轨迹话题：`/radar_graph_slam/aftmapped_odom`
 
+- 注意：每个SLAM系统的轨迹话题不一样
+
 ```bash
 rosbag record -O stamped_traj_estimate.bag /radar_graph_slam/aftmapped_odom
 ```

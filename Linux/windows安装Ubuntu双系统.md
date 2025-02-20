@@ -169,6 +169,8 @@ sudo apt install browser-plugin-freshplayer-pepperflash
 
 在显卡配置文件中添加对应内：https://zhuanlan.zhihu.com/p/348624522?utm_id=0
 
+- 无效
+
 
 https://www.cnblogs.com/zl-yang/p/13073356.html
 

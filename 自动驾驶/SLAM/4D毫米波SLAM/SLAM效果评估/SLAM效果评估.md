@@ -431,9 +431,37 @@ python2 analyze_trajectory_single.py <result_folder>
 - 基于 SIM(3) 对齐的平移误差，表示轨迹估计中平移部分的误差。
 - 用于评估在不同位置上的平移误差，尤其在包含尺度调整过的对齐过程中，平移误差的表现。
 
+# 三、格式转换
+
+##### 1. `.bag` 转为 `.txt`
+
+```bash
+# 提取轨迹到 TUM 格式的 txt 文件（时间戳 + xyz + 四元数）
+rosrun evo_ros bag_topic_to_txt /path/to/your.bag /slam_pose slam_traj_tum.txt --tum
+```
+
+- `/path/to/your.bag` ：存储轨迹的 `bag` 文件
+- `/slam_pose` : 轨迹的话题
+
+##### 2. `.txt` 转为 `.tum`
+
+- 只需直接更改文件后缀为 `.tum`
+
+- 注意事项
+
+  - 数据格式是否为 `tum` 格式，即每一行表示 
+
+    `timestamp tx ty tz qx qy qz qw`
+
+  - 四元数是否已经归一化
+  - 是否已经去除标题行
+    - 若第一行是 `timestamp tx ty tz qx qy qz qw`，则需要去除。
 
 
-# 三、评估 4DRadarSLAM
+
+# 四、评估 4DRadarSLAM
+
+## 1. 导出 SLAM 轨迹
 
 [导出轨迹](./4DRadarSLAM导出轨迹.md)：
 
@@ -447,11 +475,9 @@ python2 analyze_trajectory_single.py <result_folder>
 - 数据格式：tum 格式 
   - timestamp tx ty tz qx qy qz qw
 
+## 2. 绘制轨迹对比图
 
-
-
-
-运行 `rpg`
+### 2.1  `rpg` 
 
 ```bash
 source devel/setup.bash
@@ -463,7 +489,84 @@ python2 analyze_trajectory_single.py <result_folder>
 - `stamped_groundtruth.txt`
 - `stamped_traj_estimate.txt`
 
+### 2.2 evo 
 
+将存储的轨迹 `bag` 文件转换为 `evo` 可用格式
 
+```bash
+evo_traj bag XRGB.bag /radar_graph_slam/aftmapped_odom --save_as_tum
+```
 
+绘制轨迹
 
+```bash
+evo_traj tum aft_mapped_to_init.tum -p
+```
+
+- 增加真值
+
+  ```bash
+  evo_traj tum aft_mapped_to_init.tum --ref=ground_truth.tum -p --plot_mode=xz
+  ```
+
+  
+
+## 3. 定量数据评估
+
+### 3.2 evo
+
+#### 3.2.1 计算 ATE | 绝对轨迹误差
+
+```bash
+evo_ape tum ground_truth.tum slam_traj.tum -va --plot --save_results results/ate.zip
+```
+
+- 关键参数
+  - `-va` : 显示详细的统计信息（RMSE、均值、中位数等）
+  - `--plot`  ：生成轨迹对比图和误差分布图
+  - `--save_result` : 保存结果以便后续分析
+
+#### 3.2.2 计算 RPE | 相对轨迹误差
+
+```bash
+evo_rpe tum ground_truth.tum slam_traj.tum -va --plot --save_results results/rpe.zip
+```
+
+#### 3.2.3 常见问题
+
+##### 问题 1：时间戳不同步
+
+- **现象**：轨迹和真值的时间戳未对齐，导致评估错误。
+
+- 解决：使用 `--t_offset` 和 `--t_max_diff` 调整时间偏移：
+
+  ```bash
+  evo_ape tum ground_truth.tum slam_traj.tum --t_offset 0.5 --t_max_diff 0.02
+  ```
+
+  - `--t_offset`：时间偏移补偿（例如真值比轨迹晚 0.5 秒）。
+  - `--t_max_diff`：允许的最大时间戳差异（超出此值的帧会被忽略）。
+
+##### 问题 2：坐标系方向不一致
+
+- **现象**：轨迹与真值的坐标系方向不匹配（例如 z 轴朝上 vs. y 轴朝上）。
+
+- 解决：使用 `--transform` 参数对齐坐标系：
+
+  ```bash
+  evo_ape tum ground_truth.tum slam_traj.tum --transform_gt 0,0,0,0,0,0,1,0,0,0,1,0
+  ```
+
+  - `--transform_gt`：对真值应用变换矩阵（参数为 12 维，对应 4x4 变换矩阵的前三行）。
+
+##### 问题 3：单目 SLAM 的尺度问题
+
+- **现象**：单目 SLAM 轨迹缺少绝对尺度，导致轨迹与真值尺度不一致。
+
+- 解决：使用 `--align` 和 `--correct_scale` 进行尺度对齐：
+
+  ```bash
+  evo_ape tum ground_truth.tum slam_traj.tum --align --correct_scale
+  ```
+
+  
