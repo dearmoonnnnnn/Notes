@@ -1,11 +1,5 @@
 # 零、windos安装ubuntu双系统
 
-## 相关资料：
-
-[Windows 10 安装ubuntu 18.04 双系统（超详细教程）_安装ubuntu双系统-CSDN博客](https://blog.csdn.net/qq_43106321/article/details/105361644)
-
-[【精选】【Ubuntu18.04分区分配方式推荐与详解】-CSDN博客](https://blog.csdn.net/qq_29960631/article/details/123369207)
-
 ## 问题：
 
 ##### 1、什么是efi系统分区，应该分配多大空间
@@ -38,7 +32,21 @@ ubuntu20.04：
 
 电脑硬件过新，18.04内核过低，无法识别显示器、声卡、wifi等驱动，安装20.04一劳永逸
 
-## 遇到的问题
+# 一、安装 Ubuntu
+
+[Windows 10 安装ubuntu 18.04 双系统（超详细教程）_安装ubuntu双系统-CSDN博客](https://blog.csdn.net/qq_43106321/article/details/105361644)
+
+[【精选】【Ubuntu18.04分区分配方式推荐与详解】-CSDN博客](https://blog.csdn.net/qq_29960631/article/details/123369207)
+
+
+
+# 二、删除Ubuntu系统
+
+[【Linux卸载】Win10卸载Ubuntu双系统（不安装任何软件）_怎么卸载ubuntu系统_百里飞洋的博客-CSDN博客](https://blog.csdn.net/qq_51513895/article/details/128614127)
+
+
+
+# 三、遇到的问题
 
 ### 1、没有无线驱动
 
@@ -181,6 +189,3 @@ uname -r
 
 教程中升级到5.9，这里选择升级到5.19
 
-## 删除Ubuntu系统
-
-[【Linux卸载】Win10卸载Ubuntu双系统（不安装任何软件）_怎么卸载ubuntu系统_百里飞洋的博客-CSDN博客](https://blog.csdn.net/qq_51513895/article/details/128614127)
