@@ -163,7 +163,7 @@ GICP：由于4D毫米波雷达具有更多噪声，不能直接提取几何特�
 
 将每一个点的空间概率分布考虑到GICP中，提出自适应概率分布GICP(Adaptive Probability Distribution-GICP，APDGICP)
 
-==// TO DO LIST==
+==// TO DO==
 
 ### 2.1.2 关键帧的选择
 

@@ -182,3 +182,34 @@ sudo apt install texlive-full
 
 # 五、表格
 
+- [Convert Excel to LaTeX Table Online - Table Convert Online](https://tableconvert.com/excel-to-latex)
+- [Create LaTeX tables online – TablesGenerator.com](https://www.tablesgenerator.com/)
+
+
+
+
+
+# 六、图片
+
+示例
+
+```latex
+\begin{figure}[H] 
+\centerline{\includegraphics[width=3.35in]{chapters/ch4_figs/Dynamic_algorithm_flow_chart.eps}}
+\caption{动态Constrained-LSRE定位算法流程框图}
+\label{fig:Dynamic_algorithm_flow_chart}
+\end{figure}
+```
+
+- 图片位置表示
+  - H
+    - 浮动体位置完全固定
+  - htbp
+    - h：尝试将浮动体放置在代码插入的当前位置
+    - t：尝试放置在当前页面的顶部
+    - b：尝试放置在当前页面的底部
+    - p：将浮动体单独放置在一个浮动页。
+    - htbp：按优先级依次尝试上述位置
+- h！
+  - ！：临时放宽排版限制
+  - 建议 LaTeX 优先放置在当前位置，但 LaTeX 仍可能根据排版规则浮动到其他位置。
