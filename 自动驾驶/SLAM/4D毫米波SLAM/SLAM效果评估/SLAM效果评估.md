@@ -506,7 +506,7 @@ evo_traj tum aft_mapped_to_init.tum -p
 - 增加真值
 
   ```bash
-  evo_traj tum aft_mapped_to_init.tum --ref=ground_truth.tum -p --plot_mode=xz
+  evo_traj tum aft_mapped_to_init.tum --ref=ground_truth.tum -p --plot_mode=xzy
   ```
 
   
