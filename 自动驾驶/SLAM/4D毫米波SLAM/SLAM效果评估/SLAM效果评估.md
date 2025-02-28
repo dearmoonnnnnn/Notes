@@ -178,15 +178,21 @@ https://github.com/letMeEmoForAWhile/Notes/blob/main/%E8%87%AA%E5%8A%A8%E9%A9%BE
 
 APE+RPE
 
-##### 安装：
+##### 安装1：pip
 
-1. 创建虚拟环境`python3.8`
+1. 创建虚拟环境 `python3.8`
 
 2. pip安装
 
    ```bash
    sudo python -m pip install evo --upgrade --no-binary evo  # or python2, python3...
    ```
+
+##### 安装2：源码安装
+
+- pip 安装只有核心库
+
+  
 
 ##### 可用的数据格式：
 
@@ -433,7 +439,9 @@ python2 analyze_trajectory_single.py <result_folder>
 
 # 三、格式转换
 
-##### 1. `.bag` 转为 `.txt`
+##### 1. `bag` 转为 `tum`
+
+若使用ROS版
 
 ```bash
 # 提取轨迹到 TUM 格式的 txt 文件（时间戳 + xyz + 四元数）
@@ -442,6 +450,16 @@ rosrun evo_ros bag_topic_to_txt /path/to/your.bag /slam_pose slam_traj_tum.txt -
 
 - `/path/to/your.bag` ：存储轨迹的 `bag` 文件
 - `/slam_pose` : 轨迹的话题
+
+
+
+若使用 python 版
+
+```bash
+evo_traj bag /path/to/your.bag /topic_name --save_as_tum
+```
+
+
 
 ##### 2. `.txt` 转为 `.tum`
 
