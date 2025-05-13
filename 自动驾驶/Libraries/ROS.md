@@ -1604,7 +1604,7 @@ bool is_dense
 ##### 6.1.4、pcl::PointCloud\<T> —— 标准的 PCL 数据结构
 
 - PCL 中用于点云的标准且最常用的数据结构。
-- 是模板化的，其中 `T` 是点的类型，例如 `pcl::PointXYZ`、`pcl::PointXYZRGB`、`pcl::PointNormal` 等。
+- 是模板化的，其中 `T` 是点的类型，例如 `pcl::PointXYZ`、`pcl::PointXYZRGB`、`。` 等。
 - 提供了许多方便的方法，允许轻松访问点。
 - 旨在为点云处理任务提供高效和用户友好的方式。
 
