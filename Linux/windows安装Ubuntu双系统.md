@@ -96,6 +96,65 @@ git clone https://github.com/intel/backport-iwlwifi.git
 
 - 重启电脑后就能看到无线连接选项。PS：不要删除驱动，后续再出现该问题，直接在对应路径下安装驱动即可。
 
+报错:
+
+```cpp
+/include/linux/compiler.h:253: note: this is the location of the previous definition
+253 | #define is\_signed\_type(type) (((type)(-1)) < (\_\_force type)1)
+|
+/home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.c: In function ‘nl80211\_common\_reg\_change\_event’:
+/home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.c:17625:2: error: too many arguments to function ‘genlmsg\_multicast\_allns’
+17625 |  genlmsg\_multicast\_allns(\&nl80211\_fam, msg, 0,
+\|  ^\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
+In file included from /home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/backport-include/net/genetlink.h:3,
+from /home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.c:25:
+./include/net/genetlink.h:342:5: note: declared here
+342 | int genlmsg\_multicast\_allns(const struct genl\_family \*family,
+\|     ^\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
+/home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.c: In function ‘nl80211\_send\_beacon\_hint\_event’:
+/home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.c:18246:2: error: too many arguments to function ‘genlmsg\_multicast\_allns’
+18246 |  genlmsg\_multicast\_allns(\&nl80211\_fam, msg, 0,
+\|  ^\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
+In file included from /home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/backport-include/net/genetlink.h:3,
+from /home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.c:25:
+./include/net/genetlink.h:342:5: note: declared here
+342 | int genlmsg\_multicast\_allns(const struct genl\_family \*family,
+\|     ^\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
+make\[6]: \*\*\* \[scripts/Makefile.build:297：/home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.o] 错误 1
+make\[5]: \*\*\* \[scripts/Makefile.build:560：/home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev/net/wireless] 错误 2
+make\[4]: \*\*\* \[Makefile:1910：/home/dearmoon/library/backport-iwlwifi/iwlwifi-stack-dev] 错误 2
+make\[3]: \*\*\* \[Makefile.build:13：modules] 错误 2
+make\[2]: \*\*\* \[Makefile.real:100：modules] 错误 2
+make\[1]: \*\*\* \[Makefile:43：modules] 错误 2
+make: \*\*\* \[Makefile:30：default] 错误 2
+```
+
+
+
+错误原因：
+
+这个编译错误是由于函数 `genlmsg_multicast_allns()` 的调用参数不兼容引起的，原因是 **你正在编译的 iwlwifi backport 驱动使用了旧版接口，而你当前的内核头文件已经更新为新版接口**。
+
+
+
+解决方案：
+
+在 `/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.c` 文件中，找到报错的这两个函数调用（`nl80211_common_reg_change_event` 和 `nl80211_send_beacon_hint_event`），然后修改 `genlmsg_multicast_allns(...)` 的调用参数，将第 4 个参数 `GFP_KERNEL` 删除。
+
+例如，把：
+
+```bash
+genlmsg_multicast_allns(&nl80211_fam, msg, 0, GFP_KERNEL);
+```
+
+修改为：
+
+```bash
+genlmsg_multicast_allns(&nl80211_fam, msg, 0);
+```
+
+
+
 ##### 适用于ubuntu18.04
 
 https://blog.csdn.net/m0_74397934/article/details/134809876
