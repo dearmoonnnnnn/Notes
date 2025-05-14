@@ -213,3 +213,25 @@ sudo apt install texlive-full
 - h！
   - ！：临时放宽排版限制
   - 建议 LaTeX 优先放置在当前位置，但 LaTeX 仍可能根据排版规则浮动到其他位置。
+
+
+
+
+
+# 七、下划线
+
+在导言区加入
+
+```
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+```
+
+
+
+正文即可使用 `\ul` 命令加下划线
+
+```
+\ul{文字}
+```
+
