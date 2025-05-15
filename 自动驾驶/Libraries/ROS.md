@@ -1422,6 +1422,12 @@ rosbag filter input.bag output.bag "topic != '/topic1' && topic != '/topic2'"
 
 保留话题：使用 `==`
 
+保留多个话题：使用 `or`
+
+```bash
+rosbag filter yxbdbgs23.bag 23l.bag "topic == '/livox/lidar' or topic == '/livox/imu'"
+```
+
 
 
 ## 5.5 rosbag record
