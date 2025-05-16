@@ -183,7 +183,7 @@ step2：在空白卷下新建一个文件夹，设置属性为共享，并添加
 
 ## 4.1 安装软件
 
-### A 、使用安装包(dep等)
+### A 、使用安装包(deb等)
 
 ##### 选择对应的版本
 
@@ -225,15 +225,53 @@ ubuntu卸载和安装 https://blog.csdn.net/Laney_Midory/article/details/1206866
 
 https://blog.csdn.net/qq_42170079/article/details/130770073
 
-### A 卸载源码安装的软件
+### 4.2.1 卸载源码安装的软件
 
-在你make install的文件下面输入:
+在 make install 的文件下面输入:
 
 ```
 sudo make uninstall
 ```
 
 然后删除源码即可
+
+### 4.2.2 卸载 deb 安装的软件
+
+1. 确认包名（注意不是 deb 文件名）
+
+   ```bash
+   dpkg -l | grep <关键字>
+   ```
+
+   返回
+
+   ```go
+   ii  example-package-name   1.0.0   amd64   Example description
+   ```
+
+   - `example-package-name` 就是包名
+
+2. 卸载
+
+   ```bash
+   sudo dpkg -r example-package-name
+   ```
+
+   若要彻底清除配置文件等
+
+   ```bash
+   sudo dpkg -P example-package-name
+   ```
+
+3. 若有依赖错误
+
+   ```bash
+   sudo apt-get -f install   # 自动修复依赖
+   ```
+
+   
+
+
 
 # 五、NVIDIA驱动
 
