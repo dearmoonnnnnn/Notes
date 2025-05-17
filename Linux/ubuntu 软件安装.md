@@ -114,7 +114,7 @@ https://blog.csdn.net/lt9700/article/details/127979193
 
 参考链接：https://blog.csdn.net/qq_62517226/article/details/128708656
 
-## 1、 windows下的操作
+## 1. windows下的操作
 
 step1：新建空白卷
 
@@ -134,7 +134,7 @@ step2：在空白卷下新建一个文件夹，设置属性为共享，并添加
 
 ![image-20230403173317039](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20230403173317039.png)
 
-## 2、linux下的操作
+## 2. linux下的操作
 
 1. 查看磁盘信息，找到新加卷E盘对应的分区
 
@@ -175,15 +175,15 @@ step2：在空白卷下新建一个文件夹，设置属性为共享，并添加
    df -kh
    ```
 
-## 3、结语
+## 3. 结语
 
 成功实现共享文件夹在挂载磁盘下的情况，既可以实现软件的迁移使用，又能和windows实现文件的传输。
 
 # 四、Ubuntu安装与卸载软件
 
-## 4.1 安装软件
+## 1. 安装软件
 
-### A 、使用安装包(deb等)
+### 1.1 使用安装包(deb等)
 
 ##### 选择对应的版本
 
@@ -211,21 +211,21 @@ sudo dpkg -i package_name.deb
 
 
 
-### B、源码安装
+### 1.2 源码安装
 
 手动编译、安装
 
-### C、apt安装
+### 1.3 apt安装
 
 apt是ubuntu的包管理工具
 
-## 4.2、Ubuntu卸载软件
+## 2. Ubuntu卸载软件
 
 ubuntu卸载和安装 https://blog.csdn.net/Laney_Midory/article/details/120686618
 
 https://blog.csdn.net/qq_42170079/article/details/130770073
 
-### 4.2.1 卸载源码安装的软件
+### 2.1 卸载源码安装的软件
 
 在 make install 的文件下面输入:
 
@@ -235,7 +235,7 @@ sudo make uninstall
 
 然后删除源码即可
 
-### 4.2.2 卸载 deb 安装的软件
+### 2.2 卸载 deb 安装的软件
 
 1. 确认包名（注意不是 deb 文件名）
 
@@ -271,10 +271,13 @@ sudo make uninstall
 
    
 
-## 4.3 CMakeList 指定版本
+## 3. CMakeList 指定版本
 
-```
-
+```cmake
+find_package(Eigen3 REQUIRED)
+find_package(PCL 1.10 REQUIRED)
+find_package(OpenCV 4.2 REQUIRED)
+find_package(Ceres REQUIRED)
 ```
 
 
@@ -287,21 +290,21 @@ sudo make uninstall
 ubuntu-drivers devices
 ```
 
-## 5.1 安装驱动
+## 1. 安装驱动
 
 三种方法
 
-### A、官方下载
+### 1.1 官方下载
 
-### B、ubuntu自带的“附加驱动”中安装
+### 1.2 ubuntu自带的“附加驱动”中安装
 
-### C、apt安装
+### 1.3 apt安装
 
-## 5.2 卸载
+## 2. 卸载
 
 两种方法
 
-### A、进入系统的路径/usr/bin,然后查看与nvidia相关的命令
+### 2.1 进入系统的路径/usr/bin,然后查看与nvidia相关的命令
 
 ```bash
 ls nvidia-*
@@ -309,7 +312,7 @@ ls nvidia-*
 
 若显示结果有`nvidia-uninstall`，则可以使用该命令卸载。
 
-### B、直接使用系统自带的命令卸载
+### 2.2 直接使用系统自带的命令卸载
 
 ```bash
 sudo apt-get remove --purge nvidia*
