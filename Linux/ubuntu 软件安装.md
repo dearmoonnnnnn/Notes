@@ -271,6 +271,12 @@ sudo make uninstall
 
    
 
+## 4.3 CMakeList 指定版本
+
+```
+
+```
+
 
 
 # 五、NVIDIA驱动
