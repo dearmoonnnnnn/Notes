@@ -1353,9 +1353,9 @@ rosbag filter input2.bag output2.bag "topic == '/your_topic'"
 rosbag merge output1.bag output2.bag merged_output.bag
 ```
 
-这里的`/your_topic`是您要融合的特定话题。首先，使用`rosbag filter`从两个输入文件中提取特定话题的消息到两个输出文件中。然后，使用`rosbag merge`将这两个输出文件合并为一个文件。
+这里的 `/your_topic` 是您要融合的特定话题。首先，使用 `rosbag filter` 从两个输入文件中提取特定话题的消息到两个输出文件中。然后，使用 `rosbag merge` 将这两个输出文件合并为一个文件。
 
-请确保将`input1.bag`、`input2.bag`和`merged_output.bag`替换为实际的文件名和路径。
+请确保将 `input1.bag`、`input2.bag` 和 `merged_output.bag` 替换为实际的文件名和路径。
 
 ### 5.4.2 两个 bag 文件合并为一个，并保留需要的所有话题
 
