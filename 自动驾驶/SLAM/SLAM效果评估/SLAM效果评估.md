@@ -174,7 +174,7 @@ https://github.com/letMeEmoForAWhile/Notes/blob/main/%E8%87%AA%E5%8A%A8%E9%A9%BE
   https://blog.csdn.net/Android_WPF/article/details/132589717
 
 
-# 一、evo (APE + RPE)
+# 一、evo (APE/ATE + RPE)
 
 APE+RPE
 
