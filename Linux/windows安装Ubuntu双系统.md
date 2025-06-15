@@ -48,7 +48,7 @@ ubuntu20.04：
 
 # 三、遇到的问题
 
-### 1、没有无线驱动
+### 1. 没有无线驱动
 
 - [双系统装完之后，Ubuntu系统连不上WIFI的问题 - 代码先锋网 (codeleading.com)](https://codeleading.com/article/42485056591/)
 - [ubuntu18.04安装后没有wifi - CSDN文库](https://wenku.csdn.net/answer/b74e7077e0d19b293da066a3e293277e)
@@ -96,7 +96,7 @@ git clone https://github.com/intel/backport-iwlwifi.git
 
 - 重启电脑后就能看到无线连接选项。PS：不要删除驱动，后续再出现该问题，直接在对应路径下安装驱动即可。
 
-报错:
+##### 报错:
 
 ```cpp
 /include/linux/compiler.h:253: note: this is the location of the previous definition
@@ -137,7 +137,7 @@ make: \*\*\* \[Makefile:30：default] 错误 2
 
 
 
-解决方案：
+##### 解决方案：
 
 在 `/backport-iwlwifi/iwlwifi-stack-dev/net/wireless/nl80211.c` 文件中，找到报错的这两个函数调用（`nl80211_common_reg_change_event` 和 `nl80211_send_beacon_hint_event`），然后修改 `genlmsg_multicast_allns(...)` 的调用参数，将第 4 个参数 `GFP_KERNEL` 删除。
 
@@ -162,11 +162,11 @@ https://blog.csdn.net/m0_74397934/article/details/134809876
 - 更新linux内核
 - 下载驱动
 
-### 2、扩展显示屏无法使用
+### 2. 扩展显示屏无法使用
 
 折腾了很久，由于电脑不支持独显直连，最终无法实现扩展屏和内置屏同时使用。
 
-### 3、触摸板失效
+### 3. 触摸板失效
 
 ![image-20231216192315752](https://raw.githubusercontent.com/letMeEmoForAWhile/typoraImage/main/img/image-20231216192315752.png)
 
@@ -201,7 +201,7 @@ sudo apt install xserver-xorg-input-synaptics
 
 失败，且出现登陆成功后无法使用鼠标和键盘的问题。
 
-### 4、浏览器无法播放视频
+### 4. 浏览器无法播放视频
 
 ##### 描述：
 
@@ -222,7 +222,7 @@ sudo apt install browser-plugin-freshplayer-pepperflash
 
 
 
-### 5、无法修改亮度
+### 5. 无法修改亮度
 
 ##### 解决方法：
 
