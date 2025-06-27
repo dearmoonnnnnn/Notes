@@ -1162,11 +1162,11 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
 
 - 描述
   - 估计雷达扫描中的自我速度
-  - 先通过一定策略找到有效点`valid_targets`
+  - 先通过一定策略找到有效点 `valid_targets`
   - 若有效点大于2
     - 计算去除一定比例的异常值（`outlier`）后的剩余点数量n
-    - 对多普勒速度值进行排序，找到第n个中位数元素，并将这个多普勒速度值存在`median`中
-      - 若`median`小于零速度阈值，则认为自我速度为零，将v_r设置为0，并将速度满足零速度阈值的点添加到内点点云。
+    - 对多普勒速度值进行排序，找到第n个中位数元素，并将这个多普勒速度值存在`median` 中
+      - 若 `median` 小于零速度阈值，则认为自我速度为零，将v_r设置为0，并将速度满足零速度阈值的点添加到内点点云。
       - 若不小于零
         - 若使用ransac，使用RANSAC算法解决3D问题
         - 若不使用ransac，直接将所有点作为内点
@@ -1246,7 +1246,7 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
      - 四个通道
        - 通道名称：`field.channels[0-4].name`
        - 通道中每个点的值：`field.channels[0-4].values[0-6555]`
-       - 由`cloud_callback`可知，`channels[0].value[i]`表示点`i`的多普勒速度，`channels[2].value[i]`表示点`i`的信号强度。
+       - 由 `cloud_callback` 可知，`channels[0].value[i]` 表示点 `i` 的多普勒速度，`channels[2].value[i]` 表示点 `i` 的信号强度。
 
 - 查看自己数据的消息内容
 
@@ -1287,7 +1287,7 @@ ROS参数服务器的配置文件，配置了一个名为`radar_slam`的ROS节�
   
   2. 两者的消息格式都为 `sensor_msgs/PointCloud`，但是消息内容有区别
   
-     - `eagle_msg`数据拥有多普勒速度和信号强度信息
+     - `eagle_msg` 数据拥有多普勒速度和信号强度信息
      - ars548 未收集到多普勒速度和信号强度信息。
   
      **原因：**
@@ -1398,7 +1398,7 @@ rosbag info cp_2022-02-26.bag
 
   根据自己写的毫米波 RosDriver，信号强度存储在点云消息的通道1。
 
-  `eagle_msg->channels[2].values[i]`更改为`eagle->msg->channels[1].values[i]`
+  `eagle_msg->channels[2].values[i]` 更改为 `eagle->msg->channels[1].values[i]`
 
 - `radar_graph_slam_nodelet.cpp`
 
@@ -1591,7 +1591,7 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 
 #### 原因：
 
-`exit code -11`通常表示程序由于段错误而非正常退出。段错误的原因可能包括：内存访问错误、空指针解引用、内存溢出等。
+`exit code -11` 通常表示程序由于段错误而非正常退出。段错误的原因可能包括：内存访问错误、空指针解引用、内存溢出等。
 
 这种错误通常意味着程序试图访问未分配给它的内存区域或者试图访问已经释放的内存区域。
 
@@ -1617,13 +1617,13 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 
 ##### 动机：
 
-增强后的点云格式为`sensor_msgs::PointCloud2`，而原slam入口的点云回调函数参数为`sensor_msgs::PointCloud`，因此需要修改点云回调函数。
+增强后的点云格式为 `sensor_msgs::PointCloud2`，而原slam入口的点云回调函数参数为 `sensor_msgs::PointCloud`，因此需要修改点云回调函数。
 
 ##### 修改内容：
 
-1. 引入自定义点云头文件`point_xyzidv.h`
-2. 声明`pcl::PointCloud<pcl::PointXYZIDV>`类型的变量
-   - 使用`fromROSMsg`将输入点云转为上述类型
+1. 引入自定义点云头文件 `point_xyzidv.h`
+2. 声明 `pcl::PointCloud<pcl::PointXYZIDV>` 类型的变量
+   - 使用 `fromROSMsg` 将输入点云转为上述类型
    - 遍历每一个点，得到它们的xyz坐标，信号强度和多普勒速度
 
 
@@ -1637,17 +1637,17 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 
 - 添加头文件 `cmath`
 
-- 若点的`doppler`为`NAN`，跳过
+- 若点的 `doppler` 为 `NAN`，跳过
 
 ### 2.3、参数文件修改
 
 ##### 动机：
 
-当前点云话题为`/radar_merged`
+当前点云话题为 `/radar_merged`
 
 ##### 修改内容：
 
-`params.yaml`和`utility_radar.h`文件中修改话题内容
+`params.yaml` 和 `utility_radar.h` 文件中修改话题内容
 
 ## 3、自己采集的数据
 
@@ -1657,7 +1657,7 @@ log file: /home/dearmoon/.ros/log/3010c130-fbcd-11ee-a86c-554fd01168bd/radarslam
 
 ## 4、点云配准算法改进
 
-使用GNC而不是RANSAC
+使用 GNC 而不是 RANSAC
 
 
 
