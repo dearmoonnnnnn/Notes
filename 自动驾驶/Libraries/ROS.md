@@ -637,11 +637,11 @@ ROS 是进程(也称Nodes)的分布式框架。ROS 中的每一个功能点都�
 - 基于异步流媒体数据的**话题(topics)**机制：发布订阅模式
 - 用于数据存储的**参数服务器(Parameter Server)**：参数共享模式
 
-## 2.1 话题通信
+## 1. 话题通信
 
 适用于不断更新的、少逻辑处理的数据传输场景，比如各种使用传感器的场景。
 
-### 2.1.1 理论模型
+### 1.1 理论模型
 
 ![image-20241216100837058](https://raw.githubusercontent.com/dearmoonnnnnn/typoraImage/main/img/image-20241216100837058.png)
 
@@ -691,7 +691,7 @@ ROS 是进程(也称Nodes)的分布式框架。ROS 中的每一个功能点都�
 
 
 
-### 2.1.2 具体示例
+### 1.2 具体示例
 
 ##### 发布话题的三个步骤(python)
 
@@ -845,9 +845,9 @@ int main(int argc, char **argv)
 
 确保你已经为 `std_msgs` 和其他必要的包设置了依赖，并且在你的 `CMakeLists.txt` 中正确地设置了编译选项。
 
-## 2.2 服务通信
+## 2. 服务通信
 
-## 2.3 参数服务器
+## 3. 参数服务器
 
 在ROS中，通常所说的参数服务器指的是 ROS 参数服务器，它是一个分布式的参数存储系统，允许你在运行时存储和检索参数。
 
@@ -929,9 +929,13 @@ int main(int argc, char** argv) {
 1. ROS 参数服务器是一个全局的、分布式的参数存储系统，用于整个ROS系统中的节点之间共享参数。
 2. ROS 节点的参数服务器是每个节点内部的参数存储实例，用于存储该节点本身的参数以及可能需要的其他节点的参数。
 
+
+
+
+
 # 四、launch 文件
 
-## 4.1 概述
+## 1. 概述
 
 ##### 动机
 
@@ -947,7 +951,7 @@ launch 文件是一个 XML 格式的文件，可以启动本地和远程的多�
 
 简化节点的配置和启动，提高 ROS 程序的启动效率。
 
-## 4.2 调用 launch 文件
+## 2. 调用 launch 文件
 
 ```bash
 roslaunch 包名 xxx.launch
@@ -957,9 +961,9 @@ roslaunch 包名 xxx.launch
 
 `roslaunch` 命令执行 `launch` 文件时，首先会判断是否启动了 `roscore`，如果启动了则不再启动，否则自动启动  `roscore`。
 
-## 4.3 常见标签
+## 3. 常见标签
 
-##### 4.3.1 节点（node）
+### 3.1 节点（node）
 
 - 使用 `<node>` 标签来启动一个 ROS 节点。<!-- roslaunch命令不能保证按照node的声明顺序来启动节点，因为节点的启动是多进程的 -->
 
@@ -982,9 +986,11 @@ roslaunch 包名 xxx.launch
   <node name="talker" pkg="rospy_tutorials" type="talker" />
   ```
 
-##### 4.3.2 包含其他 launch文件（include）
+### 3.2 包含其他 launch文件（include）
 
 - 使用 `<include>` 标签包含另一个 `.launch` 文件，使得 `.launch` 文件可以模块化。
+
+- 是不能包含被 `include` 文件的 `arg` 参数 
 
 - 示例：
 
@@ -993,7 +999,60 @@ roslaunch 包名 xxx.launch
   <include file="$(find another_package)/launch/another_file.launch"/>
   ```
 
-##### 4.3.3 环境变量（env）
+
+
+##### include 不能向上暴露 arg/param 参数
+
+- 若在被 `include` 的 `launch` 文件中定义 `arg` 参数，不能直接在主 `launch` 文件中找到该参数
+
+  - `<arg>` 参数只能在当前 `launch` 文件圣像
+
+- 解决方法：在主 `launch` 文件定义 arg 参数，并通过 `<include>` 的 `<arg>` 子标签传入
+
+  - 注意 `launch_a.launch` 中的参数传递到 `launch_b.launch` 中的参数
+
+  ```xml
+  <!-- launch_a.launch -->
+  
+  <launch>
+  
+    <!-- 主 launch 文件中定义或传递参数 -->
+    <arg name="path" default="/home/dearmoon/datasets/NWU/"/>
+    <arg name="scene" default="日雪不颠簸高速21/"/>
+    <arg name="region_growing_version" default="test/"/>
+    <arg name="output_group" default="_10/"/>
+    <arg name="radar_preprocessing_group" default="origin/"/>
+  
+    <!-- 传递参数给 include 的 launch2.launch -->
+    <include file="$(find region_growing)/launch/launch_b.launch">
+      <arg name="path" value="$(arg path)"/>
+      <arg name="scene" value="$(arg scene)"/>
+      <arg name="region_growing_version" value="$(arg region_growing_version)"/>
+      <arg name="output_group" value="$(arg output_group)"/>
+      <arg name="radar_preprocessing_group" value="$(arg radar_preprocessing_group)"/>
+    </include>
+  
+    <node name="region_growing" pkg="region_growing" type="region_growing" output="screen" required="true">
+        <param name="outputFile" value="$(arg path)$(arg scene)enhancing_v2/$(arg output_group)regionGrowingResult.bag"/>
+    </node>
+  
+    <node name="player_region_growing" pkg="rosbag" type="play"
+        args="--clock --rate=1
+        $(arg path)$(arg scene)radar_preprocessing/$(arg radar_preprocessing_group)regionGrowing_input.bag"
+        >
+        <remap from="/filtered_points" to="/ars548_process/detectioin_PointCloud2"/>
+        <remap from="/livox/lidar" to="/livox/lidar_PointCloud2"/>
+    </node>
+  
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find region_growing)/rviz_config/region_growing.rviz"/>
+  </launch>
+  ```
+
+- param 也不能向上暴露参数，且不能直接在 `launch` 中通过 `$(param ...)` 使用
+
+
+
+### 3.3 环境变量（env）
 
 使用 `<env>` 标签设置环境变量，这些环境变量对于启动的节点是可见的。
 
@@ -1003,7 +1062,7 @@ roslaunch 包名 xxx.launch
   <env name="ROBOT_INITIAL_POSE" value="-x 0 -y 0 -Y 0"/>
   ```
 
-##### 4.3.4 重新映射（remap）
+### 3.4 重新映射（remap）
 
 - 使用 `<remap>` 标签将一个话题名或服务名从一个名称重映射到另一个名称。
 
@@ -1017,7 +1076,7 @@ roslaunch 包名 xxx.launch
   </node>
   ```
 
-##### 4.3.5 组（group）
+### 3.5 组（group）
 
 - 对节点分组，具有 ns 属性，让节点归属于某个命名空间
 
@@ -1030,7 +1089,7 @@ roslaunch 包名 xxx.launch
   </group>
   ```
 
-##### 4.3.6 参数服务器参数（param）
+### 3.6 参数服务器参数（param）
 
 - **作用：**向参数服务器设置参数。
 
@@ -1073,11 +1132,32 @@ roslaunch 包名 xxx.launch
   /talker/param_B
   ```
 
-##### 4.3.7 参数文件加载（rosparam）
+### 3.7 参数文件加载（rosparam）
 
-- 从`YAML`文件导入参数，或者将参数导出到`YAML`文件，也可以用来删除参数
+- 从 `YAML` 文件导入参数，或者将参数导出到 `YAML` 文件，也可以用来删除参数
 
-- **使用位置**：同param
+- 参数文件示例：
+
+  ```yaml
+  use_sim_time: true
+  
+  path: "/home/dearmoon/datasets/NWU/"
+  
+  scene_0: "日晴不颠簸低速3/"
+  scene_1: "日雪不颠簸高速21/"
+  scene_2: "夜雪不颠簸高速23/"
+  scene_3: "日晴不颠簸高速4/"
+  scene: "日雪不颠簸高速21/"  # 默认选择
+  
+  region_growing_v0: "enhancing_v2/"
+  region_growing_v1: "region_growing_dynamic_align/"
+  region_growing_version: "test/"
+  
+  output_group: "_10/"
+  radar_preprocessing_group: "origin/"
+  ```
+
+- **使用位置**：同 `param`
 
 - 示例：
 
@@ -1086,9 +1166,17 @@ roslaunch 包名 xxx.launch
   <!-- param="参数名称" -->
   <!-- ns="命名空间"： 可选-->
   <rosparam file="$(find my_package)/param/config.yaml" command="load" />
+  
+  <node >
+  	...
+  </node>
   ```
 
-##### 4.3.8 启动文件参数（arg）
+- `launch` 文件不能直接引用 `param`
+  -  不能使用 `$(param ...)`
+- `launch` 文件包含的 node 节点源代码中可以调用 `param` 参数
+
+### 3.8 启动文件参数（arg）
 
 - 用于动态传参，两种用途。
 
@@ -1117,7 +1205,7 @@ roslaunch 包名 xxx.launch
 
   这时候参数 car_length 不再是默认的 0.5, 而是 0.6
 
-## 4.4 可执行文件读取 launch 中的参数
+## 4. 可执行文件读取 launch 中的参数
 
 - 通过 `ros::NodeHandle` 来访问参数
 - 可用 `nh.getParam` 或 `nh.param<typename T>`
@@ -1145,14 +1233,14 @@ roslaunch 包名 xxx.launch
     ROS_INFO("Output bag: %s", output_bag.c_str());
 ```
 
-## 4.5 控制节点启动顺序
+## 5. 控制节点启动顺序
 
 ##### 动机
 
 - `launch` 启动多个节点，节点的顺序是非确定性的。
 - 有时需要指定节点启动顺序，确保播放 `bag` 的节点在启动节点启动完成后再启动。
 
-### 4.5.1 `<group>` 标签 + 延迟启动
+### 5.1 `<group>` 标签 + 延迟启动
 
 ```xml
 <launch>
@@ -1168,7 +1256,7 @@ roslaunch 包名 xxx.launch
 </launch>
 ```
 
-### 4.5.2 设置 `required` 属性
+### 5.2 设置 `required` 属性
 
 ```bash
 <launch>
@@ -1180,7 +1268,7 @@ roslaunch 包名 xxx.launch
 </launch>
 ```
 
-### 4.5.3 添加延迟
+### 5.3 添加延迟
 
 ```bash
 <launch>
@@ -1193,6 +1281,10 @@ roslaunch 包名 xxx.launch
     </node>
 </launch>
 ```
+
+## 6. 场景：使用
+
+
 
 # 五、rosbag
 
@@ -1216,7 +1308,7 @@ ROS为数据的存留和读取，提供了专门的工具：rosbag
 
 - 当重放时，rosbag是一个发布节点，可以读取磁盘文件，发布文件中的话题消息。
 
-## 5.1 写 bag 文件(C++)
+## 1. 写 bag 文件(C++)
 
 ```C++
 #include "ros/ros.h"
@@ -1252,7 +1344,7 @@ int main(int argc, char *argv[])
 
 ```
 
-## 5.2 读 bag 文件(C++)
+## 2. 读 bag 文件(C++)
 
 ```c++
 #include "ros/ros.h"
@@ -1294,11 +1386,11 @@ int main(int argc, char *argv[])
 }
 ```
 
-## 5.3 rosbag play
+## 3. rosbag play
 
 http://wiki.ros.org/rosbag/Commandline
 
-### 5.3.1 `--clock`
+### 3.1 `--clock`
 
 ```bash
 rosbag play --clock example.bag
@@ -1308,7 +1400,7 @@ rosbag play --clock example.bag
   - 在 SLAM、多传感器融合中，**模拟时间是标准做法**。
 - 不使用该参数，ROS 使用当前系统时间，适合只关注数据本身，不依赖时间的场景。
 
-### 5.3.2 `-s`
+### 3.2 `-s`
 
 ```bash
 rosbag play -s 0.5 example.bag
@@ -1316,7 +1408,7 @@ rosbag play -s 0.5 example.bag
 
 - 从 `example.bag` 的 0.5s 处开始播放
 
-### 5.3.3 `--rate`
+### 3.3 `--rate`
 
 ```
 rosbag play --rate=3 example.bag
@@ -1324,7 +1416,7 @@ rosbag play --rate=3 example.bag
 
 - 以 3 倍速度播放 `bag` 文件
 
-### 5.3.4 `--duration`
+### 3.4 `--duration`
 
 ```bash
 rosbag play --duration=10000 example.bag
@@ -1332,7 +1424,7 @@ rosbag play --duration=10000 example.bag
 
 - 播放的总时长，单位为秒
 
-### 5.3.5 `--topic`
+### 3.5 `--topic`
 
 ```bash
 rosbag play example.bag --topics /example_topic
@@ -1341,9 +1433,9 @@ rosbag play example.bag --topics /example_topic
 - 播放特定话题
 - `--topics` 参数需要放在最后
 
-## 5.4 bag 文件相关操作
+## 4. bag 文件相关操作
 
-### 5.4.1 融合两个 bag 文件中的特定话题
+### 4.1 融合两个 bag 文件中的特定话题
 
 要将两个bag文件中特定话题的消息融合为一个bag文件，可以使用`rosbag filter`命令。下面是一个示例：
 
@@ -1357,7 +1449,7 @@ rosbag merge output1.bag output2.bag merged_output.bag
 
 请确保将 `input1.bag`、`input2.bag` 和 `merged_output.bag` 替换为实际的文件名和路径。
 
-### 5.4.2 两个 bag 文件合并为一个，并保留需要的所有话题
+### 4.2 两个 bag 文件合并为一个，并保留需要的所有话题
 
 设 `a.bag` 包有三个话题 `/a1` 、`/a2`、`/a3`，`b.bag` 包有 2 个话题，分别为 `/b1`、`/b2`
 
@@ -1408,7 +1500,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-### 5.4.3 删除/保留 bag 文件中的特定话题
+### 4.3 删除/保留 bag 文件中的特定话题
 
 ```bash
 rosbag filter input.bag output.bag "topic != '/topic1'"
@@ -1430,7 +1522,7 @@ rosbag filter yxbdbgs23.bag 23l.bag "topic == '/livox/lidar' or topic == '/livox
 
 
 
-## 5.5 rosbag record
+## 5. rosbag record
 
 记录某个特定的话题
 
@@ -1444,7 +1536,7 @@ rosbag record /example_topic
 rosbag record -O my_bagfile.bag /example_topic
 ```
 
-## 5.6 rosbag filter 提取特定帧
+## 6. rosbag filter 提取特定帧
 
 ```bash
 rosbag filter input.bag output.bag "t.secs == 1639182735 and t.nsecs == 123456789"
@@ -1536,7 +1628,7 @@ int main(int argc, char** argv)
 }
 ```
 
-## 6.1 表示点云数据的四种方式
+## 1. 表示点云数据的四种方式
 
 ##### 6.1.1、sensor_msgs::PointCloud —— ROS message，已弃用
 
@@ -1636,7 +1728,7 @@ class PointCloud
 
 ```
 
-## 6.2 同时使用 ROS 和 PCL 时典型的工作流
+## 2. 同时使用 ROS 和 PCL 时典型的工作流
 
 1. 在一个 ROS 节点中接收一个 `sensor_msgs::PointCloud2` 消息的点云。
 2. 如果需要使用 pcl 处理它，我们会将其转换为 `pcl::PointCloud<T>`，进行处理。
