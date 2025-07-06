@@ -2447,9 +2447,11 @@ rosrun rqt_logger_level rqt_logger_level
 
 
 
-# 十四、时间同步
+# 十四、时间相关
 
-## 1. message_filters
+## 1. 时间同步
+
+##### message_filters
 
 ```cpp
 #include <ros/ros.h>
@@ -2499,3 +2501,84 @@ int main(int argc, char **argv) {
   sync.setMaxIntervalDuration(ros::Duration(0.05));       // 设置最大时间间隔，单位秒
 ```
 
+## 2. /clock 话题
+
+### 2.1 作用
+
+- 使用虚拟时间
+
+- `ros::Time::now()` 回返回系统的虚拟时间（`/clock`），而不是真实时间（`wall time`）
+
+### 2.2 两种方式
+
+- 虚拟时间必须加上 `use_sim_time = true`
+
+- 若 rosbag 中包含 `/clock` 话题
+  - 播放时发布该话题，使用虚拟时间
+- 若 rosbag 中不包含 `/clock` 话题
+  - 方式加上 `--clock` 参数，rosbag play 会提取每一条消息的时间戳，并生成 `/clock` 话题
+
+
+
+## 3. 时间记录/打印
+
+### 3.1 `std::ofstream`
+
+##### 问题
+
+默认采用科学计数法格式，但是时间戳的数值很大，导致后面几位被省略，影响准确的时间戳
+
+```cpp
+std::ofstream fout("/home/dearmoon/log/extrinsic_log.csv");
+
+fout << "time,tx,ty,tz,roll,pitch,yaw\n";
+for (size_t i = 0; i < vec_time.size(); ++i) {
+    const auto& t = vec_translation[i];
+    const auto& r = vec_euler[i];
+    fout << vec_time[i] << "," 
+         << t[0] << "," << t[1] << "," << t[2] << ","
+         << r[0] << "," << r[1] << "," << r[2] << "\n";
+}
+
+```
+
+
+
+##### 解决方法：
+
+- 强制固定格式，保留小数位数：`std::fixed << std::setprecisoin(9)`
+
+```cpp
+std::ofstream fout("/home/dearmoon/log/extrinsic_log.csv");
+fout << std::fixed << std::setprecision(9);  // 👈 加这行
+
+fout << "time,tx,ty,tz,roll,pitch,yaw\n";
+for (size_t i = 0; i < vec_time.size(); ++i) {
+    const auto& t = vec_translation[i];
+    const auto& r = vec_euler[i];
+    fout << vec_time[i] << "," 
+         << t[0] << "," << t[1] << "," << t[2] << ","
+         << r[0] << "," << r[1] << "," << r[2] << "\n";
+}
+```
+
+
+
+### 3.2 `ros::Time::now()` 打印
+
+```cpp
+ROS_INFO("ros:Time:now(): %f s", ros::Time::now().toSec());
+```
+
+- 只显示小数后 6 位
+
+  - 原因：`%f` 只显示小数后 6 位
+  - 实际上 `ros::Time:now()` 的精度达到小数后 9 位
+
+- 解决方法：指定打印精度
+
+  ```cpp
+  ROS_INFO("ros:Time:now(): %.9f s", ros::Time::now().toSec());
+  ```
+
+  
