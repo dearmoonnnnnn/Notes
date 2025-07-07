@@ -2575,10 +2575,35 @@ ROS_INFO("ros:Time:now(): %f s", ros::Time::now().toSec());
   - 原因：`%f` 只显示小数后 6 位
   - 实际上 `ros::Time:now()` 的精度达到小数后 9 位
 
-- 解决方法：指定打印精度
+- 解决方法：指定打印精度 `.9f`
 
   ```cpp
   ROS_INFO("ros:Time:now(): %.9f s", ros::Time::now().toSec());
   ```
 
-  
+
+
+### 3.3 确保精度不丢时
+
+- 使用 `toSec()` 返回 `double` 类型，容易丢失精度
+- 可转换为纳秒存储
+
+```cpp
+std::ofstream fout("/home/dearmoon/log/extrinsic_log.csv");
+fout << std::fixed;
+fout << "time,tx,ty,tz,roll,pitch,yaw\n";
+for (size_t i = 0; i < vec_time.size(); ++i) {
+    std::ostringstream oss;
+    oss << vec_time[i].sec << "."<<std::setw(9) << std::setfill('0') << vec_time[i].nsec;
+    const auto& t = vec_translation[i];
+    const auto& r = vec_euler[i];
+    fout << oss.str() << ","
+         << t[0] << "," << t[1] << "," << t[2] << ","
+         << r[0] << "," << r[1] << "," << r[2] << "\n";
+}	
+```
+
+- `setw(9)`
+  - 设置字段宽度为 9，这里是 `nsec`
+- `setfilll('0')`
+  - 若不足 9 位，在前面补 `0`
