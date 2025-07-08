@@ -384,9 +384,7 @@ void cloudCallback(const sensor_msgs::PointCloud::ConstPtr& cloud_msg)
 
 ```xml
 <node pkg="cloud_merging" name="12345" type="cloud_merging"  output="screen">
-
-    <param name="output_bag_path"  value = "bbbbbbb" />
-
+	<param name="output_bag_path"  value = "bbbbbbb" />
 </node>
 ```
 
