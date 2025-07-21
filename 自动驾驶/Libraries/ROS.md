@@ -1435,18 +1435,6 @@ rosbag play example.bag --topics /example_topic
 
 ### 4.1 融合两个 bag 文件中的特定话题
 
-要将两个bag文件中特定话题的消息融合为一个bag文件，可以使用`rosbag filter`命令。下面是一个示例：
-
-```bash
-rosbag filter input1.bag output1.bag "topic == '/your_topic'"
-rosbag filter input2.bag output2.bag "topic == '/your_topic'"
-rosbag merge output1.bag output2.bag merged_output.bag
-```
-
-这里的 `/your_topic` 是您要融合的特定话题。首先，使用 `rosbag filter` 从两个输入文件中提取特定话题的消息到两个输出文件中。然后，使用 `rosbag merge` 将这两个输出文件合并为一个文件。
-
-请确保将 `input1.bag`、`input2.bag` 和 `merged_output.bag` 替换为实际的文件名和路径。
-
 ### 4.2 两个 bag 文件合并为一个，并保留需要的所有话题
 
 设 `a.bag` 包有三个话题 `/a1` 、`/a2`、`/a3`，`b.bag` 包有 2 个话题，分别为 `/b1`、`/b2`

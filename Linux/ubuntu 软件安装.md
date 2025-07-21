@@ -221,9 +221,26 @@ apt是ubuntu的包管理工具
 
 ## 2. Ubuntu卸载软件
 
-ubuntu卸载和安装 https://blog.csdn.net/Laney_Midory/article/details/120686618
+- ubuntu卸载和安装 https://blog.csdn.net/Laney_Midory/article/details/120686618
+- https://blog.csdn.net/qq_42170079/article/details/130770073
 
-https://blog.csdn.net/qq_42170079/article/details/130770073
+### 2.0 查找安装来源
+
+##### 用 which 看安装位置
+
+```bash
+which 软件名
+```
+
+- 如果是 `/usr/local/bin` 或 `/opt` ，多半是源码或第三方安装。
+
+##### 用 `dpkg -S` 查归属
+
+```bash
+dpkg -S $(which 软件名)
+```
+
+- 如果能查到，说明是通过 apt 安装的
 
 ### 2.1 卸载源码安装的软件
 
@@ -235,7 +252,7 @@ sudo make uninstall
 
 然后删除源码即可
 
-### 2.2 卸载 deb 安装的软件
+### 2.2 卸载 deb 包安装的软件
 
 1. 确认包名（注意不是 deb 文件名）
 
@@ -251,7 +268,7 @@ sudo make uninstall
 
    - `example-package-name` 就是包名
 
-2. 卸载
+2. **卸载**
 
    ```bash
    sudo dpkg -r example-package-name
@@ -269,7 +286,20 @@ sudo make uninstall
    sudo apt-get -f install   # 自动修复依赖
    ```
 
-   
+
+### 2.3 apt 包管理
+
+卸载
+
+```bash
+sudo apt purge 软件名
+```
+
+清理无用依赖
+
+```bash
+sudo apt autoremove
+```
 
 ## 3. CMakeList 指定版本
 
