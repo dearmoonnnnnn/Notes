@@ -642,3 +642,6 @@ git push --force
 git push --force
 ```
 
+
+
+# 七、查看历史

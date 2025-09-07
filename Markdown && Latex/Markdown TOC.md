@@ -145,3 +145,19 @@ project/
 [Introduction](./docs/introduction.md)
 ```
 
+
+
+# 三、Typora 自带 TOC
+
+## 1. 插入方式：
+
+Typora -> 段落 -> 内容目录
+
+将会在光标选定位置生成可跳转目录
+
+## 2. 优劣
+
+- **优点**：新加内容可以自动更新目录；操作方便
+
+- **缺陷**：无法在 github 上显示
+

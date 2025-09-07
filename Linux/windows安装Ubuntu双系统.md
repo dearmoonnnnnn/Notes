@@ -57,7 +57,7 @@ ubuntu20.04：
 
 [Ubuntu20.04 无线网卡驱动（未发现wifi适配器）、Nvidia显卡驱动安装一条龙教程【多坑预警】_ubuntuwifi驱动安装-CSDN博客](https://blog.csdn.net/weixin_52490336/article/details/133139105)
 直接使用链接中的项目地址，可能会编译出错
-在github中搜到了intel官方驱动地址`https://github.com/intel/backport-iwlwifi.git`
+在 `github` 中搜到了 `intel` 官方驱动地址`https://github.com/intel/backport-iwlwifi.git`
 
 将
 ```bash
