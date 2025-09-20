@@ -469,3 +469,24 @@ bind-address: 192.168.1.100   # 限制代理端口只监听此 IP
 | `allow-lan: true`  | 开启局域网访问，允许其他设备共享代理 |
 | 配合使用           | 建议加上 IP 绑定 + 认证，确保安全    |
 
+# 六、手动添加自己的规则
+
+## 1. parsers
+
+**作用**：在订阅 `profile` 下载下来后，先经过 `parsers` 进行二次处理（加规则，改代理组名字、删掉无用节点等），最后再交给 Clash 使用。
+
+**使用方法**
+
+- 右键一个 `profile` -> 点击 `Parsers` -> `Edit Parsers` -> 添加如下内容
+
+  ```yaml
+  parsers:
+    - url: https://你的订阅地址
+      yaml:
+        prepend-rules:
+          - DOMAIN-SUFFIX,overleaf.com,DIRECT
+          - DOMAIN-KEYWORD,overleaf,DIRECT
+  
+  ```
+
+- 保存后，重新更新 `profile` 文件
