@@ -485,8 +485,8 @@ bind-address: 192.168.1.100   # 限制代理端口只监听此 IP
       yaml:
         prepend-rules:
           - DOMAIN-SUFFIX,overleaf.com,DIRECT
+          - DOMAIN-SUFFIX,overleafusercontent.com,DIRECT
           - DOMAIN-KEYWORD,overleaf,DIRECT
-  
   ```
 
 - 保存后，重新更新 `profile` 文件
