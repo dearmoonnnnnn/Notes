@@ -466,11 +466,11 @@ git push -u origin main
 
 # 三、git push/pull 特定文件夹或者文件
 
-##### 方法1：使用 `sparse-checkout：`（未实践）
+## 1. 方法1：使用 `sparse-checkout：`（未实践）
 
 https://blog.csdn.net/yuyefuxiao521/article/details/132292012
 
-##### 方法2：使用 `.gitignore` 文件
+## 2. 方法2：使用 `.gitignore` 文件
 
 1、在根目录下创建 `.gitignore` 文件
 
@@ -493,6 +493,19 @@ temp/
 git add .gitignore
 git commit -m "Add .gitignore file"
 ```
+
+### 2.1 通配符
+
+| 通配符  | 含义                                    |
+| ------- | --------------------------------------- |
+| `*`     | 匹配任意数量的任意字符（不包括 `/`）    |
+| `?`     | 匹配任意单个字符（不包括 `/`）          |
+| `**`    | 匹配任意数量的任意目录，包括 `/`        |
+| `/`     | 用于目录分隔，开头 `/` 表示从根目录开始 |
+| `[...]` | 匹配方括号中的任意单个字符              |
+| `!`     | 排除模式（不忽略匹配的文件）            |
+
+
 
 # 四、将 clone 的项目发布到新仓库
 
