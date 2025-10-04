@@ -1388,9 +1388,12 @@ rosbag filter input.bag output.bag "topic != '/topic1' && topic != '/topic2'"
 rosbag filter yxbdbgs23.bag 23l.bag "topic == '/livox/lidar' or topic == '/livox/imu'"
 ```
 
+- bag 文件过大时，可能需要等待很长时间，但一定会有 bash 输出提示。
+  - 若没有话题，则会报错
+  - 若有话题，则会显示提取进度条
+  - 若仍没任何输出提示，说明还在读取 bag 文件
 
-
-## 5. rosbag record
+### 4.5 rosbag record
 
 记录某个特定的话题
 
@@ -1404,7 +1407,7 @@ rosbag record /example_topic
 rosbag record -O my_bagfile.bag /example_topic
 ```
 
-## 6. rosbag filter 提取特定帧
+### 4.6 rosbag filter 提取特定帧
 
 ```bash
 rosbag filter input.bag output.bag "t.secs == 1639182735 and t.nsecs == 123456789"
