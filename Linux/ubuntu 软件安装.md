@@ -349,3 +349,13 @@ sudo apt-get remove --purge nvidia*
 sudo apt autoremove
 ```
 
+
+
+# 六、画图软件
+
+安装 pinta
+
+```bash
+sudo snap install pinta
+```
+
