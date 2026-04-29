@@ -53,7 +53,7 @@ ubuntu20.04：
 - [双系统装完之后，Ubuntu系统连不上WIFI的问题 - 代码先锋网 (codeleading.com)](https://codeleading.com/article/42485056591/)
 - [ubuntu18.04安装后没有wifi - CSDN文库](https://wenku.csdn.net/answer/b74e7077e0d19b293da066a3e293277e)
 
-##### 适用于ubuntu20.04和ubuntu22.04
+##### 适用于ubuntu20.04和ubuntu22.04 的具体方法
 
 [Ubuntu20.04 无线网卡驱动（未发现wifi适配器）、Nvidia显卡驱动安装一条龙教程【多坑预警】_ubuntuwifi驱动安装-CSDN博客](https://blog.csdn.net/weixin_52490336/article/details/133139105)
 直接使用链接中的项目地址，可能会编译出错
