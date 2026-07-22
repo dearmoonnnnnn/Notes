@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-07-22T15:51:47.411Z",
+  "updatedAtMs": 1784735507411,
+  "deviceId": "device_1784735362637_1z4n1p5mq",
+  "provider": "github",
+  "domains": [
+    "records",
+    "settings"
+  ],
+  "lastUploadedDomains": [
+    "settings"
+  ],
+  "files": {
+    "records": [
+      ".data/tags.json",
+      ".data/marks.json"
+    ],
+    "settings": [
+      ".data/settings.json"
+    ],
+    "meta": ".data/meta.json"
+  },
+  "appVersion": "0.32.1"
+}
