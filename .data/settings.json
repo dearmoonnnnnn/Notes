@@ -404,6 +404,7 @@
   "giteaCustomUrl": "",
   "textToSpeechMode": "auto",
   "gitlabUsername": "",
+  "outlinePosition": "left",
   "previewTheme": "github",
   "githubCustomImageRepo": "",
   "collapsibleList": [
