@@ -101,7 +101,7 @@
     }
   ],
   "darkMode": "system",
-  "autoSync": "5",
+  "autoSync": "120",
   "language": "简体中文",
   "customThemeColors": {
     "dark": {
@@ -168,7 +168,7 @@
   "keepLatestCount": 4,
   "recordViewMode": "list",
   "outlinePosition": "left",
-  "lastSettingPage": "imageHosting",
+  "lastSettingPage": "sync",
   "githubReleasesCache": {
     "releases": [
       {
