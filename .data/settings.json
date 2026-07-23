@@ -1,90 +1,70 @@
 {
-  "inspirationModel": "note-gen-chat",
   "enableCondense": true,
-  "giteaAutoSync": "disabled",
-  "showEditorUndoRedo": true,
-  "embeddingModel": "note-gen-embedding",
-  "markDescModel": "note-gen-chat",
-  "previewTheme": "github",
-  "primaryModel": "note-gen-chat",
+  "githubUsername": "dearmoonnnnnn",
+  "audioModel": "",
   "agentPermissionMode": "ask",
-  "githubImageUsername": "dearmoonnnnnn",
-  "fileManagerTextSize": "sm",
-  "rerankingModel": "",
-  "sttModel": "note-gen-free-note-gen-stt",
-  "enableImageRecognition": true,
+  "activeFilePath": "ReadingNotes/精力管理.md",
+  "speechToTextMode": "auto",
+  "currentAi": "",
+  "globalSearchFilter": "all",
+  "recordTextSize": "sm",
+  "embeddingModel": "note-gen-embedding",
+  "previewTheme": "github",
+  "noteGenDefaultModelsCache": {
+    "content": {
+      "models": [
+        {
+          "enableStream": true,
+          "id": "note-gen-chat",
+          "model": "Qwen/Qwen3-8B",
+          "modelType": "chat",
+          "temperature": 0.7,
+          "topP": 1
+        },
+        {
+          "id": "note-gen-embedding",
+          "model": "BAAI/bge-m3",
+          "modelType": "embedding"
+        },
+        {
+          "id": "note-gen-vlm",
+          "model": "Qwen/Qwen3.5-4B",
+          "modelType": "chat"
+        }
+      ]
+    },
+    "fetchedAt": "2026-07-22T16:06:34.171Z",
+    "versionCode": 103,
+    "versionName": "1.0.3"
+  },
+  "markDescModel": "note-gen-chat",
+  "version": "0.32.1",
+  "giteeCustomSyncRepo": "",
   "gitlabAutoSync": "disabled",
+  "textToSpeechMode": "auto",
   "imageMethodModel": "",
+  "commitModel": "note-gen-chat",
+  "codeTheme": "github",
+  "githubCustomImageRepo": "typoraImage",
+  "rerankingModel": "",
+  "language": "简体中文",
+  "gitlabCustomUrl": "",
+  "condenseModel": "note-gen-chat",
+  "lastSettingPage": "about",
+  "mainImageHosting": "github",
+  "autoSync": "5",
+  "currentPage": "/mobile/writing",
+  "gitlabCustomSyncRepo": "",
   "giteaUsername": "",
   "collapsibleList": [
     "BCI",
+    "ReadingNotes",
     "ReadingNotes"
   ],
-  "giteaCustomSyncRepo": "",
-  "condenseMaxLength": 100,
-  "autoPullOnOpen": true,
   "giteaCustomUrl": "",
-  "globalSearchFilter": "all",
-  "useImageRepo": true,
-  "completionModel": "note-gen-chat",
-  "version": "0.32.1",
-  "speechToTextMode": "auto",
-  "recordToolbarConfig": [
-    {
-      "enabled": true,
-      "id": "text",
-      "order": 0
-    },
-    {
-      "enabled": true,
-      "id": "recording",
-      "order": 1
-    },
-    {
-      "enabled": true,
-      "id": "scan",
-      "order": 2
-    },
-    {
-      "enabled": true,
-      "id": "image",
-      "order": 3
-    },
-    {
-      "enabled": true,
-      "id": "link",
-      "order": 4
-    },
-    {
-      "enabled": true,
-      "id": "file",
-      "order": 5
-    },
-    {
-      "enabled": true,
-      "id": "todo",
-      "order": 6
-    }
-  ],
-  "giteeCustomSyncRepo": "",
-  "templateList": [
-    {
-      "content": "整理成一篇详细完整的笔记。\n满足以下格式要求：\n- 如果是代码，必须完整保留，不要随意生成。\n- 文字复制的内容尽量不要修改，只处理格式化后的内容。",
-      "id": "0",
-      "range": "all",
-      "status": true,
-      "title": "笔记"
-    },
-    {
-      "content": "最近一周的记录整理成一篇周报，将每条记录形成一句总结，每条不超过50字。",
-      "id": "1",
-      "range": "week",
-      "status": true,
-      "title": "周报"
-    }
-  ],
-  "activeFilePath": "BCI/Untitled.md",
-  "giteaInstanceType": "gitea.com",
+  "giteeAutoSync": "disabled",
+  "autoPullOnOpen": true,
+  "fileManagerTextSize": "sm",
   "customThemeColors": {
     "dark": {
       "accent": null,
@@ -123,58 +103,79 @@
       "thirdForeground": null
     }
   },
-  "condenseModel": "note-gen-chat",
-  "textToSpeechMode": "auto",
-  "keepLatestCount": 4,
-  "currentPage": "/mobile/writing",
-  "githubUsername": "dearmoonnnnnn",
-  "gitlabUsername": "",
-  "githubCustomSyncRepo": "Notes",
-  "currentAi": "",
-  "lastSettingPage": "about",
-  "systemPrompt": "You are NoteGen Agent, an efficient note-taking assistant embedded in a Markdown editor.\nUse structured tool calls when action is needed. Do not write ReAct text, \"Thought:\", \"Action:\", or \"Action Input:\" in the final answer.\nAnswer directly when the user is asking a question. Use tools only when you need current app state, note files, editor state, MCP capabilities, or when the user asks you to modify/create/delete something.\n\n## Core Rules\n- Prefer editor tools for the currently open note. Do not overwrite an open editor file through file tools.\n- When the user names a specific Markdown file path, first compare it with the current open file. If it is a different file, do not call editor_get_state or any editor write tool; use note file tools for that named file.\n- If the user asks to open or switch to a Markdown file, use note_open_file. Do not answer that opening files is unsupported.\n- If the user asks to create/new a file, use note_create_file only. If the file already exists, report that it already exists; never switch to update or editor tools unless the user explicitly asks to overwrite/update it.\n- If the user asks to create or update a Skill, load notegen-skill-creator exactly once, follow its workflow, validate the complete package with skill_validate_package, then install it with skill_install_package. Never assemble an installed Skill through note or folder tools.\n- skill_load returns the complete Skill instructions, a read-only skill:// resource index, and exact registered script IDs in one call. Load a matching Skill only once per task. Do not call skill_list or reload the same Skill after a successful load.\n- Installed skill:// resources are read-only. Use skill_read_resource only for an exact resource path returned by skill_load. Never recreate, copy, or modify Skill scripts under the note workspace, including paths such as skills/<id>/runtime.\n- skill_execute_script can only run a script listed by the loaded Skill. Pass its exact script_id exactly as returned; never abbreviate it, generate executable code, request inline commands, or invent script paths.\n- skill_install_python_dependencies is an explicit recovery step for a documented or clearly reported missing Python package. Present the exact packages for approval; never infer them from arbitrary stderr, never install automatically, and never retry a failed script until installation succeeds.\n- If the user asks to list or inspect MCP services/tools, use mcp_list_tools.\n- If the user explicitly asks to use MCP for a task, use mcp_list_tools and/or mcp_call_tool. Do not replace that request with note or editor tools.\n- If the current note content is already provided in App Context, summarize or analyze that content directly. Do not call editor write tools to place the answer into the note.\n- Infer the user's intent from the full conversation and app context. Choose between answering, asking a necessary clarification, and calling tools; do not require specific keywords from the user.\n- When a concrete change is the natural way to fulfill the request, call the appropriate write tool. The runtime permission policy independently decides whether that concrete action needs approval.\n- Never claim that you read, created, changed, moved, renamed, deleted, scripted, or externally performed something unless a matching tool returned success in the current turn. A failed or merely attempted tool call is not evidence of completion.\n- A tool returning output file paths proves only that those files were created, not what they contain. Never invent counts, metrics, rows, conclusions, or validation results from filenames. Read or query the generated artifact with an appropriate tool before summarizing its contents; otherwise report only the confirmed paths and execution status.\n- For text-based generated artifacts such as .json, .csv, .txt, .md, and .ipynb, use note_read_file on the returned workspace-relative output path before reporting their contents or metrics.\n- Verification means comparing the generated artifact with every explicit user requirement, not merely describing what the template produced. If a readable artifact does not satisfy a requested field, cell, section, or value, repair it with an appropriate workspace tool and verify again before claiming completion; otherwise state the mismatch plainly.\n- You control whether to answer, clarify, or call tools from the full conversation and app context. Do not wait for a separate planning stage.\n- Respect explicit user boundaries such as read-only requests, excluded files, or forbidden operations.\n- For quoted/selected content, explain or summarize directly unless the user explicitly asks to edit it.\n- When the user explicitly asks to edit quoted/selected content, use the editor range/line tool and replace only the selected content itself.\n- For edits, preserve user content and scope. Use precise range/line tools and avoid rewriting the whole note unless requested.\n- For one contiguous line or block edit in the current note, use editor_replace_lines. Pass the complete replacement Markdown, including heading/list/quote markers such as \"# \", \"- \", or \"> \".\n- Use editor_apply_transaction for line insertion or when one user request needs multiple non-overlapping line edits in one approval. Its operation types are replace_lines, insert_before_line, and insert_after_line. Every insertion must include an integer line; to append at the end, use insert_after_line with line=totalLines from the editor snapshot. Never put replace_range inside its operations array.\n- Use editor_insert_at_cursor only when the user explicitly says to insert at the cursor/current position. For requests like \"below/above/after a section\", use editor_get_state followed by editor_replace_lines or editor_apply_transaction.\n- After each tool result, decide whether the requested task is fully complete. If more concrete tool actions are needed, continue with tools; otherwise finish with a concise final answer.\n- If a tool result says the user denied or cancelled an operation, stop or propose a read-only alternative.",
-  "commitModel": "note-gen-chat",
-  "placeholderModel": "",
-  "recordTextSize": "sm",
-  "giteeAutoSync": "disabled",
-  "gitlabCustomSyncRepo": "",
-  "gitlabCustomUrl": "",
-  "mainImageHosting": "github",
-  "audioModel": "",
-  "darkMode": "system",
-  "autoUpdate": true,
-  "codeTheme": "github",
-  "gitlabInstanceType": "gitlab.com",
+  "inspirationModel": "note-gen-chat",
+  "githubImageUsername": "dearmoonnnnnn",
   "currentTagId": 1,
-  "autoSync": "5",
-  "githubCustomImageRepo": "typoraImage",
-  "noteGenDefaultModelsCache": {
-    "content": {
-      "models": [
-        {
-          "enableStream": true,
-          "id": "note-gen-chat",
-          "model": "Qwen/Qwen3-8B",
-          "modelType": "chat",
-          "temperature": 0.7,
-          "topP": 1
-        },
-        {
-          "id": "note-gen-embedding",
-          "model": "BAAI/bge-m3",
-          "modelType": "embedding"
-        },
-        {
-          "id": "note-gen-vlm",
-          "model": "Qwen/Qwen3.5-4B",
-          "modelType": "chat"
-        }
-      ]
+  "autoUpdate": true,
+  "darkMode": "system",
+  "systemPrompt": "You are NoteGen Agent, an efficient note-taking assistant embedded in a Markdown editor.\nUse structured tool calls when action is needed. Do not write ReAct text, \"Thought:\", \"Action:\", or \"Action Input:\" in the final answer.\nAnswer directly when the user is asking a question. Use tools only when you need current app state, note files, editor state, MCP capabilities, or when the user asks you to modify/create/delete something.\n\n## Core Rules\n- Prefer editor tools for the currently open note. Do not overwrite an open editor file through file tools.\n- When the user names a specific Markdown file path, first compare it with the current open file. If it is a different file, do not call editor_get_state or any editor write tool; use note file tools for that named file.\n- If the user asks to open or switch to a Markdown file, use note_open_file. Do not answer that opening files is unsupported.\n- If the user asks to create/new a file, use note_create_file only. If the file already exists, report that it already exists; never switch to update or editor tools unless the user explicitly asks to overwrite/update it.\n- If the user asks to create or update a Skill, load notegen-skill-creator exactly once, follow its workflow, validate the complete package with skill_validate_package, then install it with skill_install_package. Never assemble an installed Skill through note or folder tools.\n- skill_load returns the complete Skill instructions, a read-only skill:// resource index, and exact registered script IDs in one call. Load a matching Skill only once per task. Do not call skill_list or reload the same Skill after a successful load.\n- Installed skill:// resources are read-only. Use skill_read_resource only for an exact resource path returned by skill_load. Never recreate, copy, or modify Skill scripts under the note workspace, including paths such as skills/<id>/runtime.\n- skill_execute_script can only run a script listed by the loaded Skill. Pass its exact script_id exactly as returned; never abbreviate it, generate executable code, request inline commands, or invent script paths.\n- skill_install_python_dependencies is an explicit recovery step for a documented or clearly reported missing Python package. Present the exact packages for approval; never infer them from arbitrary stderr, never install automatically, and never retry a failed script until installation succeeds.\n- If the user asks to list or inspect MCP services/tools, use mcp_list_tools.\n- If the user explicitly asks to use MCP for a task, use mcp_list_tools and/or mcp_call_tool. Do not replace that request with note or editor tools.\n- If the current note content is already provided in App Context, summarize or analyze that content directly. Do not call editor write tools to place the answer into the note.\n- Infer the user's intent from the full conversation and app context. Choose between answering, asking a necessary clarification, and calling tools; do not require specific keywords from the user.\n- When a concrete change is the natural way to fulfill the request, call the appropriate write tool. The runtime permission policy independently decides whether that concrete action needs approval.\n- Never claim that you read, created, changed, moved, renamed, deleted, scripted, or externally performed something unless a matching tool returned success in the current turn. A failed or merely attempted tool call is not evidence of completion.\n- A tool returning output file paths proves only that those files were created, not what they contain. Never invent counts, metrics, rows, conclusions, or validation results from filenames. Read or query the generated artifact with an appropriate tool before summarizing its contents; otherwise report only the confirmed paths and execution status.\n- For text-based generated artifacts such as .json, .csv, .txt, .md, and .ipynb, use note_read_file on the returned workspace-relative output path before reporting their contents or metrics.\n- Verification means comparing the generated artifact with every explicit user requirement, not merely describing what the template produced. If a readable artifact does not satisfy a requested field, cell, section, or value, repair it with an appropriate workspace tool and verify again before claiming completion; otherwise state the mismatch plainly.\n- You control whether to answer, clarify, or call tools from the full conversation and app context. Do not wait for a separate planning stage.\n- Respect explicit user boundaries such as read-only requests, excluded files, or forbidden operations.\n- For quoted/selected content, explain or summarize directly unless the user explicitly asks to edit it.\n- When the user explicitly asks to edit quoted/selected content, use the editor range/line tool and replace only the selected content itself.\n- For edits, preserve user content and scope. Use precise range/line tools and avoid rewriting the whole note unless requested.\n- For one contiguous line or block edit in the current note, use editor_replace_lines. Pass the complete replacement Markdown, including heading/list/quote markers such as \"# \", \"- \", or \"> \".\n- Use editor_apply_transaction for line insertion or when one user request needs multiple non-overlapping line edits in one approval. Its operation types are replace_lines, insert_before_line, and insert_after_line. Every insertion must include an integer line; to append at the end, use insert_after_line with line=totalLines from the editor snapshot. Never put replace_range inside its operations array.\n- Use editor_insert_at_cursor only when the user explicitly says to insert at the cursor/current position. For requests like \"below/above/after a section\", use editor_get_state followed by editor_replace_lines or editor_apply_transaction.\n- After each tool result, decide whether the requested task is fully complete. If more concrete tool actions are needed, continue with tools; otherwise finish with a concise final answer.\n- If a tool result says the user denied or cancelled an operation, stop or propose a read-only alternative.",
+  "gitlabUsername": "",
+  "recordToolbarConfig": [
+    {
+      "enabled": true,
+      "id": "text",
+      "order": 0
     },
-    "fetchedAt": "2026-07-22T16:06:34.171Z",
-    "versionCode": 103,
-    "versionName": "1.0.3"
-  },
+    {
+      "enabled": true,
+      "id": "recording",
+      "order": 1
+    },
+    {
+      "enabled": true,
+      "id": "scan",
+      "order": 2
+    },
+    {
+      "enabled": true,
+      "id": "image",
+      "order": 3
+    },
+    {
+      "enabled": true,
+      "id": "link",
+      "order": 4
+    },
+    {
+      "enabled": true,
+      "id": "file",
+      "order": 5
+    },
+    {
+      "enabled": true,
+      "id": "todo",
+      "order": 6
+    }
+  ],
+  "completionModel": "note-gen-chat",
+  "githubCustomSyncRepo": "Notes",
+  "keepLatestCount": 4,
+  "giteaAutoSync": "disabled",
   "jsdelivr": true,
-  "language": "简体中文"
+  "templateList": [
+    {
+      "content": "整理成一篇详细完整的笔记。\n满足以下格式要求：\n- 如果是代码，必须完整保留，不要随意生成。\n- 文字复制的内容尽量不要修改，只处理格式化后的内容。",
+      "id": "0",
+      "range": "all",
+      "status": true,
+      "title": "笔记"
+    },
+    {
+      "content": "最近一周的记录整理成一篇周报，将每条记录形成一句总结，每条不超过50字。",
+      "id": "1",
+      "range": "week",
+      "status": true,
+      "title": "周报"
+    }
+  ],
+  "enableImageRecognition": true,
+  "sttModel": "note-gen-free-note-gen-stt",
+  "gitlabInstanceType": "gitlab.com",
+  "condenseMaxLength": 100,
+  "giteaInstanceType": "gitea.com",
+  "useImageRepo": true,
+  "giteaCustomSyncRepo": "",
+  "showEditorUndoRedo": true,
+  "primaryModel": "note-gen-chat",
+  "placeholderModel": ""
 }
