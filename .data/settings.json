@@ -101,7 +101,7 @@
     }
   ],
   "darkMode": "system",
-  "autoSync": "120",
+  "autoSync": "5",
   "language": "简体中文",
   "customThemeColors": {
     "dark": {
@@ -169,7 +169,7 @@
   "keepLatestCount": 4,
   "recordViewMode": "list",
   "outlinePosition": "left",
-  "lastSettingPage": "imageHosting",
+  "lastSettingPage": "sync",
   "githubReleasesCache": {
     "releases": [
       {
@@ -56616,7 +56616,7 @@
   "commitModel": "note-gen-chat",
   "sttModel": "note-gen-free-note-gen-stt",
   "gitlabInstanceType": "gitlab.com",
-  "activeFilePath": "BCI/概述.md",
+  "activeFilePath": "BCI/论文",
   "codeTheme": "github",
   "collapsibleList": [
     "AI 相关",
@@ -56646,9 +56646,16 @@
       "kind": "file",
       "name": "概述.md",
       "path": "BCI/概述.md"
+    },
+    {
+      "id": "1785079648722-us6qfjjrs",
+      "isFolder": true,
+      "kind": "file",
+      "name": "论文",
+      "path": "BCI/论文"
     }
   ],
-  "activeTabId": "1785079552527-fiz0babd2",
+  "activeTabId": "1785079648722-us6qfjjrs",
   "giteeCustomSyncRepo": "",
   "previewTheme": "github",
   "githubCustomSyncRepo": "Notes",
