@@ -72,10 +72,7 @@
   "autoPullOnOpen": true,
   "giteeCustomSyncRepo": "",
   "collapsibleList": [
-    "AI 相关",
-    "BCI",
-    "BCI/论文",
-    "自动驾驶"
+    "BCI/论文"
   ],
   "githubUsername": "dearmoonnnnnn",
   "recordViewMode": "list",
@@ -121,27 +118,27 @@
     },
     {
       "id": "toggleHeading1",
-      "value": "Mod+Alt+1"
+      "value": "Mod+1"
     },
     {
       "id": "toggleHeading2",
-      "value": "Mod+Alt+2"
+      "value": "Mod+2"
     },
     {
       "id": "toggleHeading3",
-      "value": "Mod+Alt+3"
+      "value": "Mod+3"
     },
     {
       "id": "toggleHeading4",
-      "value": "Mod+Alt+4"
+      "value": "Mod+4"
     },
     {
       "id": "toggleHeading5",
-      "value": "Mod+Alt+5"
+      "value": "Mod+5"
     },
     {
       "id": "toggleHeading6",
-      "value": "Mod+Alt+6"
+      "value": "Mod+6"
     },
     {
       "id": "openSearch",
@@ -189,19 +186,19 @@
     },
     {
       "id": "toggleBulletList",
-      "value": "Shift+Mod+8"
+      "value": "Shift+Mod+}"
     },
     {
       "id": "toggleOrderedList",
-      "value": "Shift+Mod+7"
+      "value": "Shift+Mod+{"
     },
     {
       "id": "toggleTaskList",
-      "value": "Shift+Mod+9"
+      "value": "Shift+Mod+X"
     },
     {
       "id": "toggleCodeBlock",
-      "value": "Mod+Alt+C"
+      "value": "Shift+Mod+K"
     },
     {
       "id": "openAiMenu",
@@ -293,7 +290,7 @@
     },
     {
       "id": "insertBlockMath",
-      "value": "Shift+Mod+Alt+M"
+      "value": "Shift+Mod+M"
     },
     {
       "id": "insertMermaid",
@@ -307,7 +304,7 @@
   "imageMethodModel": "",
   "gitlabInstanceType": "gitlab.com",
   "codeTheme": "github",
-  "lastSettingPage": "shortcuts",
+  "lastSettingPage": "sync",
   "commitModel": "note-gen-chat",
   "useImageRepo": true,
   "giteeAutoSync": "disabled",
