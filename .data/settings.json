@@ -169,7 +169,7 @@
   "keepLatestCount": 4,
   "recordViewMode": "list",
   "outlinePosition": "left",
-  "lastSettingPage": "sync",
+  "lastSettingPage": "imageHosting",
   "githubReleasesCache": {
     "releases": [
       {
@@ -56616,12 +56616,12 @@
   "commitModel": "note-gen-chat",
   "sttModel": "note-gen-free-note-gen-stt",
   "gitlabInstanceType": "gitlab.com",
-  "activeFilePath": "BCI/基本概念.md",
+  "activeFilePath": "BCI/概述.md",
   "codeTheme": "github",
   "collapsibleList": [
+    "AI 相关",
     "BCI",
-    "ReadingNotes",
-    "ReadingNotes"
+    "BCI/论文"
   ],
   "markDescModel": "note-gen-chat",
   "recordTextSize": "sm",
@@ -56638,10 +56638,17 @@
       "isFolder": false,
       "kind": "file",
       "name": "综述.md",
-      "path": "BCI/综述.md"
+      "path": "BCI/论文/综述.md"
+    },
+    {
+      "id": "1785079552527-fiz0babd2",
+      "isFolder": false,
+      "kind": "file",
+      "name": "概述.md",
+      "path": "BCI/概述.md"
     }
   ],
-  "activeTabId": "1784735685853-266pffhh5",
+  "activeTabId": "1785079552527-fiz0babd2",
   "giteeCustomSyncRepo": "",
   "previewTheme": "github",
   "githubCustomSyncRepo": "Notes",
