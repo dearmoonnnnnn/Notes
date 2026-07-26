@@ -304,7 +304,7 @@
   "imageMethodModel": "",
   "gitlabInstanceType": "gitlab.com",
   "codeTheme": "github",
-  "lastSettingPage": "general",
+  "lastSettingPage": "shortcuts",
   "commitModel": "note-gen-chat",
   "useImageRepo": true,
   "giteeAutoSync": "disabled",
