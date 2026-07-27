@@ -1,14 +1,15 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-26T23:40:44.023Z",
-  "updatedAtMs": 1785109244023,
-  "deviceId": "device_1784735362637_1z4n1p5mq",
+  "updatedAt": "2026-07-27T03:55:15.192Z",
+  "updatedAtMs": 1785124515192,
+  "deviceId": "device_1784780027422_vf9szdktm",
   "provider": "github",
   "domains": [
     "records",
     "settings"
   ],
   "lastUploadedDomains": [
+    "records",
     "settings"
   ],
   "files": {
