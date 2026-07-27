@@ -1,22 +1,7 @@
 {
   "globalSearchFilter": "all",
   "keepLatestCount": 4,
-  "templateList": [
-    {
-      "content": "整理成一篇详细完整的笔记。\n满足以下格式要求：\n- 如果是代码，必须完整保留，不要随意生成。\n- 文字复制的内容尽量不要修改，只处理格式化后的内容。",
-      "id": "0",
-      "range": "all",
-      "status": true,
-      "title": "笔记"
-    },
-    {
-      "content": "最近一周的记录整理成一篇周报，将每条记录形成一句总结，每条不超过50字。",
-      "id": "1",
-      "range": "week",
-      "status": true,
-      "title": "周报"
-    }
-  ],
+  "templateList": [],
   "agentPermissionMode": "ask",
   "previewTheme": "github",
   "audioModel": "",
@@ -133,7 +118,7 @@
   "collapsibleList": [
     "BCI",
     "ReadingNotes",
-    "BCI"
+    "BCI/论文"
   ],
   "primaryModel": "note-gen-chat",
   "showEditorUndoRedo": true,
@@ -175,7 +160,7 @@
       "order": 6
     }
   ],
-  "activeFilePath": "ReadingNotes/精力管理.md",
+  "activeFilePath": "BCI/Untitled.md",
   "textToSpeechMode": "auto",
   "gitlabCustomUrl": "",
   "darkMode": "system",
