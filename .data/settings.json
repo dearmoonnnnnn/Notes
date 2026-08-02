@@ -302,7 +302,7 @@
   "imageMethodModel": "",
   "gitlabInstanceType": "gitlab.com",
   "codeTheme": "github",
-  "lastSettingPage": "file",
+  "lastSettingPage": "sync",
   "commitModel": "note-gen-chat",
   "useImageRepo": true,
   "giteeAutoSync": "disabled",
