@@ -123,3 +123,4 @@ echo "Another line." >> output.txt
 watch -n 1 free -h
 ```
 
+- watch -n 每多少秒重复执行后面的命令一次
